@@ -7,6 +7,7 @@ import { regionesYcomunas } from '../../data/regiones.js'
 export function AdminView({
   products = [],
   users = [],
+  orders = [],
   onCreateProduct,
   onUpdateProduct,
   onDeleteProduct,
@@ -15,9 +16,11 @@ export function AdminView({
   onDeleteUser,
   loggedUser
 }) {
-  const [tab, setTab] = useState('dashboard') // 'dashboard', 'productos', 'usuarios'
+  const [tab, setTab] = useState('dashboard') // 'dashboard', 'productos', 'usuarios', 'historial'
+  const [selectedUserForHistory, setSelectedUserForHistory] = useState(null)
   const [editingProduct, setEditingProduct] = useState(null)
   const [showProductModal, setShowProductModal] = useState(false)
+
   const [productForm, setProductForm] = useState({
     titulo: '',
     precio: '',
@@ -148,8 +151,32 @@ export function AdminView({
               </a>
             </li>
           )}
+          <li className={tab === 'historial' ? 'is-active' : ''}>
+            <a onClick={() => { setSelectedUserForHistory(null); setTab('historial'); }}>
+              <span className="icon is-small">📦</span>
+              <span>Historial de Compras ({orders.length})</span>
+            </a>
+          </li>
         </ul>
       </div>
+
+      {/* ALERTA VISUAL DE BAJO STOCK */}
+      {totalCritical > 0 && (
+        <div className="notification is-danger is-light mb-5">
+          <div className="is-flex is-align-items-center">
+            <span className="is-size-3 mr-3">⚠️</span>
+            <div>
+              <p className="has-text-weight-bold is-size-5">
+                ¡Alerta de Inventario Crítico!
+              </p>
+              <p className="is-size-6">
+                Existen <strong>{totalCritical} modelos</strong> con stock igual o inferior al límite mínimo establecido. Por favor revisa la bodega y realiza reposición.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {/* VISTA 1: DASHBOARD METRICAS (Figura 9 del PDF) */}
       {tab === 'dashboard' && (
@@ -326,6 +353,17 @@ export function AdminView({
                     <td>{u.comuna}, {u.region}</td>
                     <td>
                       <div className="buttons are-small">
+                        {u.tipoUsuario === 'Cliente' && (
+                          <Button
+                            variant="primary"
+                            onClick={() => {
+                              setSelectedUserForHistory(u);
+                              setTab('historial');
+                            }}
+                          >
+                            Ver Compras
+                          </Button>
+                        )}
                         <Button variant="info" onClick={() => handleOpenEditUser(u)}>
                           Editar
                         </Button>
@@ -341,6 +379,95 @@ export function AdminView({
           </div>
         </div>
       )}
+
+      {/* VISTA 4: HISTORIAL DE COMPRAS (GLOBAL O FILTRADO POR CLIENTE) */}
+      {tab === 'historial' && (
+        <div className="box">
+          <div className="is-flex is-justify-content-space-between is-align-items-center mb-4">
+            <div>
+              <h2 className="title is-4 mb-1">
+                {selectedUserForHistory
+                  ? `Historial de Compras: ${selectedUserForHistory.nombre} ${selectedUserForHistory.apellidos} (${selectedUserForHistory.run})`
+                  : 'Historial General de Compras de Clientes'}
+              </h2>
+              <p className="subtitle is-6 has-text-grey">
+                {selectedUserForHistory
+                  ? 'Listado de todas las compras realizadas por este cliente.'
+                  : 'Registro de todas las órdenes emitidas en la tienda online.'}
+              </p>
+            </div>
+            {selectedUserForHistory && (
+              <Button
+                variant="light"
+                size="small"
+                onClick={() => setSelectedUserForHistory(null)}
+              >
+                Ver Todas las Compras
+              </Button>
+            )}
+          </div>
+
+          {(() => {
+            const displayedOrders = selectedUserForHistory
+              ? orders.filter(o => String(o.userRun) === String(selectedUserForHistory.run))
+              : orders;
+
+            if (displayedOrders.length === 0) {
+              return (
+                <div className="notification is-light has-text-centered py-5">
+                  <p className="is-size-6">No se encontraron registros de compra para este cliente.</p>
+                </div>
+              );
+            }
+
+            return (
+              <div className="table-container">
+                <table className="table is-fullwidth is-striped is-hoverable">
+                  <thead>
+                    <tr>
+                      <th>Código Orden</th>
+                      <th>Fecha</th>
+                      <th>Cliente</th>
+                      <th>RUN</th>
+                      <th>Productos Comprados</th>
+                      <th>Total</th>
+                      <th>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {displayedOrders.map(ord => (
+                      <tr key={ord.id}>
+                        <td><strong>{ord.id}</strong></td>
+                        <td>{ord.fecha}</td>
+                        <td>{ord.customerName}</td>
+                        <td><code>{ord.userRun}</code></td>
+                        <td>
+                          <ul style={{ paddingLeft: '1rem', margin: 0, fontSize: '0.85rem' }}>
+                            {ord.items.map((it, i) => (
+                              <li key={i}>
+                                {it.cantidad}x {it.titulo} {it.talla ? `(${it.talla})` : ''} - ${Number(it.precio).toLocaleString('es-CL')}
+                              </li>
+                            ))}
+                          </ul>
+                        </td>
+                        <td className="has-text-weight-bold has-text-primary">
+                          ${Number(ord.total).toLocaleString('es-CL')}
+                        </td>
+                        <td>
+                          <span className="tag is-success is-light">
+                            {ord.estado || 'Completado'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
 
       {/* MODAL PRODUCTO (CREAR / EDITAR) */}
       {showProductModal && (

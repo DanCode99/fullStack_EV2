@@ -48,10 +48,27 @@ export function ProductCard({
             {product.titulo}
           </h3>
 
-          <p className="subtitle is-5 has-text-primary has-text-weight-bold">
-            ${Number(product.precio).toLocaleString('es-CL')}
-          </p>
+          {product.descuento ? (
+            <div>
+              <div className="is-flex is-align-items-center mb-1">
+                <span className="tag is-danger is-light has-text-weight-bold mr-2">
+                  -{product.descuento}% OFF
+                </span>
+                <span className="is-size-7 has-text-grey" style={{ textDecoration: 'line-through' }}>
+                  ${Number(product.precioOriginal || product.precio).toLocaleString('es-CL')}
+                </span>
+              </div>
+              <p className="subtitle is-5 has-text-danger has-text-weight-bold mb-0">
+                ${Number(product.precioFinal || Math.round(product.precio * (1 - product.descuento / 100))).toLocaleString('es-CL')}
+              </p>
+            </div>
+          ) : (
+            <p className="subtitle is-5 has-text-primary has-text-weight-bold">
+              ${Number(product.precio).toLocaleString('es-CL')}
+            </p>
+          )}
         </div>
+
 
         <div className="buttons mt-3">
           <Button

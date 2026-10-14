@@ -44,11 +44,14 @@ npm run build
 
 Para probar las distintas vistas, permisos y roles del sistema (Cliente, Vendedor y Administrador), puedes usar las siguientes credenciales registradas:
 
-| Rol                     | Correo                 | Contraseña | ¿A qué tiene acceso?                                                                                 |
-| :---------------------- | :--------------------- | :---------- | :----------------------------------------------------------------------------------------------------- |
-| **Administrador** | `admin@duoc.cl`      | `123456`  | Acceso total al Panel Admin (Dashboard de métricas, CRUD de Productos y CRUD de Usuarios).            |
-| **Vendedor**      | `vendedor1@duoc.cl`  | `123456`  | Acceso a Dashboard y catálogo del Panel Admin. No puede gestionar usuarios ni crear nuevos productos. |
-| **Cliente**       | `clienteA@gmail.com` | `123456`  | Navegación de tienda, catálogo, carrito y checkout con autocompletado de sus datos.                  |
+| Rol                     | Correo                                            | Contraseña | ¿A qué tiene acceso?                                                                                                            |
+| :---------------------- | :------------------------------------------------ | :---------- | :-------------------------------------------------------------------------------------------------------------------------------- |
+| **Administrador** | `admin@duoc.cl`                                 | `123456`  | Acceso total al Panel Admin (Dashboard con alertas de stock, CRUD de Productos, CRUD de Usuarios e Historial general de compras). |
+| **Vendedor**      | `vendedor1@duoc.cl`                             | `123456`  | Acceso a Dashboard y catálogo del Panel Admin. No puede gestionar usuarios ni crear nuevos productos.                            |
+| **Cliente A**     | `clienteA@gmail.com`                            | `123456`  | Navegación de tienda, catálogo, carrito, checkout y compras registradas con RUN 444444444.                                      |
+| **Cliente B**     | `clienteB@gmail.com`                            | `123456`  | Cliente frecuente con compras registradas (RUN 555555555).                                                                        |
+| **Cliente C**     | `clienteC@gmail.com`                            | `123456`  | Cliente de Valparaíso con historial de compras (RUN 666666666).                                                                  |
+| **Cliente D - J** | `clienteD@gmail.com` ... `clienteJ@gmail.com` | `123456`  | Cuentas cliente adicionales con historial y compras asignadas.                                                                    |
 
 > También puedes usar la opción **"Registro"** en la barra superior para crear una cuenta nueva de cliente con tus propios datos.
 

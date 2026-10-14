@@ -9,7 +9,48 @@ body, button, input, textarea, select {
 
 body {
     background-color: #f4f6f8;
+    color: #2b323c;
 }
+
+/* Forzar contraste nítido y legible en formularios */
+input.input, textarea.textarea, select {
+    background-color: #ffffff !important;
+    color: #2b323c !important;
+    border-color: #dcdfe6 !important;
+}
+
+input.input::placeholder, textarea.textarea::placeholder {
+    color: #8c939f !important;
+}
+
+input.input:focus, textarea.textarea:focus, select:focus {
+    border-color: #00b89c !important;
+    box-shadow: 0 0 0 0.125em rgba(0, 184, 156, 0.25) !important;
+}
+
+label.label {
+    color: #1a1e24 !important;
+    font-weight: 600 !important;
+}
+
+/* Evitar texto blanco en fondos claros */
+.has-text-grey-light {
+    color: #636e7b !important;
+}
+
+.table {
+    background-color: #ffffff !important;
+    color: #2b323c !important;
+}
+
+.table th {
+    color: #1a1e24 !important;
+}
+
+.table td {
+    color: #2b323c !important;
+}
+
 
 /* ===================================================
    2. TARJETAS (CATÁLOGO Y BLOG UNIFICADOS)

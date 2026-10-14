@@ -175,5 +175,20 @@ export const productStorage = {
     const filtered = products.filter(p => String(p.id) !== String(id));
     localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify(filtered));
     return true;
+  },
+
+  reduceStock: (cartItems = []) => {
+    const products = productStorage.getAll();
+    const updated = products.map(p => {
+      const purchased = cartItems.find(it => String(it.id) === String(p.id));
+      if (purchased) {
+        const newStock = Math.max(0, (Number(p.stock) || 0) - (Number(purchased.cantidad) || 0));
+        return { ...p, stock: newStock };
+      }
+      return p;
+    });
+    localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify(updated));
+    return updated;
   }
 };
+

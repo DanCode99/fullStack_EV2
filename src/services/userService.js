@@ -4,8 +4,16 @@ export const initialUsers = [
   { run: "333333333", nombre: "Vendedor", apellidos: "Dos", correo: "vendedor2@duoc.cl", fechaNacimiento: "1992-08-20", tipoUsuario: "Vendedor", region: "Región del Biobío", comuna: "Concepción", direccion: "Pasaje 3", password: "123456" },
   { run: "444444444", nombre: "Cliente", apellidos: "A", correo: "clienteA@gmail.com", fechaNacimiento: "1995-12-10", tipoUsuario: "Cliente", region: "Región Metropolitana de Santiago", comuna: "Maipú", direccion: "Calle 4", password: "123456" },
   { run: "555555555", nombre: "Cliente", apellidos: "B", correo: "clienteB@gmail.com", fechaNacimiento: "1996-11-11", tipoUsuario: "Cliente", region: "Región Metropolitana de Santiago", comuna: "Puente Alto", direccion: "Calle 5", password: "123456" },
-  { run: "666666666", nombre: "Cliente", apellidos: "C", correo: "clienteC@gmail.com", fechaNacimiento: "1997-10-12", tipoUsuario: "Cliente", region: "Región de Valparaíso", comuna: "Valparaíso", direccion: "Calle 6", password: "123456" }
+  { run: "666666666", nombre: "Cliente", apellidos: "C", correo: "clienteC@gmail.com", fechaNacimiento: "1997-10-12", tipoUsuario: "Cliente", region: "Región de Valparaíso", comuna: "Valparaíso", direccion: "Calle 6", password: "123456" },
+  { run: "777777777", nombre: "Cliente", apellidos: "D", correo: "clienteD@gmail.com", fechaNacimiento: "1998-09-13", tipoUsuario: "Cliente", region: "Región del Biobío", comuna: "Talcahuano", direccion: "Calle 7", password: "123456" },
+  { run: "888888888", nombre: "Cliente", apellidos: "E", correo: "clienteE@gmail.com", fechaNacimiento: "1999-08-14", tipoUsuario: "Cliente", region: "Región de Coquimbo", comuna: "La Serena", direccion: "Calle 8", password: "123456" },
+  { run: "999999999", nombre: "Cliente", apellidos: "F", correo: "clienteF@gmail.com", fechaNacimiento: "2000-07-15", tipoUsuario: "Cliente", region: "Región de Antofagasta", comuna: "Antofagasta", direccion: "Calle 9", password: "123456" },
+  { run: "101010101", nombre: "Cliente", apellidos: "G", correo: "clienteG@gmail.com", fechaNacimiento: "2001-06-16", tipoUsuario: "Cliente", region: "Región de Tarapacá", comuna: "Iquique", direccion: "Calle 10", password: "123456" },
+  { run: "121212121", nombre: "Cliente", apellidos: "H", correo: "clienteH@gmail.com", fechaNacimiento: "2002-05-17", tipoUsuario: "Cliente", region: "Región Metropolitana de Santiago", comuna: "Providencia", direccion: "Calle 11", password: "123456" },
+  { run: "131313131", nombre: "Cliente", apellidos: "I", correo: "clienteI@gmail.com", fechaNacimiento: "2003-04-18", tipoUsuario: "Cliente", region: "Región de Valparaíso", comuna: "Quilpué", direccion: "Calle 12", password: "123456" },
+  { run: "141414141", nombre: "Cliente", apellidos: "J", correo: "clienteJ@gmail.com", fechaNacimiento: "1994-03-19", tipoUsuario: "Cliente", region: "Región del Maule", comuna: "Talca", direccion: "Calle 13", password: "123456" }
 ];
+
 
 const USERS_STORAGE_KEY = 'tienda_usuarios';
 const LOGGED_USER_KEY = 'loggedUser';

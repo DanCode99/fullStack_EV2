@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { productStorage } from './services/productService.js'
 import { userService } from './services/userService.js'
+import { orderService } from './services/orderService.js'
 import { MainLayout } from './components/templates/MainLayout/MainLayout.jsx'
 import { AdminLayout } from './components/templates/AdminLayout/AdminLayout.jsx'
 
@@ -27,9 +28,11 @@ export function App() {
   const [currentView, setCurrentView] = useState('home')
   const [products, setProducts] = useState(() => productStorage.getAll())
   const [users, setUsers] = useState(() => userService.getAll())
+  const [orders, setOrders] = useState(() => orderService.getAll())
   const [loggedUser, setLoggedUser] = useState(() => userService.getLoggedUser())
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [lastOrder, setLastOrder] = useState(null)
+
   const [cart, setCart] = useState(() => {
     try {
       const saved = localStorage.getItem(CART_STORAGE_KEY)
@@ -170,12 +173,31 @@ export function App() {
   const handleSubmitOrder = ({ success, order }) => {
     setLastOrder(order)
     if (success) {
+      // 1. Descontar del stock de los productos comprados
+      productStorage.reduceStock(order.items || [])
+      setProducts(productStorage.getAll())
+
+      // 2. Registrar en el historial de órdenes
+      const registeredOrder = {
+        id: `ORD-${order.orderNumber}`,
+        userRun: loggedUser?.run || '444444444',
+        customerName: `${order.customer?.nombre || ''} ${order.customer?.apellidos || ''}`.trim() || 'Cliente Web',
+        fecha: new Date().toISOString().split('T')[0],
+        total: order.total,
+        items: order.items,
+        estado: 'Completado'
+      }
+      orderService.create(registeredOrder)
+      setOrders(orderService.getAll())
+
+      // 3. Vaciar carrito y navegar al resumen
       handleClearCart()
       navigateTo('pago-exito')
     } else {
       navigateTo('pago-error')
     }
   }
+
 
   const totalCartCount = cart.reduce((acc, item) => acc + item.cantidad, 0)
 
@@ -296,8 +318,10 @@ export function App() {
               onCreateUser={handleCreateUser}
               onUpdateUser={handleUpdateUser}
               onDeleteUser={handleDeleteUser}
+              orders={orders}
               loggedUser={loggedUser}
             />
+
           </AdminLayout>
         )
       default:

@@ -26,6 +26,7 @@ const CART_STORAGE_KEY = 'carritoFutbol'
 
 export function App() {
   const [currentView, setCurrentView] = useState('home')
+  const [adminTab, setAdminTab] = useState('dashboard')
   const [products, setProducts] = useState(() => productStorage.getAll())
   const [users, setUsers] = useState(() => userService.getAll())
   const [orders, setOrders] = useState(() => orderService.getAll())
@@ -303,8 +304,8 @@ export function App() {
       case 'admin':
         return (
           <AdminLayout
-            currentAdminTab="dashboard"
-            onSelectTab={() => {}}
+            currentAdminTab={adminTab}
+            onSelectTab={setAdminTab}
             onNavigateHome={() => navigateTo('home')}
             onLogout={handleLogout}
             loggedUser={loggedUser}
@@ -320,8 +321,10 @@ export function App() {
               onDeleteUser={handleDeleteUser}
               orders={orders}
               loggedUser={loggedUser}
+              currentTab={adminTab}
+              onSelectTab={setAdminTab}
+              onNavigateHome={() => navigateTo('home')}
             />
-
           </AdminLayout>
         )
       default:

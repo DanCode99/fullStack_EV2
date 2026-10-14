@@ -1,13 +1,19 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { FormField } from '../../components/molecules/FormField/FormField.jsx'
 import { Input } from '../../components/atoms/Input/Input.jsx'
 import { Button } from '../../components/atoms/Button/Button.jsx'
+import { MetricCard } from '../../components/molecules/MetricCard/MetricCard.jsx'
+import { OrdersTable } from '../../components/organisms/OrdersTable/OrdersTable.jsx'
+import { ReceiptModal } from '../../components/organisms/ReceiptModal/ReceiptModal.jsx'
+import { ReportsPanel } from '../../components/organisms/ReportsPanel/ReportsPanel.jsx'
 import { regionesYcomunas } from '../../data/regiones.js'
 
 export function AdminView({
   products = [],
   users = [],
   orders = [],
+  currentTab = 'dashboard',
+  onSelectTab,
   onCreateProduct,
   onUpdateProduct,
   onDeleteProduct,
@@ -16,11 +22,27 @@ export function AdminView({
   onDeleteUser,
   loggedUser
 }) {
-  const [tab, setTab] = useState('dashboard') // 'dashboard', 'productos', 'usuarios', 'historial'
-  const [selectedUserForHistory, setSelectedUserForHistory] = useState(null)
+  // Estado interno sincronizado con prop opcional
+  const [internalTab, setInternalTab] = useState('dashboard')
+  const activeTab = currentTab || internalTab
+
+  const handleTabChange = (newTab) => {
+    setInternalTab(newTab)
+    if (typeof onSelectTab === 'function') {
+      onSelectTab(newTab)
+    }
+  }
+
+  // Estado para el modal de Detalle de Boleta
+  const [selectedOrderForReceipt, setSelectedOrderForReceipt] = useState(null)
+  const [showReceiptModal, setShowReceiptModal] = useState(false)
+
+  // Filtro de usuario para la vista de Órdenes
+  const [selectedUserForOrders, setSelectedUserForOrders] = useState(null)
+
+  // Estados para CRUD de Productos
   const [editingProduct, setEditingProduct] = useState(null)
   const [showProductModal, setShowProductModal] = useState(false)
-
   const [productForm, setProductForm] = useState({
     titulo: '',
     precio: '',
@@ -32,6 +54,7 @@ export function AdminView({
     categoria: 'Selecciones Nacionales'
   })
 
+  // Estados para CRUD de Usuarios
   const [editingUser, setEditingUser] = useState(null)
   const [showUserModal, setShowUserModal] = useState(false)
   const [userForm, setUserForm] = useState({
@@ -49,11 +72,32 @@ export function AdminView({
 
   const isSeller = loggedUser && (loggedUser.tipoUsuario === 'Vendedor' || loggedUser.tipo === 'Vendedor')
 
-  // Métricas
-  const totalStock = products.reduce((acc, p) => acc + (Number(p.stock) || 0), 0)
-  const totalCritical = products.filter(p => Number(p.stock) <= (Number(p.stockCritico) || 5)).length
+  // Métricas generales
+  const totalStock = useMemo(() => products.reduce((acc, p) => acc + (Number(p.stock) || 0), 0), [products])
+  const totalCritical = useMemo(() => products.filter(p => Number(p.stock) <= (Number(p.stockCritico) || 5)).length, [products])
+  const totalVentas = useMemo(() => orders.reduce((acc, o) => acc + (Number(o.total) || 0), 0), [orders])
 
-  // Handlers Productos
+  // Enriquecer orden con datos del cliente para la Boleta
+  const handleOpenReceipt = (order) => {
+    let enriched = { ...order }
+    if (!enriched.customer || !enriched.customer.nombre) {
+      const found = users.find(u => String(u.run) === String(order.userRun))
+      if (found) {
+        enriched.customer = {
+          nombre: found.nombre,
+          apellidos: found.apellidos,
+          correo: found.correo,
+          direccion: found.direccion,
+          comuna: found.comuna,
+          region: found.region
+        }
+      }
+    }
+    setSelectedOrderForReceipt(enriched)
+    setShowReceiptModal(true)
+  }
+
+  // Handlers CRUD Productos
   const handleOpenNewProduct = () => {
     setEditingProduct(null)
     setProductForm({
@@ -92,7 +136,7 @@ export function AdminView({
     setShowProductModal(false)
   }
 
-  // Handlers Usuarios
+  // Handlers CRUD Usuarios
   const handleOpenNewUser = () => {
     setEditingUser(null)
     setUserForm({
@@ -127,129 +171,251 @@ export function AdminView({
   }
 
   return (
-    <div className="p-4">
-      {/* Botones de navegación interna */}
+    <div className="admin-view-wrapper">
+      {/* Botones de navegación interna (Tabs horizontales) */}
       <div className="tabs is-boxed mb-5">
         <ul>
-          <li className={tab === 'dashboard' ? 'is-active' : ''}>
-            <a onClick={() => setTab('dashboard')}>
+          <li className={activeTab === 'dashboard' ? 'is-active' : ''}>
+            <a onClick={() => handleTabChange('dashboard')} id="tab-btn-dashboard">
               <span className="icon is-small">📊</span>
               <span>Dashboard</span>
             </a>
           </li>
-          <li className={tab === 'productos' ? 'is-active' : ''}>
-            <a onClick={() => setTab('productos')}>
+          <li className={activeTab === 'ordenes' ? 'is-active' : ''}>
+            <a onClick={() => { setSelectedUserForOrders(null); handleTabChange('ordenes'); }} id="tab-btn-ordenes">
+              <span className="icon is-small">🧾</span>
+              <span>Órdenes / Boletas ({orders.length})</span>
+            </a>
+          </li>
+          <li className={activeTab === 'productos' ? 'is-active' : ''}>
+            <a onClick={() => handleTabChange('productos')} id="tab-btn-productos">
               <span className="icon is-small">👕</span>
-              <span>Gestión de Productos ({products.length})</span>
+              <span>Productos ({products.length})</span>
             </a>
           </li>
           {!isSeller && (
-            <li className={tab === 'usuarios' ? 'is-active' : ''}>
-              <a onClick={() => setTab('usuarios')}>
+            <li className={activeTab === 'usuarios' ? 'is-active' : ''}>
+              <a onClick={() => handleTabChange('usuarios')} id="tab-btn-usuarios">
                 <span className="icon is-small">👥</span>
-                <span>Gestión de Usuarios ({users.length})</span>
+                <span>Usuarios ({users.length})</span>
               </a>
             </li>
           )}
-          <li className={tab === 'historial' ? 'is-active' : ''}>
-            <a onClick={() => { setSelectedUserForHistory(null); setTab('historial'); }}>
-              <span className="icon is-small">📦</span>
-              <span>Historial de Compras ({orders.length})</span>
+          <li className={activeTab === 'reportes' ? 'is-active' : ''}>
+            <a onClick={() => handleTabChange('reportes')} id="tab-btn-reportes">
+              <span className="icon is-small">📈</span>
+              <span>Reportes y Métricas</span>
             </a>
           </li>
         </ul>
       </div>
 
-      {/* ALERTA VISUAL DE BAJO STOCK */}
-      {totalCritical > 0 && (
-        <div className="notification is-danger is-light mb-5">
+      {/* Alerta de Inventario Crítico si existe */}
+      {totalCritical > 0 && activeTab !== 'reportes' && (
+        <div className="notification is-danger is-light mb-5" style={{ borderRadius: '8px' }}>
           <div className="is-flex is-align-items-center">
             <span className="is-size-3 mr-3">⚠️</span>
             <div>
-              <p className="has-text-weight-bold is-size-5">
-                ¡Alerta de Inventario Crítico!
+              <p className="has-text-weight-bold is-size-6 mb-1">
+                ¡Alerta de Inventario Crítico en Bodega!
               </p>
-              <p className="is-size-6">
-                Existen <strong>{totalCritical} modelos</strong> con stock igual o inferior al límite mínimo establecido. Por favor revisa la bodega y realiza reposición.
+              <p className="is-size-7 mb-0">
+                Hay <strong>{totalCritical} modelos</strong> con stock igual o inferior a su umbral mínimo. Revisa la sección de productos para reposición.
               </p>
             </div>
           </div>
         </div>
       )}
 
-
-      {/* VISTA 1: DASHBOARD METRICAS (Figura 9 del PDF) */}
-      {tab === 'dashboard' && (
+      {/* ========================================================
+          1. TAB DASHBOARD
+          ======================================================== */}
+      {activeTab === 'dashboard' && (
         <div>
+          {/* Header Dashboard */}
+          <div className="mb-5">
+            <h1 className="title is-3 mb-1 has-text-weight-bold">
+              Panel Principal de Control
+            </h1>
+            <p className="subtitle is-6 has-text-grey">
+              Resumen ejecutivo del estado del negocio, inventario y ventas.
+            </p>
+          </div>
+
+          {/* Tarjetas Métricas Principales */}
           <div className="columns is-multiline mb-5">
-            <div className="column is-4">
-              <div className="box has-background-info has-text-white p-5">
-                <h3 className="is-size-6 has-text-weight-bold">PRODUCTOS EN CATÁLOGO</h3>
-                <p className="is-size-2 has-text-weight-bold">{products.length}</p>
-                <p className="is-size-7">Total de modelos registrados</p>
-              </div>
+            <div className="column is-3-desktop is-6-tablet">
+              <MetricCard
+                title="Ventas Totales"
+                value={`$${totalVentas.toLocaleString('es-CL')}`}
+                subtitle={`${orders.length} compras concretadas`}
+                icon="💰"
+                variant="primary"
+                onClick={() => handleTabChange('reportes')}
+              />
             </div>
-
-            <div className="column is-4">
-              <div className="box has-background-primary has-text-white p-5">
-                <h3 className="is-size-6 has-text-weight-bold">STOCK TOTAL EN BODEGA</h3>
-                <p className="is-size-2 has-text-weight-bold">{totalStock}</p>
-                <p className="is-size-7">Unidades totales disponibles</p>
-              </div>
+            <div className="column is-3-desktop is-6-tablet">
+              <MetricCard
+                title="Órdenes Emitidas"
+                value={orders.length}
+                subtitle="Ver historial y boletas"
+                icon="🧾"
+                variant="info"
+                onClick={() => handleTabChange('ordenes')}
+              />
             </div>
-
-            <div className="column is-4">
-              <div className="box has-background-warning-dark has-text-white p-5">
-                <h3 className="is-size-6 has-text-weight-bold">STOCK CRÍTICO</h3>
-                <p className="is-size-2 has-text-weight-bold">{totalCritical}</p>
-                <p className="is-size-7">Modelos que requieren reposición</p>
-              </div>
+            <div className="column is-3-desktop is-6-tablet">
+              <MetricCard
+                title="Modelos en Catálogo"
+                value={products.length}
+                subtitle={`${totalStock} unidades en stock`}
+                icon="👕"
+                variant="success"
+                onClick={() => handleTabChange('productos')}
+              />
+            </div>
+            <div className="column is-3-desktop is-6-tablet">
+              <MetricCard
+                title="Stock Crítico"
+                value={totalCritical}
+                subtitle="Modelos bajo el mínimo"
+                icon="⚠️"
+                variant="danger"
+                onClick={() => handleTabChange('productos')}
+              />
             </div>
           </div>
 
+          {/* Accesos Directos a Módulos (Propuesta Figura 9 del documento) */}
+          <div className="box p-5 mb-5" style={{ borderRadius: '12px' }}>
+            <h3 className="title is-5 mb-3 has-text-weight-bold">
+              ⚡ Accesos Rápidos a Módulos del Sistema
+            </h3>
+            <div className="columns is-multiline">
+              <div className="column is-3-desktop is-6-tablet">
+                <div
+                  className="box has-background-white-bis p-4 has-text-centered is-clickable"
+                  onClick={() => handleTabChange('ordenes')}
+                  style={{ border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer' }}
+                >
+                  <span className="is-size-2 mb-2 is-block">🧾</span>
+                  <p className="has-text-weight-bold is-size-6 mb-1">Órdenes / Boletas</p>
+                  <p className="is-size-7 has-text-grey mb-0">Revisar compras y emitir comprobantes</p>
+                </div>
+              </div>
+
+              <div className="column is-3-desktop is-6-tablet">
+                <div
+                  className="box has-background-white-bis p-4 has-text-centered is-clickable"
+                  onClick={() => handleTabChange('reportes')}
+                  style={{ border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer' }}
+                >
+                  <span className="is-size-2 mb-2 is-block">📈</span>
+                  <p className="has-text-weight-bold is-size-6 mb-1">Reportes y Estadísticas</p>
+                  <p className="is-size-7 has-text-grey mb-0">Métricas comerciales y productos top</p>
+                </div>
+              </div>
+
+              <div className="column is-3-desktop is-6-tablet">
+                <div
+                  className="box has-background-white-bis p-4 has-text-centered is-clickable"
+                  onClick={() => handleTabChange('productos')}
+                  style={{ border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer' }}
+                >
+                  <span className="is-size-2 mb-2 is-block">👕</span>
+                  <p className="has-text-weight-bold is-size-6 mb-1">Catálogo de Productos</p>
+                  <p className="is-size-7 has-text-grey mb-0">Agregar modelos, stock y precios</p>
+                </div>
+              </div>
+
+              {!isSeller && (
+                <div className="column is-3-desktop is-6-tablet">
+                  <div
+                    className="box has-background-white-bis p-4 has-text-centered is-clickable"
+                    onClick={() => handleTabChange('usuarios')}
+                    style={{ border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer' }}
+                  >
+                    <span className="is-size-2 mb-2 is-block">👥</span>
+                    <p className="has-text-weight-bold is-size-6 mb-1">Gestión de Usuarios</p>
+                    <p className="is-size-7 has-text-grey mb-0">Cuentas, roles e historial de cliente</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Modelos Críticos y Acciones Rápidas */}
           <div className="columns">
-            <div className="column is-6">
-              <div className="box">
-                <h3 className="title is-5 mb-3">Modelos con Stock Crítico</h3>
+            <div className="column is-7">
+              <div className="box p-5" style={{ borderRadius: '12px' }}>
+                <h3 className="title is-5 mb-3 has-text-weight-bold">
+                  📦 Modelos con Stock Crítico
+                </h3>
                 {totalCritical === 0 ? (
-                  <p className="has-text-grey">Todos los productos cuentan con stock suficiente.</p>
+                  <p className="has-text-grey is-size-6">
+                    ✅ Todos los productos cuentan con inventario por sobre el umbral mínimo.
+                  </p>
                 ) : (
-                  <table className="table is-fullwidth is-striped is-narrow">
-                    <thead>
-                      <tr>
-                        <th>Producto</th>
-                        <th>Stock Actual</th>
-                        <th>Mínimo</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {products
-                        .filter(p => Number(p.stock) <= (Number(p.stockCritico) || 5))
-                        .map(p => (
-                          <tr key={p.id}>
-                            <td>{p.titulo}</td>
-                            <td><span className="tag is-danger">{p.stock}</span></td>
-                            <td>{p.stockCritico || 5}</td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
+                  <div className="table-container">
+                    <table className="table is-fullwidth is-striped is-narrow is-vcentered">
+                      <thead>
+                        <tr>
+                          <th>Producto</th>
+                          <th>Categoría</th>
+                          <th className="has-text-centered">Stock Actual</th>
+                          <th className="has-text-centered">Mínimo</th>
+                          <th className="has-text-right">Acción</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {products
+                          .filter(p => Number(p.stock) <= (Number(p.stockCritico) || 5))
+                          .map(p => (
+                            <tr key={p.id}>
+                              <td><strong>{p.titulo}</strong></td>
+                              <td><span className="tag is-light is-size-7">{p.categoria}</span></td>
+                              <td className="has-text-centered">
+                                <span className="tag is-danger has-text-weight-bold">{p.stock}</span>
+                              </td>
+                              <td className="has-text-centered">{p.stockCritico || 5}</td>
+                              <td className="has-text-right">
+                                <Button
+                                  variant="info"
+                                  size="small"
+                                  onClick={() => handleOpenEditProduct(p)}
+                                >
+                                  Editar Stock
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
                 )}
               </div>
             </div>
 
-            <div className="column is-6">
-              <div className="box">
-                <h3 className="title is-5 mb-3">Accesos Rápidos de Administración</h3>
+            <div className="column is-5">
+              <div className="box p-5" style={{ borderRadius: '12px' }}>
+                <h3 className="title is-5 mb-3 has-text-weight-bold">
+                  🚀 Acciones Operativas
+                </h3>
+                <p className="is-size-7 has-text-grey mb-4">
+                  Crea nuevos registros directos para nutrir la tienda y los usuarios autorizados.
+                </p>
                 <div className="buttons">
-                  <Button variant="primary" onClick={handleOpenNewProduct}>
+                  <Button variant="primary" onClick={handleOpenNewProduct} id="btn-dashboard-new-product">
                     + Registrar Nuevo Producto
                   </Button>
                   {!isSeller && (
-                    <Button variant="info" onClick={handleOpenNewUser}>
+                    <Button variant="info" onClick={handleOpenNewUser} id="btn-dashboard-new-user">
                       + Registrar Nuevo Usuario
                     </Button>
                   )}
+                  <Button variant="light" onClick={() => handleTabChange('ordenes')} id="btn-dashboard-go-orders">
+                    🧾 Ver Historial de Órdenes
+                  </Button>
                 </div>
               </div>
             </div>
@@ -257,50 +423,68 @@ export function AdminView({
         </div>
       )}
 
-      {/* VISTA 2: GESTION DE PRODUCTOS */}
-      {tab === 'productos' && (
-        <div className="box">
-          <div className="is-flex is-justify-content-space-between is-align-items-center mb-4">
-            <h2 className="title is-4 mb-0">Catálogo de Productos</h2>
-            <Button variant="primary" size="small" onClick={handleOpenNewProduct}>
+      {/* ========================================================
+          2. TAB ÓRDENES / HISTORIAL DE COMPRAS (Componente Requerido)
+          ======================================================== */}
+      {activeTab === 'ordenes' && (
+        <OrdersTable
+          orders={orders}
+          onViewReceipt={handleOpenReceipt}
+          selectedUserFilter={selectedUserForOrders}
+          onClearUserFilter={() => setSelectedUserForOrders(null)}
+        />
+      )}
+
+      {/* ========================================================
+          3. TAB PRODUCTOS (CRUD)
+          ======================================================== */}
+      {activeTab === 'productos' && (
+        <div className="box p-5" style={{ borderRadius: '12px' }}>
+          <div className="is-flex is-justify-content-space-between is-align-items-center mb-4 is-flex-wrap-wrap gap-2">
+            <div>
+              <h2 className="title is-4 mb-1 has-text-weight-bold">Catálogo de Productos</h2>
+              <p className="subtitle is-6 has-text-grey mb-0">Gestión de inventario, precios y stock crítico.</p>
+            </div>
+            <Button variant="primary" size="small" onClick={handleOpenNewProduct} id="btn-new-product">
               + Nuevo Producto
             </Button>
           </div>
 
           <div className="table-container">
-            <table className="table is-fullwidth is-striped is-hoverable">
+            <table className="table is-fullwidth is-striped is-hoverable is-vcentered">
               <thead>
-                <tr>
+                <tr className="has-background-light">
                   <th>ID</th>
                   <th>Foto</th>
                   <th>Nombre</th>
                   <th>Precio</th>
                   <th>Categoría</th>
-                  <th>Stock</th>
-                  <th>Acciones</th>
+                  <th className="has-text-centered">Stock</th>
+                  <th className="has-text-centered">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {products.map(p => (
                   <tr key={p.id}>
-                    <td>{p.id}</td>
+                    <td><code>{p.id}</code></td>
                     <td>
                       <img
                         src={p.img}
                         alt={p.titulo}
                         style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }}
+                        onError={(e) => { e.target.src = '/assets/images/brasil/brasil1.jpeg' }}
                       />
                     </td>
                     <td><strong>{p.titulo}</strong></td>
-                    <td>${Number(p.precio).toLocaleString('es-CL')}</td>
+                    <td className="has-text-weight-semibold">${Number(p.precio).toLocaleString('es-CL')}</td>
                     <td><span className="tag is-light">{p.categoria}</span></td>
-                    <td>
-                      <span className={`tag ${Number(p.stock) <= (Number(p.stockCritico) || 5) ? 'is-danger' : 'is-success'}`}>
-                        {p.stock}
+                    <td className="has-text-centered">
+                      <span className={`tag has-text-weight-bold ${Number(p.stock) <= (Number(p.stockCritico) || 5) ? 'is-danger' : 'is-success'}`}>
+                        {p.stock} {Number(p.stock) <= (Number(p.stockCritico) || 5) ? '⚠️' : ''}
                       </span>
                     </td>
-                    <td>
-                      <div className="buttons are-small">
+                    <td className="has-text-centered">
+                      <div className="buttons are-small is-centered">
                         <Button variant="info" onClick={() => handleOpenEditProduct(p)}>
                           Editar
                         </Button>
@@ -317,51 +501,56 @@ export function AdminView({
         </div>
       )}
 
-      {/* VISTA 3: GESTION DE USUARIOS */}
-      {tab === 'usuarios' && !isSeller && (
-        <div className="box">
-          <div className="is-flex is-justify-content-space-between is-align-items-center mb-4">
-            <h2 className="title is-4 mb-0">Listado de Usuarios</h2>
-            <Button variant="primary" size="small" onClick={handleOpenNewUser}>
+      {/* ========================================================
+          4. TAB USUARIOS (CRUD)
+          ======================================================== */}
+      {activeTab === 'usuarios' && !isSeller && (
+        <div className="box p-5" style={{ borderRadius: '12px' }}>
+          <div className="is-flex is-justify-content-space-between is-align-items-center mb-4 is-flex-wrap-wrap gap-2">
+            <div>
+              <h2 className="title is-4 mb-1 has-text-weight-bold">Listado de Usuarios</h2>
+              <p className="subtitle is-6 has-text-grey mb-0">Gestión de cuentas de clientes, vendedores y administradores.</p>
+            </div>
+            <Button variant="primary" size="small" onClick={handleOpenNewUser} id="btn-new-user">
               + Nuevo Usuario
             </Button>
           </div>
 
           <div className="table-container">
-            <table className="table is-fullwidth is-striped is-hoverable">
+            <table className="table is-fullwidth is-striped is-hoverable is-vcentered">
               <thead>
-                <tr>
+                <tr className="has-background-light">
                   <th>RUN</th>
                   <th>Nombre y Apellidos</th>
                   <th>Correo</th>
                   <th>Rol</th>
-                  <th>Región / Comuna</th>
-                  <th>Acciones</th>
+                  <th>Comuna / Región</th>
+                  <th className="has-text-centered">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {users.map(u => (
                   <tr key={u.run}>
                     <td><code>{u.run}</code></td>
-                    <td>{u.nombre} {u.apellidos}</td>
+                    <td><strong>{u.nombre} {u.apellidos}</strong></td>
                     <td>{u.correo}</td>
                     <td>
-                      <span className={`tag ${u.tipoUsuario === 'Administrador' ? 'is-danger' : u.tipoUsuario === 'Vendedor' ? 'is-warning' : 'is-info'}`}>
+                      <span className={`tag has-text-weight-semibold ${u.tipoUsuario === 'Administrador' ? 'is-danger' : u.tipoUsuario === 'Vendedor' ? 'is-warning' : 'is-info is-light'}`}>
                         {u.tipoUsuario}
                       </span>
                     </td>
-                    <td>{u.comuna}, {u.region}</td>
-                    <td>
-                      <div className="buttons are-small">
+                    <td className="is-size-7">{u.comuna}, {u.region}</td>
+                    <td className="has-text-centered">
+                      <div className="buttons are-small is-centered">
                         {u.tipoUsuario === 'Cliente' && (
                           <Button
                             variant="primary"
                             onClick={() => {
-                              setSelectedUserForHistory(u);
-                              setTab('historial');
+                              setSelectedUserForOrders(u)
+                              handleTabChange('ordenes')
                             }}
                           >
-                            Ver Compras
+                            🧾 Ver Compras
                           </Button>
                         )}
                         <Button variant="info" onClick={() => handleOpenEditUser(u)}>
@@ -380,98 +569,34 @@ export function AdminView({
         </div>
       )}
 
-      {/* VISTA 4: HISTORIAL DE COMPRAS (GLOBAL O FILTRADO POR CLIENTE) */}
-      {tab === 'historial' && (
-        <div className="box">
-          <div className="is-flex is-justify-content-space-between is-align-items-center mb-4">
-            <div>
-              <h2 className="title is-4 mb-1">
-                {selectedUserForHistory
-                  ? `Historial de Compras: ${selectedUserForHistory.nombre} ${selectedUserForHistory.apellidos} (${selectedUserForHistory.run})`
-                  : 'Historial General de Compras de Clientes'}
-              </h2>
-              <p className="subtitle is-6 has-text-grey">
-                {selectedUserForHistory
-                  ? 'Listado de todas las compras realizadas por este cliente.'
-                  : 'Registro de todas las órdenes emitidas en la tienda online.'}
-              </p>
-            </div>
-            {selectedUserForHistory && (
-              <Button
-                variant="light"
-                size="small"
-                onClick={() => setSelectedUserForHistory(null)}
-              >
-                Ver Todas las Compras
-              </Button>
-            )}
-          </div>
-
-          {(() => {
-            const displayedOrders = selectedUserForHistory
-              ? orders.filter(o => String(o.userRun) === String(selectedUserForHistory.run))
-              : orders;
-
-            if (displayedOrders.length === 0) {
-              return (
-                <div className="notification is-light has-text-centered py-5">
-                  <p className="is-size-6">No se encontraron registros de compra para este cliente.</p>
-                </div>
-              );
-            }
-
-            return (
-              <div className="table-container">
-                <table className="table is-fullwidth is-striped is-hoverable">
-                  <thead>
-                    <tr>
-                      <th>Código Orden</th>
-                      <th>Fecha</th>
-                      <th>Cliente</th>
-                      <th>RUN</th>
-                      <th>Productos Comprados</th>
-                      <th>Total</th>
-                      <th>Estado</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {displayedOrders.map(ord => (
-                      <tr key={ord.id}>
-                        <td><strong>{ord.id}</strong></td>
-                        <td>{ord.fecha}</td>
-                        <td>{ord.customerName}</td>
-                        <td><code>{ord.userRun}</code></td>
-                        <td>
-                          <ul style={{ paddingLeft: '1rem', margin: 0, fontSize: '0.85rem' }}>
-                            {ord.items.map((it, i) => (
-                              <li key={i}>
-                                {it.cantidad}x {it.titulo} {it.talla ? `(${it.talla})` : ''} - ${Number(it.precio).toLocaleString('es-CL')}
-                              </li>
-                            ))}
-                          </ul>
-                        </td>
-                        <td className="has-text-weight-bold has-text-primary">
-                          ${Number(ord.total).toLocaleString('es-CL')}
-                        </td>
-                        <td>
-                          <span className="tag is-success is-light">
-                            {ord.estado || 'Completado'}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            );
-          })()}
-        </div>
+      {/* ========================================================
+          5. TAB REPORTES Y MÉTRICAS (Componente Requerido)
+          ======================================================== */}
+      {activeTab === 'reportes' && (
+        <ReportsPanel
+          orders={orders}
+          products={products}
+          users={users}
+        />
       )}
 
+      {/* ========================================================
+          MODAL DETALLE DE BOLETA (Componente Requerido)
+          ======================================================== */}
+      <ReceiptModal
+        isOpen={showReceiptModal}
+        order={selectedOrderForReceipt}
+        onClose={() => {
+          setShowReceiptModal(false)
+          setSelectedOrderForReceipt(null)
+        }}
+      />
 
-      {/* MODAL PRODUCTO (CREAR / EDITAR) */}
+      {/* ========================================================
+          MODAL CREAR / EDITAR PRODUCTO
+          ======================================================== */}
       {showProductModal && (
-        <div className="modal is-active">
+        <div className="modal is-active" id="product-modal">
           <div className="modal-background" onClick={() => setShowProductModal(false)}></div>
           <div className="modal-card">
             <header className="modal-card-head">
@@ -569,9 +694,11 @@ export function AdminView({
         </div>
       )}
 
-      {/* MODAL USUARIO (CREAR / EDITAR) */}
+      {/* ========================================================
+          MODAL CREAR / EDITAR USUARIO
+          ======================================================== */}
       {showUserModal && (
-        <div className="modal is-active">
+        <div className="modal is-active" id="user-modal">
           <div className="modal-background" onClick={() => setShowUserModal(false)}></div>
           <div className="modal-card">
             <header className="modal-card-head">

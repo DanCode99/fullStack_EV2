@@ -32,6 +32,7 @@ export function App() {
   const [loggedUser, setLoggedUser] = useState(() => userService.getLoggedUser())
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [lastOrder, setLastOrder] = useState(null)
+  const [adminTab, setAdminTab] = useState('dashboard')
 
   const [cart, setCart] = useState(() => {
     try {
@@ -182,6 +183,7 @@ export function App() {
         id: `ORD-${order.orderNumber}`,
         userRun: loggedUser?.run || '444444444',
         customerName: `${order.customer?.nombre || ''} ${order.customer?.apellidos || ''}`.trim() || 'Cliente Web',
+        customer: order.customer,
         fecha: new Date().toISOString().split('T')[0],
         total: order.total,
         items: order.items,
@@ -303,13 +305,15 @@ export function App() {
       case 'admin':
         return (
           <AdminLayout
-            currentAdminTab="dashboard"
-            onSelectTab={() => {}}
+            currentAdminTab={adminTab}
+            onSelectTab={setAdminTab}
             onNavigateHome={() => navigateTo('home')}
             onLogout={handleLogout}
             loggedUser={loggedUser}
           >
             <AdminView
+              currentTab={adminTab}
+              onSelectTab={setAdminTab}
               products={products}
               users={users}
               onCreateProduct={handleCreateProduct}
@@ -321,7 +325,6 @@ export function App() {
               orders={orders}
               loggedUser={loggedUser}
             />
-
           </AdminLayout>
         )
       default:

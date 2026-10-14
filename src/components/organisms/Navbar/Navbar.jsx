@@ -29,17 +29,19 @@ export function Navbar({
           <a
             className="navbar-item"
             onClick={() => handleNav('home')}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
           >
             <img
               src="/assets/images/logo/logo.png"
-              alt="Logo Tienda"
-              className="img-cover"
+              alt="Logo Tienda de Fútbol"
+              style={{ maxHeight: '38px', marginRight: '8px', objectFit: 'contain' }}
               onError={(e) => {
                 e.target.style.display = 'none'
               }}
             />
-            <strong className="has-text-primary ml-2 is-size-5">FÚTBOL STORE</strong>
+            <strong className="has-text-primary is-size-5" style={{ letterSpacing: '0.5px' }}>
+              TIENDA DE FÚTBOL
+            </strong>
           </a>
 
           <a

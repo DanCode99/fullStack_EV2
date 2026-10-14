@@ -1,0 +1,651 @@
+/* ===================================================
+   1. FUENTE GLOBAL Y FONDO
+   =================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+body, button, input, textarea, select {
+    font-family: "Ubuntu", sans-serif !important;
+}
+
+body {
+    background-color: #f4f6f8;
+}
+
+/* ===================================================
+   2. TARJETAS (CATÁLOGO Y BLOG UNIFICADOS)
+   =================================================== */
+.card {
+    border-radius: 12px !important;
+    overflow: hidden;
+    border: 1px solid #e1e4e8;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+    cursor: pointer;
+    transform: translateY(-5px);
+    box-shadow: rgba(0, 0, 0, 0.25) 0 25px 30px -10px, 
+                rgba(0, 0, 0, 0.12) 0 -6px 15px, 
+                rgba(0, 0, 0, 0.09) 0 4px 6px !important;
+}
+
+.card .card-image {
+    width: 100%;
+    overflow: hidden;
+    background-color: #f8fafc;
+}
+
+.card .card-image img {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    height: 230px !important;
+    width: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.card:hover .card-image img {
+    transform: scale(1.04);
+}
+
+.card-content {
+    padding: 1.25rem !important;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-content .title {
+    font-size: 1.05rem !important;
+    line-height: 1.3;
+    min-height: 2.6rem;
+    margin-bottom: 0.5rem !important;
+}
+
+.card-content .subtitle {
+    font-size: 1.2rem !important;
+    color: #00b89c !important;
+    margin-top: 0.25rem;
+}
+
+/* ===================================================
+   3. BOTONES Y CAJAS (.BOX)
+   =================================================== */
+.button {
+    border-radius: 8px !important;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+}
+
+.button.is-primary {
+    background-color: #00b89c !important;
+    border-color: transparent !important;
+    color: #ffffff !important;
+}
+
+.button.is-primary:hover {
+    background-color: #009e86 !important;
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 184, 156, 0.35);
+}
+
+.button.is-dark {
+    background-color: #2b323c !important;
+    color: #ffffff !important;
+}
+
+.button.is-dark:hover {
+    background-color: #1a1e24 !important;
+    transform: scale(1.02);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.button.is-danger:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(241, 70, 104, 0.35);
+}
+
+.box {
+    border-radius: 12px !important;
+    border: 1px solid #e1e4e8;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+    background-color: #ffffff;
+}
+
+.section .title {
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #1a1e24;
+}
+
+/* ===================================================
+   4. NAVBAR Y EFECTOS INTERACTIVOS
+   =================================================== */
+.navbar.is-dark .navbar-item,
+.navbar.is-dark a.navbar-item,
+.navbar-brand a.navbar-item,
+a[href*="login.html"] {
+    position: relative !important;
+    background-color: transparent !important;
+    color: #ffffff !important;
+    transition: color 0.3s ease;
+    text-decoration: none !important;
+}
+
+/* linea animada inferior en hover */
+.navbar.is-dark .navbar-start a.navbar-item::after,
+.navbar-brand a.navbar-item::after,
+a[href*="login.html"]::after {
+    content: '';
+    position: absolute;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0%;
+    height: 2.5px;
+    background-color: #00d1b2;
+    border-radius: 2px;
+    transition: width 0.3s ease-in-out;
+}
+
+.navbar.is-dark .navbar-start a.navbar-item:hover,
+.navbar-brand a.navbar-item:hover,
+a[href*="login.html"]:hover {
+    color: #00d1b2 !important;
+    cursor: pointer;
+}
+
+.navbar.is-dark .navbar-start a.navbar-item:hover::after,
+.navbar-brand a.navbar-item:hover::after,
+a[href*="login.html"]:hover::after {
+    width: 80%;
+}
+
+.navbar-burger {
+    color: #00b89c !important;
+}
+
+@media screen and (max-width: 1023px) {
+    .navbar-menu.is-active {
+        background-color: #363636 !important;
+    }
+    .navbar-menu.is-active .navbar-item {
+        color: #ffffff !important;
+    }
+}
+
+/* ===================================================
+   5. GALERÍA DE DETALLE DE PRODUCTO
+   =================================================== */
+.galeria-contenedor {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.galeria-miniaturas {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.miniatura-item {
+    width: 65px;
+    height: 65px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    overflow: hidden;
+    background-color: #f0f2f5;
+    transition: all 0.2s ease;
+}
+
+.miniatura-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.miniatura-item:hover {
+    border-color: #cbd5e1;
+}
+
+.miniatura-item.activa {
+    border-color: #1a1e24;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.galeria-principal {
+    position: relative;
+    flex-grow: 1;
+    height: 480px;
+    background-color: #f8fafc;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e1e4e8;
+}
+
+.galeria-principal img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 0.2s ease;
+}
+
+.btn-flecha {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    z-index: 10;
+}
+
+.btn-flecha:hover {
+    background-color: #ffffff;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.btn-flecha.izq { left: 12px; }
+.btn-flecha.der { right: 12px; }
+
+@media screen and (max-width: 768px) {
+    .galeria-contenedor {
+        flex-direction: column-reverse;
+    }
+    .galeria-miniaturas {
+        flex-direction: row;
+        justify-content: center;
+    }
+    .galeria-principal {
+        height: 320px;
+        width: 100%;
+    }
+}
+
+/* correccion de tarjetas del blog */
+.card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.card .card-image {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.card .card-image figure.image {
+    margin: 0;
+    width: 100%;
+    height: auto;
+}
+
+.card .card-image img {
+    width: 100%;
+    height: 220px !important;
+    object-fit: cover !important;
+    object-position: top center;
+    display: block;
+}
+
+.card .card-content {
+    padding: 1.25rem !important;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card .card-content .title {
+    margin-top: 0 !important;
+    margin-bottom: 0.75rem !important;
+    line-height: 1.3 !important;
+    overflow: visible !important;
+}
+
+/* ===================================================
+   6. CORRECCIONES PARA MÓVILES (NAVBAR DROPDOWN)
+   =================================================== */
+@media screen and (max-width: 1023px) {
+    .navbar-menu.is-active {
+        background-color: #363636 !important;
+    }
+    .navbar-menu.is-active .navbar-item {
+        color: #ffffff !important;
+    }
+}
+
+.navbar-burger {
+    color: #00b89c !important;
+}
+
+/* ===================================================
+   7. CLASES UTILITARIAS Y ESPECÍFICAS
+   =================================================== */
+.min-vh-custom { min-height: calc(100vh - 150px); }
+.min-vh-100-custom { min-height: calc(100vh - 100px); }
+.min-vh-70 { min-height: 70vh; }
+.mt-custom-2 { margin-top: 2rem; }
+.w-100 { width: 100% !important; }
+.h-100 { height: 100% !important; }
+.d-flex { display: flex !important; }
+.flex-grow-1 { flex-grow: 1 !important; }
+
+.admin-sidebar { 
+    border-right: 1px solid #ddd; 
+    min-height: 100%; 
+}
+
+.card-link {
+    display: block; 
+    height: 100%; 
+    text-decoration: none;
+}
+
+.card-flex {
+    height: 100%; 
+    display: flex; 
+    flex-direction: column;
+}
+
+.img-cover { object-fit: cover; }
+.img-admin-table { width: 50px; height: 50px; object-fit: cover; }
+.w-60px { width: 60px !important; }
+.w-42px { width: 42px !important; }
+
+.img-carrito {
+    width: 70px; 
+    height: 70px; 
+    object-fit: cover; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.img-blog-header {
+    object-fit: cover; 
+    border-radius: 8px; 
+    width: 100%; 
+    max-height: 450px;
+}
+
+aside.menu {
+    position: sticky;
+    top: 1.5rem;
+}
+
+aside.menu .menu-list a {
+    border-radius: 6px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+aside.menu .menu-list a:hover {
+    background-color: #f1f5f9;
+    color: #1e293b;
+}
+
+aside.menu .menu-list a.is-active {
+    background-color: #485fc7;
+    color: #ffffff !important;
+}
+
+.column.has-background-white-ter {
+    padding: 3rem 2.5rem !important;
+}
+
+/* ===================================================
+   8. COMPONENTE ALERTA
+   =================================================== */
+#custom-alert-modal {
+    z-index: 9999;
+}
+
+#custom-alert-modal .modal-background {
+    background-color: rgba(0,0,0,0.6);
+}
+
+#custom-alert-modal .modal-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+#custom-alert-modal .box {
+    max-width: 400px;
+    width: 100%;
+    border-radius: 8px;
+}
+
+#custom-alert-close {
+    width: 100%;
+}
+
+/* ===================================================
+   9. CARRUSEL
+   =================================================== */
+.carrusel-slide-link {
+    min-width: 100%;
+    display: block;
+    position: relative;
+}
+
+.carrusel-slide-img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 8px;
+}
+
+.carrusel-slide-info {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0,0,0,0.8);
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+#caja-banner {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+#btn-izq-banner, #btn-der-banner {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    opacity: 0.8;
+    border: 2px solid white;
+}
+
+#btn-izq-banner { left: 15px; }
+#btn-der-banner { right: 15px; }
+
+#pista-banner {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    width: 100%;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+#pista-banner::-webkit-scrollbar {
+    display: none;
+}
+
+#pista-banner > a {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+}
+
+/* ===================================================
+   10. FOOTER
+   =================================================== */
+.custom-footer {
+    border-top: 1px solid #4a4a4a;
+    padding: 4rem 1.5rem 2rem;
+    font-size: 0.9rem;
+}
+
+.footer-list {
+    list-style: none;
+    padding: 0;
+    line-height: 2.2;
+}
+
+.footer-link {
+    text-decoration: none;
+    outline: none;
+}
+
+.footer-socials {
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.footer-social-link {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    text-decoration: none;
+    font-weight: bold;
+    outline: none;
+}
+
+.footer-social-link-small {
+    font-size: 0.75rem;
+}
+
+.footer-bottom {
+    border-top: 1px solid #4a4a4a;
+}
+
+/* ===================================================
+   11. ADMIN DASHBOARD
+   =================================================== */
+.admin-section {
+    min-height: 100vh;
+    display: flex;
+    overflow-x: hidden;
+}
+
+.admin-container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.admin-sidebar {
+    width: 260px;
+    min-width: 260px;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 3px 0 10px rgba(0,0,0,0.15);
+    z-index: 10;
+}
+
+.admin-menu-label {
+    margin-bottom: 0.75rem;
+    letter-spacing: 1px;
+}
+
+.admin-menu-list {
+    margin-bottom: 2rem;
+}
+
+.admin-menu-item {
+    margin-bottom: 0.35rem;
+}
+
+.admin-menu-link {
+    border-radius: 6px;
+    padding: 0.65rem 1rem;
+    display: block;
+}
+
+.admin-main {
+    flex-grow: 1;
+    padding: 3rem;
+    overflow-y: auto;
+}
+
+.admin-header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2.5rem;
+}
+
+.admin-header-title {
+    margin: 0 0 0.5rem 0 !important;
+    line-height: 1.2;
+}
+
+.admin-header-subtitle {
+    margin: 0 !important;
+}
+
+.admin-metric-box {
+    border-radius: 8px !important;
+}
+
+/* ===================================================
+   12. ADMIN RESPONSIVE
+   =================================================== */
+.admin-section {
+    flex-direction: column;
+}
+
+@media screen and (max-width: 1023px) {
+    .admin-container {
+        flex-direction: column;
+        min-height: auto;
+    }
+    .admin-sidebar {
+        width: 100%;
+        min-width: 100%;
+        display: none;
+        position: static;
+    }
+    .admin-sidebar.is-active {
+        display: flex;
+    }
+    .admin-mobile-nav {
+        width: 100%;
+    }
+    .admin-main {
+        padding: 1.5rem !important;
+    }
+}

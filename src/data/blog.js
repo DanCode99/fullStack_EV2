@@ -1,0 +1,37 @@
+export const blogPosts = [
+  {
+    id: 1,
+    titulo: "CASO CURIOSO #1: El Maracanazo y la camiseta blanca",
+    resumen: "Por qué Brasil nunca más volvió a usar el uniforme blanco tras la final del Mundial de 1950.",
+    contenido: "Durante las primeras cinco décadas del fútbol brasileño, la selección nacional vistió casi exclusivamente una camiseta blanca con detalles en azul en el cuello y las mangas. Sin embargo, el 16 de julio de 1950 todo cambió drásticamente. Ante casi 200.000 espectadores en el Estadio Maracaná, Brasil cayó sorpresivamente 2-1 ante Uruguay en la definición del título mundial. El impacto psicológico y social fue tan devastador que la indumentaria blanca fue declarada maldita y despojada de su representatividad patria.\n\nEn 1953, el diario Correio da Manhã, en coordinación con la Confederación Brasileña de Deportes, lanzó un concurso nacional para diseñar un uniforme completamente nuevo. La única regla obligatoria era incorporar los cuatro colores de la bandera nacional: amarillo, verde, azul y blanco. El ganador fue un joven ilustrador y escritor de 19 años llamado Aldyr Garcia Schlee, quien propuso la camiseta amarilla con vivos verdes, pantalón azul y medias blancas. Con esta nueva piel debutaron en 1954 y conquistaron su primer Mundial en Suecia 1958, convirtiendo al uniforme en el más icónico del planeta.",
+    img: "/assets/images/brasil/brasil1.jpeg"
+  },
+  {
+    id: 2,
+    titulo: "CASO CURIOSO #2: La camiseta improvisada de Francia 1978",
+    resumen: "El insólito día en que la selección francesa tuvo que disputar un partido del Mundial con camiseta a rayas verdes.",
+    contenido: "El 10 de junio de 1978, en el Estadio José María Minella de Mar del Plata, la selección de Francia debía medirse ante Hungría por la última fecha del Grupo 1. Ambos planteles ya estaban matemáticamente eliminados, pero protagonizaron uno de los episodios más bizarros de las Copas del Mundo. Semanas antes, la FIFA había enviado una circular indicando que Hungría jugaría con su camiseta roja tradicional y Francia de blanco; no obstante, una segunda notificación invirtió las órdenes sin que el cuerpo técnico galo tomara nota.\n\nAl salir al calentamiento, ambos equipos vestían de blanco de pies a cabeza. Como ninguno de los dos cuadros disponía de camisetas de recambio en el vestuario y el partido debía transmitirse a color para Europa, los dirigentes salieron a toda velocidad por las calles de Mar del Plata buscando una solución urgente. Recalaron en la sede del Club Atlético Kimberley, equipo local de la liga marplatense, que les prestó un juego de camisetas con franjas verticales verdes y blancas sin numeración reglamentaria. Con números estampados a mano a última hora, Michel Platini y sus compañeros vencieron 3-1 vistiendo la indumentaria de un club barrial argentino.",
+    img: "/assets/images/francia/francia1.png"
+  },
+  {
+    id: 3,
+    titulo: "CASO CURIOSO #3: Las camisetas caladas de Argentina en México 1986",
+    resumen: "La odisea de comprar camisetas de emergencia en un barrio de México antes de enfrentar a Inglaterra.",
+    contenido: "En los octavos de final de México 1986 contra Uruguay, Argentina utilizó una camiseta azul suplente de algodón grueso fabricada por Le Coq Sportif. Los jugadores sufrieron un ahogo extremo debido al intenso calor y la altitud de Puebla. Sabiendo que en cuartos de final contra Inglaterra volverían a usar camiseta azul a las doce del mediodía en el Estadio Azteca, el director técnico Carlos Bilardo le exigió a la marca prendas caladas y transpirables, pero la empresa respondió que era imposible fabricarlas a tiempo.\n\nFaltando escasos tres días para el duelo decisivo, Bilardo envió al utilero Rubén Moschella a recorrer las tiendas de deportes de Ciudad de México. Moschella compró dos modelos azules genéricos de tela calada; Maradona pasó por la habitación, señaló uno y dijo: 'Qué linda esta, con esta le ganamos a los ingleses'. El cuerpo técnico contrató a costureras mexicanas para coser escudos bordados improvisados de la AFA y conseguir números brillantes de fútbol americano que fueron planchados a las apuradas horas antes del silbatazo inicial. Con esa camiseta armada a mano, Diego gestó 'La Mano de Dios' y el mejor gol en la historia de los mundiales.",
+    img: "/assets/images/argentina/argentina1.jpg"
+  },
+  {
+    id: 4,
+    titulo: "CASO CURIOSO #4: La U y el origen del Chuncho en el pecho",
+    resumen: "El símbolo universitario que reemplazó a la estrella solitaria y definió la identidad azul.",
+    contenido: "Los primeros antecedentes del Club Deportivo de la Universidad de Chile a comienzos del siglo XX estuvieron marcados por la variabilidad en sus colores: la Federación Universitaria y los equipos de Medicina e Ingeniería llegaron a utilizar uniformes con franjas blancas y rojas. No fue hasta finales de la década de 1920 que comenzó a gestarse la identidad azul definitiva que caracteriza a la institución.\n\nEl emblema del Chuncho llegó en 1928 de la mano del Club Náutico Universitario, cuyos fundadores se inspiraron en una insignia que un grupo de estudiantes trajo desde Alemania. La figura corresponde a la lechuza de Minerva o Atenea, símbolo clásico de la sabiduría, el conocimiento, la vigilia y la prudencia en el mundo académico. Cuando el Club Deportivo Universidad de Chile se fundó formalmente en mayo de 1937 y debutó en el fútbol profesional en 1938, el Chuncho sobre la franja azul en el pecho sustituyó de manera definitiva a la antigua estrella solitaria, forjando el lazo indestructible entre la comunidad estudiantil y su hinchada.",
+    img: "/assets/images/u_de_chile/lau1.webp"
+  },
+  {
+    id: 5,
+    titulo: "CASO CURIOSO #5: Los colores que casi condenan a la U en 1943",
+    resumen: "El error de diseño que obligó a la directiva a tomar una decisión histórica antes del debut profesional.",
+    contenido: "Poco antes del inicio del primer campeonato profesional de la Primera División en 1938, los dirigentes de la Universidad de Chile se enfrentaron a un problema crítico: por una coincidencia logística, el club no disponía de un uniforme propio y su plantilla lucía una camiseta blanca similar a la del poderoso Audax Italiano. Ante la imposibilidad de diferenciarse, la directiva solicitó ayuda económica al Club Náutico Universitario para fabricar un set de camisetas nuevas. Los fondos permitieron comprar tela, pero la modista cometió un error que casi archiva definitivamente el uniforme azul: confeccionó una franja azul vertical muy ancha en el centro del pecho, contrastada con franjas blancas muy delgadas a los costados.\n\nEl diseño fue considerado un fracaso estético y causó profunda desazón en la directiva azul. Sin embargo, tras la derrota por 4-1 ante Magallanes en el primer partido, el entrenador Hernán Doll ordenó retirar la camiseta. Un par de semanas después, el 11 de junio de 1938, la Universidad de Chile debutó oficialmente con la icónica franja azul horizontal que define su identidad hasta hoy.",
+    img: "/assets/images/u_de_chile/lau2.webp"
+  }
+];

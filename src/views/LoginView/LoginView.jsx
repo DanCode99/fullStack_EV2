@@ -4,8 +4,8 @@ import { Input } from '../../components/atoms/Input/Input.jsx'
 import { Button } from '../../components/atoms/Button/Button.jsx'
 
 export function LoginView({ onLoginSuccess, onNavigate }) {
-  const [correo, setCorreo] = useState('admin@duoc.cl')
-  const [password, setPassword] = useState('123456')
+  const [correo, setCorreo] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
   const handleSubmit = (e) => {
@@ -84,15 +84,9 @@ export function LoginView({ onLoginSuccess, onNavigate }) {
               Crear una cuenta nueva
             </Button>
           </div>
-
-          <div className="notification is-light mt-4 p-2 is-size-7 has-text-grey">
-            <strong>Credenciales de prueba:</strong><br />
-            - Admin: <code>admin@duoc.cl</code> / <code>123456</code><br />
-            - Vendedor: <code>vendedor1@duoc.cl</code> / <code>123456</code><br />
-            - Cliente: <code>clienteA@gmail.com</code> / <code>123456</code>
-          </div>
         </div>
       </div>
+
     </div>
   )
 }

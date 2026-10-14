@@ -1,16 +1,78 @@
-# React + Vite
+# Tienda de Camisetas de Fútbol - Evaluación 2
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Proyecto desarrollado en React con Vite para la Evaluación 2 de Desarrollo FullStack II (Duoc UC).
+Esta versión corresponde a la migración desde HTML/JS vanilla hacia una arquitectura basada en componentes reutilizables utilizando **Atomic Design**, estilos con **Bulma CSS** y persistencia de datos en `localStorage`.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Cómo levantar el proyecto localmente
 
-## React Compiler
+1. Clonar el repositorio y entrar a la carpeta:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+git clone https://github.com/DanCode99/fullStack_EV2.git
+cd fullStack_EV2
+```
 
-## Expanding the ESLint configuration
+2. Instalar las dependencias:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+```
+
+3. Iniciar el servidor de desarrollo:
+
+```bash
+npm run dev
+```
+
+4. Para validar que no haya errores de linting:
+
+```bash
+npm run lint
+```
+
+5. Para compilar la versión de producción:
+
+```bash
+npm run build
+```
+
+---
+
+## Cuentas de prueba para iniciar sesión
+
+Para probar las distintas vistas, permisos y roles del sistema (Cliente, Vendedor y Administrador), puedes usar las siguientes credenciales registradas:
+
+| Rol                     | Correo                 | Contraseña | ¿A qué tiene acceso?                                                                                 |
+| :---------------------- | :--------------------- | :---------- | :----------------------------------------------------------------------------------------------------- |
+| **Administrador** | `admin@duoc.cl`      | `123456`  | Acceso total al Panel Admin (Dashboard de métricas, CRUD de Productos y CRUD de Usuarios).            |
+| **Vendedor**      | `vendedor1@duoc.cl`  | `123456`  | Acceso a Dashboard y catálogo del Panel Admin. No puede gestionar usuarios ni crear nuevos productos. |
+| **Cliente**       | `clienteA@gmail.com` | `123456`  | Navegación de tienda, catálogo, carrito y checkout con autocompletado de sus datos.                  |
+
+> También puedes usar la opción **"Registro"** en la barra superior para crear una cuenta nueva de cliente con tus propios datos.
+
+---
+
+## Estructura del proyecto (Atomic Design)
+
+El código fuente en `src/` está organizado bajo la metodología Atomic Design para mantener todo ordenado y desacoplado:
+
+- **`components/atoms/`**: Elementos base (botones, inputs, badges de stock y títulos).
+- **`components/molecules/`**: Combinaciones funcionales (campos de formulario con labels/errores, tarjetas de producto y filas del carrito).
+- **`components/organisms/`**: Bloques completos (Navbar responsive con menú burger, Footer institucional y carrusel de inicio).
+- **`components/templates/`**: Estructuras de página (MainLayout para la tienda pública y AdminLayout para el panel administrativo).
+- **`views/`**: Vistas completas de la aplicación (Home, Catálogo con filtros y ordenamiento, Categorías, Ofertas, Detalle de producto, Carrito, Checkout, Compra exitosa, Compra con error, Nosotros, Blog, Contacto, Login, Registro y Panel Admin).
+- **`services/`**: Módulos de persistencia simulada con operaciones CRUD en `localStorage` (`productService.js` y `userService.js`).
+- **`data/`**: Listado inicial de datos semilla (regiones y comunas de Chile, historias del blog).
+- **`styles/`**: Estilos globales y personalizados adaptados con Bulma.
+
+---
+
+## Flujos principales agregados en esta entrega
+
+- **Filtros y Búsqueda**: El catálogo permite filtrar por categoría, buscar por nombre o país en tiempo real y ordenar por precio ascendente o descendente.
+- **Detalle de Producto**: Selector interactivo de tallas, control de unidades según stock disponible y cambio de vista en miniatura de fotos.
+- **Carrito de Compras**: Suma y resta de cantidades, eliminación de ítems, cálculo automático de subtotales y total acumulado.
+- **Checkout y Despacho**: Si inicias sesión, el formulario de entrega precarga tus datos automáticamente. Incluye selección dinámica de comunas según la región elegida en Chile.
+- **Simulación de Pago**: En el checkout se incluye una casilla de prueba para simular tanto el flujo de **Compra Exitosa** (con generación de boleta y código de orden) como el de **Fallo de Pago** para evaluar ambos requerimientos de la pauta.

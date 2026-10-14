@@ -3,7 +3,11 @@
    =================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
 
-body, button, input, textarea, select {
+body,
+button,
+input,
+textarea,
+select {
     font-family: "Ubuntu", sans-serif !important;
 }
 
@@ -13,17 +17,22 @@ body {
 }
 
 /* Forzar contraste nítido y legible en formularios */
-input.input, textarea.textarea, select {
+input.input,
+textarea.textarea,
+select {
     background-color: #ffffff !important;
     color: #2b323c !important;
     border-color: #dcdfe6 !important;
 }
 
-input.input::placeholder, textarea.textarea::placeholder {
+input.input::placeholder,
+textarea.textarea::placeholder {
     color: #8c939f !important;
 }
 
-input.input:focus, textarea.textarea:focus, select:focus {
+input.input:focus,
+textarea.textarea:focus,
+select:focus {
     border-color: #00b89c !important;
     box-shadow: 0 0 0 0.125em rgba(0, 184, 156, 0.25) !important;
 }
@@ -69,9 +78,9 @@ label.label {
 .card:hover {
     cursor: pointer;
     transform: translateY(-5px);
-    box-shadow: rgba(0, 0, 0, 0.25) 0 25px 30px -10px, 
-                rgba(0, 0, 0, 0.12) 0 -6px 15px, 
-                rgba(0, 0, 0, 0.09) 0 4px 6px !important;
+    box-shadow: rgba(0, 0, 0, 0.25) 0 25px 30px -10px,
+        rgba(0, 0, 0, 0.12) 0 -6px 15px,
+        rgba(0, 0, 0, 0.09) 0 4px 6px !important;
 }
 
 .card .card-image {
@@ -215,6 +224,7 @@ a[href*="login.html"]:hover::after {
     .navbar-menu.is-active {
         background-color: #363636 !important;
     }
+
     .navbar-menu.is-active .navbar-item {
         color: #ffffff !important;
     }
@@ -305,17 +315,24 @@ a[href*="login.html"]:hover::after {
     transform: translateY(-50%) scale(1.1);
 }
 
-.btn-flecha.izq { left: 12px; }
-.btn-flecha.der { right: 12px; }
+.btn-flecha.izq {
+    left: 12px;
+}
+
+.btn-flecha.der {
+    right: 12px;
+}
 
 @media screen and (max-width: 768px) {
     .galeria-contenedor {
         flex-direction: column-reverse;
     }
+
     .galeria-miniaturas {
         flex-direction: row;
         justify-content: center;
     }
+
     .galeria-principal {
         height: 320px;
         width: 100%;
@@ -372,6 +389,7 @@ a[href*="login.html"]:hover::after {
     .navbar-menu.is-active {
         background-color: #363636 !important;
     }
+
     .navbar-menu.is-active .navbar-item {
         color: #ffffff !important;
     }
@@ -384,44 +402,80 @@ a[href*="login.html"]:hover::after {
 /* ===================================================
    7. CLASES UTILITARIAS Y ESPECÍFICAS
    =================================================== */
-.min-vh-custom { min-height: calc(100vh - 150px); }
-.min-vh-100-custom { min-height: calc(100vh - 100px); }
-.min-vh-70 { min-height: 70vh; }
-.mt-custom-2 { margin-top: 2rem; }
-.w-100 { width: 100% !important; }
-.h-100 { height: 100% !important; }
-.d-flex { display: flex !important; }
-.flex-grow-1 { flex-grow: 1 !important; }
+.min-vh-custom {
+    min-height: calc(100vh - 150px);
+}
+
+.min-vh-100-custom {
+    min-height: calc(100vh - 100px);
+}
+
+.min-vh-70 {
+    min-height: 70vh;
+}
+
+.mt-custom-2 {
+    margin-top: 2rem;
+}
+
+.w-100 {
+    width: 100% !important;
+}
+
+.h-100 {
+    height: 100% !important;
+}
+
+.d-flex {
+    display: flex !important;
+}
+
+.flex-grow-1 {
+    flex-grow: 1 !important;
+}
 
 .card-link {
-    display: block; 
-    height: 100%; 
+    display: block;
+    height: 100%;
     text-decoration: none;
 }
 
 .card-flex {
-    height: 100%; 
-    display: flex; 
+    height: 100%;
+    display: flex;
     flex-direction: column;
 }
 
-.img-cover { object-fit: cover; }
-.img-admin-table { width: 50px; height: 50px; object-fit: cover; }
-.w-60px { width: 60px !important; }
-.w-42px { width: 42px !important; }
+.img-cover {
+    object-fit: cover;
+}
+
+.img-admin-table {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.w-60px {
+    width: 60px !important;
+}
+
+.w-42px {
+    width: 42px !important;
+}
 
 .img-carrito {
-    width: 70px; 
-    height: 70px; 
-    object-fit: cover; 
-    border-radius: 8px; 
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .img-blog-header {
-    object-fit: cover; 
-    border-radius: 8px; 
-    width: 100%; 
+    object-fit: cover;
+    border-radius: 8px;
+    width: 100%;
     max-height: 450px;
 }
 
@@ -460,7 +514,7 @@ aside.menu .menu-list a.is-active {
 }
 
 #custom-alert-modal .modal-background {
-    background-color: rgba(0,0,0,0.6);
+    background-color: rgba(0, 0, 0, 0.6);
 }
 
 #custom-alert-modal .modal-content {
@@ -502,7 +556,7 @@ aside.menu .menu-list a.is-active {
     position: absolute;
     bottom: 20px;
     left: 20px;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0, 0, 0, 0.8);
     padding: 10px 20px;
     border-radius: 5px;
 }
@@ -511,10 +565,11 @@ aside.menu .menu-list a.is-active {
     position: relative;
     overflow: hidden;
     border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-#btn-izq-banner, #btn-der-banner {
+#btn-izq-banner,
+#btn-der-banner {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -523,8 +578,13 @@ aside.menu .menu-list a.is-active {
     border: 2px solid white;
 }
 
-#btn-izq-banner { left: 15px; }
-#btn-der-banner { right: 15px; }
+#btn-izq-banner {
+    left: 15px;
+}
+
+#btn-der-banner {
+    right: 15px;
+}
 
 #pista-banner {
     display: flex;
@@ -540,7 +600,7 @@ aside.menu .menu-list a.is-active {
     display: none;
 }
 
-#pista-banner > a {
+#pista-banner>a {
     scroll-snap-align: start;
     flex-shrink: 0;
 }
@@ -750,7 +810,7 @@ aside.menu .menu-list a.is-active {
     justify-content: space-between;
     height: 100%;
     min-height: 110px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
     position: relative;
     overflow: hidden;
 }
@@ -845,10 +905,12 @@ aside.menu .menu-list a.is-active {
     .admin-container {
         flex-direction: column;
     }
+
     .admin-sidebar {
         width: 100%;
         min-width: 100%;
     }
+
     .admin-main {
         padding: 1.25rem;
     }

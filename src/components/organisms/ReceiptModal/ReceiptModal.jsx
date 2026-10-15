@@ -42,7 +42,6 @@ export function ReceiptModal({ order, isOpen, onClose }) {
       <div className="modal-card" style={{ width: '92%', maxWidth: '720px', borderRadius: '12px' }}>
         <header className="modal-card-head has-background-dark py-3 px-5">
           <div className="is-flex is-align-items-center">
-            <span className="is-size-4 mr-2">🧾</span>
             <p className="modal-card-title has-text-white is-size-5 mb-0 has-text-weight-bold">
               Detalle de Boleta Electrónica
             </p>
@@ -55,7 +54,7 @@ export function ReceiptModal({ order, isOpen, onClose }) {
           <div className="columns is-mobile is-vcentered mb-4 pb-3" style={{ borderBottom: '2px dashed #dbdbdb' }}>
             <div className="column is-7">
               <h2 className="title is-4 mb-1 has-text-primary has-text-weight-bold">
-                ⚽ FÚTBOL STORE
+                TIENDA DE FÚTBOL
               </h2>
               <p className="is-size-7 has-text-grey mb-1">Tienda Oficial de Indumentaria Deportiva</p>
               <p className="is-size-7 has-text-grey mb-0">RUT: 76.892.410-K &bull; Santiago, Chile</p>
@@ -169,7 +168,7 @@ export function ReceiptModal({ order, isOpen, onClose }) {
           {simulatedSent && (
             <div className="notification is-success is-light p-3 mb-0">
               <p className="is-size-7 has-text-weight-semibold">
-                ✅ Boleta enviada satisfactoriamente a: <strong>{customerEmail}</strong>
+                Boleta enviada satisfactoriamente a: <strong>{customerEmail}</strong>
               </p>
             </div>
           )}
@@ -182,7 +181,7 @@ export function ReceiptModal({ order, isOpen, onClose }) {
               size="small"
               id="btn-print-receipt"
             >
-              <span className="mr-1">🖨️</span> Imprimir Boleta
+              Imprimir Boleta
             </Button>
             <Button
               variant="info"
@@ -190,7 +189,7 @@ export function ReceiptModal({ order, isOpen, onClose }) {
               onClick={handleSendEmail}
               id="btn-send-receipt"
             >
-              <span className="mr-1">📧</span> Enviar por Email
+              Enviar por Email
             </Button>
           </div>
           <Button

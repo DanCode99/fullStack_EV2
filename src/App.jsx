@@ -324,8 +324,6 @@ export function App() {
               onDeleteUser={handleDeleteUser}
               orders={orders}
               loggedUser={loggedUser}
-              currentTab={adminTab}
-              onSelectTab={setAdminTab}
               onNavigateHome={() => navigateTo('home')}
             />
           </AdminLayout>

@@ -145,7 +145,7 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
       <div className="is-flex is-justify-content-space-between is-align-items-center mb-5 is-flex-wrap-wrap gap-2">
         <div>
           <h2 className="title is-3 mb-1 has-text-weight-bold">
-            📈 Panel de Reportes y Estadísticas
+            Panel de Reportes y Estadísticas
           </h2>
           <p className="subtitle is-6 has-text-grey mb-0">
             Métricas de rendimiento de ventas, facturación y productos más populares en tiempo real.
@@ -169,7 +169,7 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
             size="small"
             id="btn-print-report"
           >
-            🖨️ Exportar / Imprimir Reporte
+            Exportar / Imprimir Reporte
           </Button>
         </div>
       </div>
@@ -178,7 +178,7 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
       {criticalProducts.length > 0 && (
         <div className="box mb-5 has-background-warning-light" style={{ border: '1px solid #ffe08a', borderRadius: '12px' }}>
           <p className="has-text-warning-dark mb-3">
-            <strong>⚠️ Alerta de Inventario:</strong> Existen <strong>{criticalProducts.length}</strong> modelos con stock crítico o bajo. Puedes gestionarlos en la sección de Productos.
+            <strong>Alerta de Inventario:</strong> Existen <strong>{criticalProducts.length}</strong> modelos con stock crítico o bajo. Puedes gestionarlos en la sección de Productos.
           </p>
           <div className="table-container mb-0">
             <table className="table is-fullwidth is-narrow has-background-white is-bordered" style={{ borderRadius: '6px' }}>
@@ -210,7 +210,6 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
             title="Ventas Totales"
             value={`$${totalRevenue.toLocaleString('es-CL')}`}
             subtitle="Ingresos brutos acumulados"
-            icon="💰"
             variant="primary"
             trend="+18.4% vs mes ant."
           />
@@ -221,7 +220,6 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
             title="Órdenes Registradas"
             value={totalOrdersCount}
             subtitle="Compras procesadas con éxito"
-            icon="📦"
             variant="info"
             trend="100% efectividad"
           />
@@ -232,7 +230,6 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
             title="Ticket Promedio"
             value={`$${averageTicket.toLocaleString('es-CL')}`}
             subtitle="Gasto medio por pedido"
-            icon="🏷️"
             variant="warning"
             trend="CLP por orden"
           />
@@ -243,7 +240,6 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
             title="Prendas Vendidas"
             value={totalUnitsSold}
             subtitle={`${uniqueCustomersCount} clientes activos`}
-            icon="👕"
             variant="danger"
             trend="Envíos a todo Chile"
           />
@@ -257,7 +253,7 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
             <div className="is-flex is-justify-content-space-between is-align-items-center mb-4">
               <div>
                 <h3 className="title is-5 mb-1 has-text-weight-bold">
-                  🔥 Productos Más Vendidos (Ranking Oficial)
+                  Productos Más Vendidos (Ranking Oficial)
                 </h3>
                 <p className="subtitle is-7 has-text-grey mb-0">
                   Modelos con mayor volumen de salida y recaudación generada
@@ -282,7 +278,7 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
                 </thead>
                 <tbody>
                   {topSellingProducts.map((p, index) => {
-                    const badgeMedal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`
+                    const badgeMedal = index === 0 ? '#1' : index === 1 ? '#2' : index === 2 ? '#3' : `#${index + 1}`
                     return (
                       <tr key={p.id || index}>
                         <td className="has-text-weight-bold is-size-6">{badgeMedal}</td>
@@ -332,7 +328,7 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
         <div className="column is-4">
           <div className="box p-5" style={{ borderRadius: '12px', height: '100%' }}>
             <h3 className="title is-5 mb-1 has-text-weight-bold">
-              📊 Distribución por Categoría
+              Distribución por Categoría
             </h3>
             <p className="subtitle is-7 has-text-grey mb-4">
               Porcentaje de recaudación según el tipo de camiseta
@@ -365,7 +361,7 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
             </div>
 
             <div className="notification is-primary is-light p-3 is-size-7">
-              <p className="has-text-weight-bold mb-1">💡 Conclusión Comercial:</p>
+              <p className="has-text-weight-bold mb-1">Conclusión Comercial:</p>
               <p className="mb-0">
                 Las camisetas de selecciones internacionales lideran la demanda gracias a los torneos de este año, seguidas por los clubes nacionales de primera división.
               </p>
@@ -377,7 +373,7 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
       {/* Sección 4: Top Clientes de Mayor Facturación */}
       <div className="box p-5" style={{ borderRadius: '12px' }}>
         <h3 className="title is-5 mb-1 has-text-weight-bold">
-          ⭐ Top Clientes con Mayor Fidelidad y Compra
+          Top Clientes con Mayor Fidelidad y Compra
         </h3>
         <p className="subtitle is-7 has-text-grey mb-4">
           Usuarios con mayor volumen acumulado de órdenes en la tienda online

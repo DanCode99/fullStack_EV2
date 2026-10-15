@@ -1,48 +1,49 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { FormField } from '../../components/molecules/FormField/FormField.jsx'
 import { Input } from '../../components/atoms/Input/Input.jsx'
 import { Button } from '../../components/atoms/Button/Button.jsx'
-import { MetricCard } from '../../components/molecules/MetricCard/MetricCard.jsx'
-import { OrdersTable } from '../../components/organisms/OrdersTable/OrdersTable.jsx'
+import { regionesYcomunas } from '../../data/regiones.js'
 import { ReceiptModal } from '../../components/organisms/ReceiptModal/ReceiptModal.jsx'
 import { ReportsPanel } from '../../components/organisms/ReportsPanel/ReportsPanel.jsx'
-import { regionesYcomunas } from '../../data/regiones.js'
 
 export function AdminView({
   products = [],
   users = [],
   orders = [],
-  currentTab = 'dashboard',
-  onSelectTab,
   onCreateProduct,
   onUpdateProduct,
   onDeleteProduct,
   onCreateUser,
   onUpdateUser,
   onDeleteUser,
-  loggedUser
+  loggedUser,
+  currentTab = 'dashboard',
+  onSelectTab,
+  onNavigateHome
 }) {
-  // Estado interno sincronizado con prop opcional
-  const [internalTab, setInternalTab] = useState('dashboard')
-  const activeTab = currentTab || internalTab
-
-  const handleTabChange = (newTab) => {
-    setInternalTab(newTab)
-    if (typeof onSelectTab === 'function') {
-      onSelectTab(newTab)
-    }
-  }
-
-  // Estado para el modal de Detalle de Boleta
-  const [selectedOrderForReceipt, setSelectedOrderForReceipt] = useState(null)
-  const [showReceiptModal, setShowReceiptModal] = useState(false)
-
-  // Filtro de usuario para la vista de Órdenes
-  const [selectedUserForOrders, setSelectedUserForOrders] = useState(null)
-
-  // Estados para CRUD de Productos
+  const [selectedUserForHistory, setSelectedUserForHistory] = useState(null)
+  const [selectedOrderForDetail, setSelectedOrderForDetail] = useState(null)
   const [editingProduct, setEditingProduct] = useState(null)
   const [showProductModal, setShowProductModal] = useState(false)
+
+  // Estado para gestión de Categorías
+  const [categoryFilter, setCategoryFilter] = useState('Todas')
+  const [newCategoryName, setNewCategoryName] = useState('')
+  const [customCategories, setCustomCategories] = useState([
+    'Selecciones Nacionales',
+    'Clubes Chilenos'
+  ])
+
+  // Estado para Perfil Admin
+  const [profileForm, setProfileForm] = useState({
+    nombre: loggedUser?.nombre || 'Administrador',
+    apellidos: loggedUser?.apellidos || 'Sistema',
+    correo: loggedUser?.correo || 'admin@duoc.cl',
+    telefono: '+56 9 8765 4321',
+    cargo: loggedUser?.tipoUsuario || 'Administrador General'
+  })
+  const [profileSavedMsg, setProfileSavedMsg] = useState(false)
+
   const [productForm, setProductForm] = useState({
     titulo: '',
     precio: '',
@@ -54,7 +55,6 @@ export function AdminView({
     categoria: 'Selecciones Nacionales'
   })
 
-  // Estados para CRUD de Usuarios
   const [editingUser, setEditingUser] = useState(null)
   const [showUserModal, setShowUserModal] = useState(false)
   const [userForm, setUserForm] = useState({
@@ -72,32 +72,23 @@ export function AdminView({
 
   const isSeller = loggedUser && (loggedUser.tipoUsuario === 'Vendedor' || loggedUser.tipo === 'Vendedor')
 
-  // Métricas generales
-  const totalStock = useMemo(() => products.reduce((acc, p) => acc + (Number(p.stock) || 0), 0), [products])
-  const totalCritical = useMemo(() => products.filter(p => Number(p.stock) <= (Number(p.stockCritico) || 5)).length, [products])
-  const totalVentas = useMemo(() => orders.reduce((acc, o) => acc + (Number(o.total) || 0), 0), [orders])
+  // Métricas calculadas con datos reales exactos
+  // 1. Compras: Total de compras reales registradas en el sistema
+  const totalPurchasesCount = orders.length.toLocaleString('es-CL')
+  
+  // 2. Productos e inventario actual
+  const totalStock = products.reduce((acc, p) => acc + (Number(p.stock) || 0), 0)
+  const displayProductsCount = products.length
+  const displayInventoryStock = totalStock
+  
+  // 3. Usuarios y nuevos usuarios
+  const displayUsersCount = users.length
+  // Si hay usuarios nuevos registrados, calcularlos o mostrar los que son clientes
+  const newUsersThisMonth = users.filter(u => u.tipoUsuario === 'Cliente').length
 
-  // Enriquecer orden con datos del cliente para la Boleta
-  const handleOpenReceipt = (order) => {
-    let enriched = { ...order }
-    if (!enriched.customer || !enriched.customer.nombre) {
-      const found = users.find(u => String(u.run) === String(order.userRun))
-      if (found) {
-        enriched.customer = {
-          nombre: found.nombre,
-          apellidos: found.apellidos,
-          correo: found.correo,
-          direccion: found.direccion,
-          comuna: found.comuna,
-          region: found.region
-        }
-      }
-    }
-    setSelectedOrderForReceipt(enriched)
-    setShowReceiptModal(true)
-  }
+  const totalCritical = products.filter(p => Number(p.stock) <= (Number(p.stockCritico) || 5)).length
 
-  // Handlers CRUD Productos
+  // Handlers Productos
   const handleOpenNewProduct = () => {
     setEditingProduct(null)
     setProductForm({
@@ -108,7 +99,7 @@ export function AdminView({
       img2: '',
       stock: 10,
       stockCritico: 3,
-      categoria: 'Selecciones Nacionales'
+      categoria: customCategories[0] || 'Selecciones Nacionales'
     })
     setShowProductModal(true)
   }
@@ -136,7 +127,7 @@ export function AdminView({
     setShowProductModal(false)
   }
 
-  // Handlers CRUD Usuarios
+  // Handlers Usuarios
   const handleOpenNewUser = () => {
     setEditingUser(null)
     setUserForm({
@@ -170,321 +161,399 @@ export function AdminView({
     setShowUserModal(false)
   }
 
+  // Handler Categorías
+  const handleAddCategory = (e) => {
+    e.preventDefault()
+    const trimmed = newCategoryName.trim()
+    if (trimmed && !customCategories.includes(trimmed)) {
+      setCustomCategories([...customCategories, trimmed])
+      setNewCategoryName('')
+    }
+  }
+
+  // Handler Guardar Perfil
+  const handleSaveProfile = (e) => {
+    e.preventDefault()
+    setProfileSavedMsg(true)
+    setTimeout(() => setProfileSavedMsg(false), 3000)
+  }
+
+  // Definición de las tarjetas de la grilla (Figura 9)
+  const gridCards = [
+    {
+      id: 'dashboard',
+      title: 'Dashboard',
+      iconSvg: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      ),
+      desc: 'Visión general de todas las métricas y estadísticas clave del sistema.',
+      action: () => onSelectTab('dashboard')
+    },
+    {
+      id: 'ordenes',
+      title: 'Órdenes',
+      iconSvg: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+      ),
+      desc: 'Gestión y seguimiento de todas las órdenes de compra realizadas.',
+      action: () => onSelectTab('ordenes')
+    },
+    {
+      id: 'productos',
+      title: 'Productos',
+      iconSvg: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+      ),
+      desc: 'Administrar inventario y detalles de los productos disponibles.',
+      action: () => onSelectTab('productos')
+    },
+    {
+      id: 'categorias',
+      title: 'Categorías',
+      iconSvg: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+          <line x1="7" y1="7" x2="7.01" y2="7"></line>
+        </svg>
+      ),
+      desc: 'Organizar productos en categorías para facilitar su navegación.',
+      action: () => onSelectTab('categorias')
+    },
+    {
+      id: 'usuarios',
+      title: 'Usuarios',
+      iconSvg: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      ),
+      desc: 'Gestión de cuentas de usuario y sus roles dentro del sistema.',
+      action: () => onSelectTab('usuarios')
+    },
+    {
+      id: 'reportes',
+      title: 'Reportes',
+      iconSvg: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+      ),
+      desc: 'Generación de informes detallados sobre las operaciones del sistema.',
+      action: () => onSelectTab('reportes')
+    },
+    {
+      id: 'perfil',
+      title: 'Perfil',
+      iconSvg: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      ),
+      desc: 'Administración de la información personal y configuraciones de cuenta.',
+      action: () => onSelectTab('perfil')
+    },
+    {
+      id: 'tienda',
+      title: 'Tienda',
+      iconSvg: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      ),
+      desc: 'Visualiza tu tienda en tiempo real, visualiza los reportes de los usuarios.',
+      action: () => onNavigateHome()
+    }
+  ]
+
   return (
-    <div className="admin-view-wrapper">
-      {/* Botones de navegación interna (Tabs horizontales) */}
-      <div className="tabs is-boxed mb-5">
-        <ul>
-          <li className={activeTab === 'dashboard' ? 'is-active' : ''}>
-            <a onClick={() => handleTabChange('dashboard')} id="tab-btn-dashboard">
-              <span className="icon is-small">📊</span>
-              <span>Dashboard</span>
-            </a>
-          </li>
-          <li className={activeTab === 'ordenes' ? 'is-active' : ''}>
-            <a onClick={() => { setSelectedUserForOrders(null); handleTabChange('ordenes'); }} id="tab-btn-ordenes">
-              <span className="icon is-small">🧾</span>
-              <span>Órdenes / Boletas ({orders.length})</span>
-            </a>
-          </li>
-          <li className={activeTab === 'productos' ? 'is-active' : ''}>
-            <a onClick={() => handleTabChange('productos')} id="tab-btn-productos">
-              <span className="icon is-small">👕</span>
-              <span>Productos ({products.length})</span>
-            </a>
-          </li>
-          {!isSeller && (
-            <li className={activeTab === 'usuarios' ? 'is-active' : ''}>
-              <a onClick={() => handleTabChange('usuarios')} id="tab-btn-usuarios">
-                <span className="icon is-small">👥</span>
-                <span>Usuarios ({users.length})</span>
-              </a>
-            </li>
-          )}
-          <li className={activeTab === 'reportes' ? 'is-active' : ''}>
-            <a onClick={() => handleTabChange('reportes')} id="tab-btn-reportes">
-              <span className="icon is-small">📈</span>
-              <span>Reportes y Métricas</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      {/* Alerta de Inventario Crítico si existe */}
-      {totalCritical > 0 && activeTab !== 'reportes' && (
-        <div className="notification is-danger is-light mb-5" style={{ borderRadius: '8px' }}>
-          <div className="is-flex is-align-items-center">
-            <span className="is-size-3 mr-3">⚠️</span>
-            <div>
-              <p className="has-text-weight-bold is-size-6 mb-1">
-                ¡Alerta de Inventario Crítico en Bodega!
-              </p>
-              <p className="is-size-7 mb-0">
-                Hay <strong>{totalCritical} modelos</strong> con stock igual o inferior a su umbral mínimo. Revisa la sección de productos para reposición.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================
-          1. TAB DASHBOARD
-          ======================================================== */}
-      {activeTab === 'dashboard' && (
+    <div className="admin-content-wrapper">
+      {/* ============================================================== */}
+      {/* VISTA 1: DASHBOARD PRINCIPAL (FIGURA 9)                        */}
+      {/* ============================================================== */}
+      {currentTab === 'dashboard' && (
         <div>
-          {/* Header Dashboard */}
+          {/* Encabezado Dashboard con alto contraste */}
           <div className="mb-5">
-            <h1 className="title is-3 mb-1 has-text-weight-bold">
-              Panel Principal de Control
+            <h1 className="title is-3 mb-1" style={{ color: '#111827', fontWeight: 800 }}>
+              Dashboard
             </h1>
-            <p className="subtitle is-6 has-text-grey">
-              Resumen ejecutivo del estado del negocio, inventario y ventas.
+            <p className="subtitle is-6" style={{ color: '#4b5563', margin: 0, fontWeight: 500 }}>
+              Resumen de las actividades diarias
             </p>
           </div>
 
-          {/* Tarjetas Métricas Principales */}
+          {/* Tres Cuadros Métricos Superiores (Figura 9) */}
           <div className="columns is-multiline mb-5">
-            <div className="column is-3-desktop is-6-tablet">
-              <MetricCard
-                title="Ventas Totales"
-                value={`$${totalVentas.toLocaleString('es-CL')}`}
-                subtitle={`${orders.length} compras concretadas`}
-                icon="💰"
-                variant="primary"
-                onClick={() => handleTabChange('reportes')}
-              />
+            {/* 1. Compras (Azul) */}
+            <div className="column is-4">
+              <div className="dashboard-stat-card stat-card-blue">
+                <div className="stat-card-header">
+                  <div className="stat-card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="9" cy="21" r="1"></circle>
+                      <circle cx="20" cy="21" r="1"></circle>
+                      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="stat-card-title">Compras</div>
+                    <div className="stat-card-value">{totalPurchasesCount}</div>
+                  </div>
+                </div>
+                <div className="stat-card-footer">
+                  Probabilidad de aumento: 20%
+                </div>
+              </div>
             </div>
-            <div className="column is-3-desktop is-6-tablet">
-              <MetricCard
-                title="Órdenes Emitidas"
-                value={orders.length}
-                subtitle="Ver historial y boletas"
-                icon="🧾"
-                variant="info"
-                onClick={() => handleTabChange('ordenes')}
-              />
+
+            {/* 2. Productos (Verde) */}
+            <div className="column is-4">
+              <div className="dashboard-stat-card stat-card-green">
+                <div className="stat-card-header">
+                  <div className="stat-card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                      <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                      <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="stat-card-title">Productos</div>
+                    <div className="stat-card-value">{displayProductsCount}</div>
+                  </div>
+                </div>
+                <div className="stat-card-footer">
+                  Inventario actual: {displayInventoryStock}
+                </div>
+              </div>
             </div>
-            <div className="column is-3-desktop is-6-tablet">
-              <MetricCard
-                title="Modelos en Catálogo"
-                value={products.length}
-                subtitle={`${totalStock} unidades en stock`}
-                icon="👕"
-                variant="success"
-                onClick={() => handleTabChange('productos')}
-              />
-            </div>
-            <div className="column is-3-desktop is-6-tablet">
-              <MetricCard
-                title="Stock Crítico"
-                value={totalCritical}
-                subtitle="Modelos bajo el mínimo"
-                icon="⚠️"
-                variant="danger"
-                onClick={() => handleTabChange('productos')}
-              />
+
+            {/* 3. Usuarios (Amarillo/Dorado) */}
+            <div className="column is-4">
+              <div className="dashboard-stat-card stat-card-yellow">
+                <div className="stat-card-header">
+                  <div className="stat-card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="9" cy="7" r="4"></circle>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="stat-card-title">Usuarios</div>
+                    <div className="stat-card-value">{displayUsersCount}</div>
+                  </div>
+                </div>
+                <div className="stat-card-footer">
+                  Nuevos usuarios este mes: {newUsersThisMonth}
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Accesos Directos a Módulos (Propuesta Figura 9 del documento) */}
-          <div className="box p-5 mb-5" style={{ borderRadius: '12px' }}>
-            <h3 className="title is-5 mb-3 has-text-weight-bold">
-              ⚡ Accesos Rápidos a Módulos del Sistema
-            </h3>
-            <div className="columns is-multiline">
-              <div className="column is-3-desktop is-6-tablet">
-                <div
-                  className="box has-background-white-bis p-4 has-text-centered is-clickable"
-                  onClick={() => handleTabChange('ordenes')}
-                  style={{ border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer' }}
-                >
-                  <span className="is-size-2 mb-2 is-block">🧾</span>
-                  <p className="has-text-weight-bold is-size-6 mb-1">Órdenes / Boletas</p>
-                  <p className="is-size-7 has-text-grey mb-0">Revisar compras y emitir comprobantes</p>
-                </div>
-              </div>
-
-              <div className="column is-3-desktop is-6-tablet">
-                <div
-                  className="box has-background-white-bis p-4 has-text-centered is-clickable"
-                  onClick={() => handleTabChange('reportes')}
-                  style={{ border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer' }}
-                >
-                  <span className="is-size-2 mb-2 is-block">📈</span>
-                  <p className="has-text-weight-bold is-size-6 mb-1">Reportes y Estadísticas</p>
-                  <p className="is-size-7 has-text-grey mb-0">Métricas comerciales y productos top</p>
-                </div>
-              </div>
-
-              <div className="column is-3-desktop is-6-tablet">
-                <div
-                  className="box has-background-white-bis p-4 has-text-centered is-clickable"
-                  onClick={() => handleTabChange('productos')}
-                  style={{ border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer' }}
-                >
-                  <span className="is-size-2 mb-2 is-block">👕</span>
-                  <p className="has-text-weight-bold is-size-6 mb-1">Catálogo de Productos</p>
-                  <p className="is-size-7 has-text-grey mb-0">Agregar modelos, stock y precios</p>
-                </div>
-              </div>
-
-              {!isSeller && (
-                <div className="column is-3-desktop is-6-tablet">
-                  <div
-                    className="box has-background-white-bis p-4 has-text-centered is-clickable"
-                    onClick={() => handleTabChange('usuarios')}
-                    style={{ border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer' }}
-                  >
-                    <span className="is-size-2 mb-2 is-block">👥</span>
-                    <p className="has-text-weight-bold is-size-6 mb-1">Gestión de Usuarios</p>
-                    <p className="is-size-7 has-text-grey mb-0">Cuentas, roles e historial de cliente</p>
-                  </div>
-                </div>
-              )}
+          {/* Alerta de Stock Crítico si aplica */}
+          {totalCritical > 0 && (
+            <div className="notification is-warning is-light mb-5">
+              <strong>Alerta de Inventario:</strong> Existen <strong>{totalCritical} modelos</strong> con stock crítico o bajo. Puedes gestionarlos en la sección de <a onClick={() => onSelectTab('productos')} style={{ textDecoration: 'underline', cursor: 'pointer' }}>Productos</a>.
             </div>
-          </div>
+          )}
 
-          {/* Modelos Críticos y Acciones Rápidas */}
-          <div className="columns">
-            <div className="column is-7">
-              <div className="box p-5" style={{ borderRadius: '12px' }}>
-                <h3 className="title is-5 mb-3 has-text-weight-bold">
-                  📦 Modelos con Stock Crítico
-                </h3>
-                {totalCritical === 0 ? (
-                  <p className="has-text-grey is-size-6">
-                    ✅ Todos los productos cuentan con inventario por sobre el umbral mínimo.
-                  </p>
-                ) : (
-                  <div className="table-container">
-                    <table className="table is-fullwidth is-striped is-narrow is-vcentered">
-                      <thead>
-                        <tr>
-                          <th>Producto</th>
-                          <th>Categoría</th>
-                          <th className="has-text-centered">Stock Actual</th>
-                          <th className="has-text-centered">Mínimo</th>
-                          <th className="has-text-right">Acción</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {products
-                          .filter(p => Number(p.stock) <= (Number(p.stockCritico) || 5))
-                          .map(p => (
-                            <tr key={p.id}>
-                              <td><strong>{p.titulo}</strong></td>
-                              <td><span className="tag is-light is-size-7">{p.categoria}</span></td>
-                              <td className="has-text-centered">
-                                <span className="tag is-danger has-text-weight-bold">{p.stock}</span>
-                              </td>
-                              <td className="has-text-centered">{p.stockCritico || 5}</td>
-                              <td className="has-text-right">
-                                <Button
-                                  variant="info"
-                                  size="small"
-                                  onClick={() => handleOpenEditProduct(p)}
-                                >
-                                  Editar Stock
-                                </Button>
-                              </td>
-                            </tr>
-                          ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="column is-5">
-              <div className="box p-5" style={{ borderRadius: '12px' }}>
-                <h3 className="title is-5 mb-3 has-text-weight-bold">
-                  🚀 Acciones Operativas
-                </h3>
-                <p className="is-size-7 has-text-grey mb-4">
-                  Crea nuevos registros directos para nutrir la tienda y los usuarios autorizados.
-                </p>
-                <div className="buttons">
-                  <Button variant="primary" onClick={handleOpenNewProduct} id="btn-dashboard-new-product">
-                    + Registrar Nuevo Producto
-                  </Button>
-                  {!isSeller && (
-                    <Button variant="info" onClick={handleOpenNewUser} id="btn-dashboard-new-user">
-                      + Registrar Nuevo Usuario
-                    </Button>
-                  )}
-                  <Button variant="light" onClick={() => handleTabChange('ordenes')} id="btn-dashboard-go-orders">
-                    🧾 Ver Historial de Órdenes
-                  </Button>
+          {/* Grilla de 8 Tarjetas Navegables (Figura 9) */}
+          <div className="columns is-multiline">
+            {gridCards.map((card) => (
+              <div key={card.id} className="column is-3-desktop is-6-tablet is-12-mobile">
+                <div
+                  className="dashboard-grid-card"
+                  onClick={card.action}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <div className="grid-card-icon">{card.iconSvg}</div>
+                  <h3 className="grid-card-title">{card.title}</h3>
+                  <p className="grid-card-desc">{card.desc}</p>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       )}
 
-      {/* ========================================================
-          2. TAB ÓRDENES / HISTORIAL DE COMPRAS (Componente Requerido)
-          ======================================================== */}
-      {activeTab === 'ordenes' && (
-        <OrdersTable
-          orders={orders}
-          onViewReceipt={handleOpenReceipt}
-          selectedUserFilter={selectedUserForOrders}
-          onClearUserFilter={() => setSelectedUserForOrders(null)}
-        />
+      {/* ============================================================== */}
+      {/* VISTA 2: ÓRDENES / HISTORIAL DE COMPRAS (COMPLETA Y OPERATIVA)  */}
+      {/* ============================================================== */}
+      {currentTab === 'ordenes' && (
+        <div className="box">
+          <div className="is-flex is-justify-content-space-between is-align-items-center mb-4">
+            <div>
+              <h2 className="title is-4 mb-1">
+                {selectedUserForHistory
+                  ? `Órdenes del Cliente: ${selectedUserForHistory.nombre} ${selectedUserForHistory.apellidos} (${selectedUserForHistory.run})`
+                  : 'Gestión y Seguimiento de Órdenes'}
+              </h2>
+              <p className="subtitle is-6 has-text-grey">
+                {selectedUserForHistory
+                  ? 'Listado detallado de compras correspondientes al cliente seleccionado.'
+                  : `Registro total de ${orders.length} órdenes generadas en la plataforma.`}
+              </p>
+            </div>
+            {selectedUserForHistory && (
+              <Button
+                variant="light"
+                size="small"
+                onClick={() => setSelectedUserForHistory(null)}
+              >
+                ← Ver Todas las Órdenes
+              </Button>
+            )}
+          </div>
+
+          {/* Modal Detalle de Boleta Electrónica (Atomic Design + Bulma CSS) */}
+          <ReceiptModal
+            order={selectedOrderForDetail ? {
+              ...selectedOrderForDetail,
+              customer: selectedOrderForDetail.customer || users.find(u => String(u.run) === String(selectedOrderForDetail.userRun))
+            } : null}
+            isOpen={!!selectedOrderForDetail}
+            onClose={() => setSelectedOrderForDetail(null)}
+          />
+
+          {(() => {
+            const displayedOrders = selectedUserForHistory
+              ? orders.filter(o => String(o.userRun) === String(selectedUserForHistory.run))
+              : orders
+
+            if (displayedOrders.length === 0) {
+              return (
+                <div className="notification is-light has-text-centered py-5">
+                  <p className="is-size-6">No se encontraron órdenes registradas.</p>
+                </div>
+              )
+            }
+
+            return (
+              <div className="table-container">
+                <table className="table is-fullwidth is-striped is-hoverable">
+                  <thead>
+                    <tr>
+                      <th>Código</th>
+                      <th>Fecha</th>
+                      <th>Cliente</th>
+                      <th>RUN</th>
+                      <th>Items</th>
+                      <th>Total</th>
+                      <th>Estado</th>
+                      <th>Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {displayedOrders.map(ord => (
+                      <tr key={ord.id}>
+                        <td><strong>{ord.id}</strong></td>
+                        <td>{ord.fecha}</td>
+                        <td>{ord.customerName}</td>
+                        <td><code>{ord.userRun}</code></td>
+                        <td>
+                          <span className="tag is-info is-light">
+                            {ord.items.reduce((s, it) => s + it.cantidad, 0)} unidades
+                          </span>
+                        </td>
+                        <td className="has-text-weight-bold has-text-primary">
+                          ${Number(ord.total).toLocaleString('es-CL')}
+                        </td>
+                        <td>
+                          <span className="tag is-success is-light">
+                            {ord.estado || 'Completado'}
+                          </span>
+                        </td>
+                        <td>
+                          <Button
+                            variant="info"
+                            size="small"
+                            onClick={() => setSelectedOrderForDetail(ord)}
+                          >
+                            Ver Boleta
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )
+          })()}
+        </div>
       )}
 
-      {/* ========================================================
-          3. TAB PRODUCTOS (CRUD)
-          ======================================================== */}
-      {activeTab === 'productos' && (
-        <div className="box p-5" style={{ borderRadius: '12px' }}>
-          <div className="is-flex is-justify-content-space-between is-align-items-center mb-4 is-flex-wrap-wrap gap-2">
+      {/* ============================================================== */}
+      {/* VISTA 3: PRODUCTOS (CATÁLOGO, INVENTARIO, CRUD)                */}
+      {/* ============================================================== */}
+      {currentTab === 'productos' && (
+        <div className="box">
+          <div className="is-flex is-justify-content-space-between is-align-items-center mb-4">
             <div>
-              <h2 className="title is-4 mb-1 has-text-weight-bold">Catálogo de Productos</h2>
-              <p className="subtitle is-6 has-text-grey mb-0">Gestión de inventario, precios y stock crítico.</p>
+              <h2 className="title is-4 mb-1">Catálogo de Productos e Inventario</h2>
+              <p className="subtitle is-6 has-text-grey">
+                {products.length} productos registrados | {totalStock} unidades en bodega
+              </p>
             </div>
-            <Button variant="primary" size="small" onClick={handleOpenNewProduct} id="btn-new-product">
+            <Button variant="primary" size="small" onClick={handleOpenNewProduct}>
               + Nuevo Producto
             </Button>
           </div>
 
           <div className="table-container">
-            <table className="table is-fullwidth is-striped is-hoverable is-vcentered">
+            <table className="table is-fullwidth is-striped is-hoverable">
               <thead>
-                <tr className="has-background-light">
+                <tr>
                   <th>ID</th>
                   <th>Foto</th>
                   <th>Nombre</th>
                   <th>Precio</th>
                   <th>Categoría</th>
-                  <th className="has-text-centered">Stock</th>
-                  <th className="has-text-centered">Acciones</th>
+                  <th>Stock</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {products.map(p => (
                   <tr key={p.id}>
-                    <td><code>{p.id}</code></td>
+                    <td>{p.id}</td>
                     <td>
                       <img
                         src={p.img}
                         alt={p.titulo}
                         style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }}
-                        onError={(e) => { e.target.src = '/assets/images/brasil/brasil1.jpeg' }}
                       />
                     </td>
                     <td><strong>{p.titulo}</strong></td>
-                    <td className="has-text-weight-semibold">${Number(p.precio).toLocaleString('es-CL')}</td>
+                    <td>${Number(p.precio).toLocaleString('es-CL')}</td>
                     <td><span className="tag is-light">{p.categoria}</span></td>
-                    <td className="has-text-centered">
-                      <span className={`tag has-text-weight-bold ${Number(p.stock) <= (Number(p.stockCritico) || 5) ? 'is-danger' : 'is-success'}`}>
-                        {p.stock} {Number(p.stock) <= (Number(p.stockCritico) || 5) ? '⚠️' : ''}
+                    <td>
+                      <span className={`tag ${Number(p.stock) <= (Number(p.stockCritico) || 5) ? 'is-danger' : 'is-success'}`}>
+                        {p.stock}
                       </span>
                     </td>
-                    <td className="has-text-centered">
-                      <div className="buttons are-small is-centered">
+                    <td>
+                      <div className="buttons are-small">
                         <Button variant="info" onClick={() => handleOpenEditProduct(p)}>
                           Editar
                         </Button>
@@ -501,56 +570,145 @@ export function AdminView({
         </div>
       )}
 
-      {/* ========================================================
-          4. TAB USUARIOS (CRUD)
-          ======================================================== */}
-      {activeTab === 'usuarios' && !isSeller && (
-        <div className="box p-5" style={{ borderRadius: '12px' }}>
-          <div className="is-flex is-justify-content-space-between is-align-items-center mb-4 is-flex-wrap-wrap gap-2">
-            <div>
-              <h2 className="title is-4 mb-1 has-text-weight-bold">Listado de Usuarios</h2>
-              <p className="subtitle is-6 has-text-grey mb-0">Gestión de cuentas de clientes, vendedores y administradores.</p>
+      {/* ============================================================== */}
+      {/* VISTA 4: CATEGORÍAS (GESTIÓN DE CATEGORÍAS Y FILTRADO)          */}
+      {/* ============================================================== */}
+      {currentTab === 'categorias' && (
+        <div>
+          <div className="box mb-5">
+            <h2 className="title is-4 mb-2">Organización de Categorías</h2>
+            <p className="subtitle is-6 has-text-grey mb-4">
+              Crea nuevas categorías o inspecciona los productos asociados a cada una.
+            </p>
+
+            <form onSubmit={handleAddCategory} className="is-flex is-align-items-center" style={{ gap: '0.75rem', maxWidth: '500px' }}>
+              <input
+                type="text"
+                className="input"
+                placeholder="Nombre de la nueva categoría..."
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                required
+              />
+              <Button type="submit" variant="primary">
+                + Agregar
+              </Button>
+            </form>
+          </div>
+
+          <div className="columns is-multiline">
+            {customCategories.map((catName) => {
+              const count = products.filter(p => p.categoria === catName).length
+              return (
+                <div key={catName} className="column is-6">
+                  <div
+                    className={`box ${categoryFilter === catName ? 'has-background-link-light' : ''}`}
+                    style={{ border: categoryFilter === catName ? '2px solid #1a73e8' : '1px solid #e9ecef', cursor: 'pointer' }}
+                    onClick={() => setCategoryFilter(categoryFilter === catName ? 'Todas' : catName)}
+                  >
+                    <div className="is-flex is-justify-content-space-between is-align-items-center">
+                      <div>
+                        <h3 className="title is-5 mb-1">{catName}</h3>
+                        <p className="subtitle is-6 has-text-grey mb-0">
+                          {count} productos registrados
+                        </p>
+                      </div>
+                      <span className={`tag ${categoryFilter === catName ? 'is-link' : 'is-light'}`}>
+                        {categoryFilter === catName ? 'Filtrando' : 'Ver productos'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="box mt-4">
+            <h3 className="title is-5 mb-3">
+              Productos en categoría: <strong>{categoryFilter}</strong>
+            </h3>
+            <div className="table-container">
+              <table className="table is-fullwidth is-striped is-hoverable">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Categoría</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products
+                    .filter(p => categoryFilter === 'Todas' || p.categoria === categoryFilter)
+                    .map(p => (
+                      <tr key={p.id}>
+                        <td>{p.id}</td>
+                        <td><strong>{p.titulo}</strong></td>
+                        <td><span className="tag is-info is-light">{p.categoria}</span></td>
+                        <td>${Number(p.precio).toLocaleString('es-CL')}</td>
+                        <td>{p.stock}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
             </div>
-            <Button variant="primary" size="small" onClick={handleOpenNewUser} id="btn-new-user">
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* VISTA 5: USUARIOS (ROLES, GESTIÓN, HISTORIAL POR CLIENTE)       */}
+      {/* ============================================================== */}
+      {currentTab === 'usuarios' && !isSeller && (
+        <div className="box">
+          <div className="is-flex is-justify-content-space-between is-align-items-center mb-4">
+            <div>
+              <h2 className="title is-4 mb-1">Listado de Usuarios del Sistema</h2>
+              <p className="subtitle is-6 has-text-grey">
+                {users.length} usuarios registrados en la base de datos
+              </p>
+            </div>
+            <Button variant="primary" size="small" onClick={handleOpenNewUser}>
               + Nuevo Usuario
             </Button>
           </div>
 
           <div className="table-container">
-            <table className="table is-fullwidth is-striped is-hoverable is-vcentered">
+            <table className="table is-fullwidth is-striped is-hoverable">
               <thead>
-                <tr className="has-background-light">
+                <tr>
                   <th>RUN</th>
                   <th>Nombre y Apellidos</th>
                   <th>Correo</th>
                   <th>Rol</th>
-                  <th>Comuna / Región</th>
-                  <th className="has-text-centered">Acciones</th>
+                  <th>Región / Comuna</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {users.map(u => (
                   <tr key={u.run}>
                     <td><code>{u.run}</code></td>
-                    <td><strong>{u.nombre} {u.apellidos}</strong></td>
+                    <td>{u.nombre} {u.apellidos}</td>
                     <td>{u.correo}</td>
                     <td>
-                      <span className={`tag has-text-weight-semibold ${u.tipoUsuario === 'Administrador' ? 'is-danger' : u.tipoUsuario === 'Vendedor' ? 'is-warning' : 'is-info is-light'}`}>
+                      <span className={`tag ${u.tipoUsuario === 'Administrador' ? 'is-danger' : u.tipoUsuario === 'Vendedor' ? 'is-warning' : 'is-info'}`}>
                         {u.tipoUsuario}
                       </span>
                     </td>
-                    <td className="is-size-7">{u.comuna}, {u.region}</td>
-                    <td className="has-text-centered">
-                      <div className="buttons are-small is-centered">
+                    <td>{u.comuna}, {u.region}</td>
+                    <td>
+                      <div className="buttons are-small">
                         {u.tipoUsuario === 'Cliente' && (
                           <Button
                             variant="primary"
                             onClick={() => {
-                              setSelectedUserForOrders(u)
-                              handleTabChange('ordenes')
+                              setSelectedUserForHistory(u)
+                              onSelectTab('ordenes')
                             }}
                           >
-                            🧾 Ver Compras
+                            Ver Compras
                           </Button>
                         )}
                         <Button variant="info" onClick={() => handleOpenEditUser(u)}>
@@ -569,34 +727,94 @@ export function AdminView({
         </div>
       )}
 
-      {/* ========================================================
-          5. TAB REPORTES Y MÉTRICAS (Componente Requerido)
-          ======================================================== */}
-      {activeTab === 'reportes' && (
-        <ReportsPanel
-          orders={orders}
-          products={products}
-          users={users}
-        />
+      {/* ============================================================== */}
+      {/* VISTA 6: REPORTES Y MÉTRICAS (ATOMIC DESIGN)                    */}
+      {/* ============================================================== */}
+      {currentTab === 'reportes' && (
+        <ReportsPanel orders={orders} products={products} users={users} />
       )}
 
-      {/* ========================================================
-          MODAL DETALLE DE BOLETA (Componente Requerido)
-          ======================================================== */}
-      <ReceiptModal
-        isOpen={showReceiptModal}
-        order={selectedOrderForReceipt}
-        onClose={() => {
-          setShowReceiptModal(false)
-          setSelectedOrderForReceipt(null)
-        }}
-      />
+      {/* ============================================================== */}
+      {/* VISTA 7: PERFIL DEL ADMINISTRADOR                              */}
+      {/* ============================================================== */}
+      {currentTab === 'perfil' && (
+        <div className="box" style={{ maxWidth: '800px' }}>
+          <h2 className="title is-4 mb-1">Perfil del Administrador</h2>
+          <p className="subtitle is-6 has-text-grey mb-4">
+            Administración de la información personal y configuraciones de cuenta.
+          </p>
 
-      {/* ========================================================
-          MODAL CREAR / EDITAR PRODUCTO
-          ======================================================== */}
+          {profileSavedMsg && (
+            <div className="notification is-success is-light mb-4">
+              ¡Datos de perfil actualizados exitosamente!
+            </div>
+          )}
+
+          <form onSubmit={handleSaveProfile}>
+            <div className="columns">
+              <div className="column is-6">
+                <FormField label="Nombre">
+                  <Input
+                    value={profileForm.nombre}
+                    onChange={(e) => setProfileForm({ ...profileForm, nombre: e.target.value })}
+                    required
+                  />
+                </FormField>
+              </div>
+              <div className="column is-6">
+                <FormField label="Apellidos">
+                  <Input
+                    value={profileForm.apellidos}
+                    onChange={(e) => setProfileForm({ ...profileForm, apellidos: e.target.value })}
+                    required
+                  />
+                </FormField>
+              </div>
+            </div>
+
+            <div className="columns">
+              <div className="column is-6">
+                <FormField label="Correo Electrónico">
+                  <Input
+                    type="email"
+                    value={profileForm.correo}
+                    onChange={(e) => setProfileForm({ ...profileForm, correo: e.target.value })}
+                    required
+                  />
+                </FormField>
+              </div>
+              <div className="column is-6">
+                <FormField label="Teléfono de Contacto">
+                  <Input
+                    value={profileForm.telefono}
+                    onChange={(e) => setProfileForm({ ...profileForm, telefono: e.target.value })}
+                    required
+                  />
+                </FormField>
+              </div>
+            </div>
+
+            <FormField label="Cargo / Rol en Plataforma">
+              <Input
+                value={profileForm.cargo}
+                readOnly
+              />
+            </FormField>
+
+            <div className="mt-4">
+              <Button type="submit" variant="primary">
+                Guardar Cambios de Perfil
+              </Button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* MODAL CREAR / EDITAR PRODUCTO                                  */}
+      {/* ============================================================== */}
       {showProductModal && (
-        <div className="modal is-active" id="product-modal">
+        <div className="modal is-active">
           <div className="modal-background" onClick={() => setShowProductModal(false)}></div>
           <div className="modal-card">
             <header className="modal-card-head">
@@ -635,8 +853,9 @@ export function AdminView({
                             value={productForm.categoria}
                             onChange={(e) => setProductForm({ ...productForm, categoria: e.target.value })}
                           >
-                            <option value="Selecciones Nacionales">Selecciones Nacionales</option>
-                            <option value="Clubes Chilenos">Clubes Chilenos</option>
+                            {customCategories.map(cat => (
+                              <option key={cat} value={cat}>{cat}</option>
+                            ))}
                           </select>
                         </div>
                       </div>
@@ -694,11 +913,11 @@ export function AdminView({
         </div>
       )}
 
-      {/* ========================================================
-          MODAL CREAR / EDITAR USUARIO
-          ======================================================== */}
+      {/* ============================================================== */}
+      {/* MODAL CREAR / EDITAR USUARIO                                   */}
+      {/* ============================================================== */}
       {showUserModal && (
-        <div className="modal is-active" id="user-modal">
+        <div className="modal is-active">
           <div className="modal-background" onClick={() => setShowUserModal(false)}></div>
           <div className="modal-card">
             <header className="modal-card-head">

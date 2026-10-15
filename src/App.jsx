@@ -26,13 +26,13 @@ const CART_STORAGE_KEY = 'carritoFutbol'
 
 export function App() {
   const [currentView, setCurrentView] = useState('home')
+  const [adminTab, setAdminTab] = useState('dashboard')
   const [products, setProducts] = useState(() => productStorage.getAll())
   const [users, setUsers] = useState(() => userService.getAll())
   const [orders, setOrders] = useState(() => orderService.getAll())
   const [loggedUser, setLoggedUser] = useState(() => userService.getLoggedUser())
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [lastOrder, setLastOrder] = useState(null)
-  const [adminTab, setAdminTab] = useState('dashboard')
 
   const [cart, setCart] = useState(() => {
     try {
@@ -324,6 +324,9 @@ export function App() {
               onDeleteUser={handleDeleteUser}
               orders={orders}
               loggedUser={loggedUser}
+              currentTab={adminTab}
+              onSelectTab={setAdminTab}
+              onNavigateHome={() => navigateTo('home')}
             />
           </AdminLayout>
         )

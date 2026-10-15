@@ -5,6 +5,16 @@ import { Button } from '../../atoms/Button/Button.jsx'
 export function ReportsPanel({ orders = [], products = [], users = [] }) {
   const [periodFilter, setPeriodFilter] = useState('ALL') // 'ALL', 'MARZO', 'RECENT'
 
+  // Filtrado de Stock Crítico dinámico
+  const criticalProducts = useMemo(() => {
+    return products.filter(p => {
+      const currentStock = Number(p.stock) || 0;
+      // Usar p.stockCritico si existe, sino por defecto 5
+      const criticalLimit = Number(p.stockCritico) || 5;
+      return currentStock <= criticalLimit;
+    });
+  }, [products]);
+
   // Filtrado por periodo
   const filteredOrders = useMemo(() => {
     if (periodFilter === 'MARZO') {
@@ -47,7 +57,6 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
       (ord.items || []).forEach(item => {
         const key = item.titulo || `Producto #${item.id}`
         if (!productMap[key]) {
-          // Intentar obtener imagen y categoría desde el catálogo de productos
           const catalogProd = products.find(p => p.id === item.id || p.titulo === item.titulo)
           productMap[key] = {
             id: item.id,
@@ -132,7 +141,7 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
 
   return (
     <div>
-      {/* Barra Superior con Selector de Período y Botón Imprimir */}
+      {/* Barra Superior con Selector de Período y Botón Imprimir (Visual) */}
       <div className="is-flex is-justify-content-space-between is-align-items-center mb-5 is-flex-wrap-wrap gap-2">
         <div>
           <h2 className="title is-3 mb-1 has-text-weight-bold">
@@ -158,13 +167,41 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
           <Button
             variant="primary"
             size="small"
-            onClick={() => window.print()}
             id="btn-print-report"
           >
             🖨️ Exportar / Imprimir Reporte
           </Button>
         </div>
       </div>
+
+      {/* Alerta Visual de Stock Crítico */}
+      {criticalProducts.length > 0 && (
+        <div className="box mb-5 has-background-warning-light" style={{ border: '1px solid #ffe08a', borderRadius: '12px' }}>
+          <p className="has-text-warning-dark mb-3">
+            <strong>⚠️ Alerta de Inventario:</strong> Existen <strong>{criticalProducts.length}</strong> modelos con stock crítico o bajo. Puedes gestionarlos en la sección de Productos.
+          </p>
+          <div className="table-container mb-0">
+            <table className="table is-fullwidth is-narrow has-background-white is-bordered" style={{ borderRadius: '6px' }}>
+              <thead>
+                <tr>
+                  <th>Producto (Stock Crítico)</th>
+                  <th className="has-text-centered" style={{ width: '120px' }}>Stock Actual</th>
+                  <th className="has-text-centered" style={{ width: '120px' }}>Límite Crítico</th>
+                </tr>
+              </thead>
+              <tbody>
+                {criticalProducts.map(p => (
+                  <tr key={p.id}>
+                    <td><strong>{p.titulo}</strong></td>
+                    <td className="has-text-centered has-text-danger has-text-weight-bold">{p.stock}</td>
+                    <td className="has-text-centered has-text-grey">{p.stockCritico || 5}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Grid de 4 KPIs Principales */}
       <div className="columns is-multiline mb-5" id="reports-kpi-grid">

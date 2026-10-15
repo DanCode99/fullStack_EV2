@@ -29,95 +29,6 @@ export function ReceiptModal({ order, isOpen, onClose }) {
   const customerAddress = order.customer?.direccion || order.direccion || 'Despacho a Domicilio'
   const customerCity = order.customer?.comuna || order.comuna || 'Santiago, Chile'
 
-  // Impresión aislada: genera un documento exclusivo con la boleta sin elementos de fondo
-  const handlePrint = () => {
-    const receiptElement = document.getElementById('printable-receipt')
-    if (!receiptElement) {
-      window.print()
-      return
-    }
-
-    const printFrame = document.createElement('iframe')
-    printFrame.name = 'printReceiptFrame'
-    printFrame.style.position = 'fixed'
-    printFrame.style.top = '-9999px'
-    printFrame.style.left = '-9999px'
-    printFrame.style.width = '0'
-    printFrame.style.height = '0'
-    printFrame.style.border = 'none'
-    document.body.appendChild(printFrame)
-
-    const frameDoc = printFrame.contentWindow || printFrame.contentDocument.document || printFrame.contentDocument
-    const doc = frameDoc.document || frameDoc
-
-    doc.open()
-    doc.write(`
-      <!DOCTYPE html>
-      <html lang="es">
-        <head>
-          <meta charset="utf-8">
-          <title>Boleta_${order.id || 'compra'}</title>
-          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-          <style>
-            @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap');
-            body {
-              font-family: 'Ubuntu', sans-serif !important;
-              background-color: #ffffff !important;
-              color: #1a1e24 !important;
-              padding: 24px;
-              margin: 0;
-            }
-            .receipt-container {
-              max-width: 680px;
-              margin: 0 auto;
-              background: #ffffff;
-              padding: 16px;
-              border: 1px solid #e2e8f0;
-              border-radius: 8px;
-            }
-            .table {
-              background-color: #ffffff !important;
-              color: #1a1e24 !important;
-            }
-            .table th {
-              background-color: #f8fafc !important;
-              color: #1a1e24 !important;
-            }
-            .nowrap {
-              white-space: nowrap !important;
-            }
-            @media print {
-              body { padding: 0 !important; }
-              .receipt-container { border: none !important; }
-              @page { margin: 1cm; size: auto; }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="receipt-container">
-            ${receiptElement.innerHTML}
-          </div>
-        </body>
-      </html>
-    `)
-    doc.close()
-
-    setTimeout(() => {
-      try {
-        printFrame.contentWindow.focus()
-        printFrame.contentWindow.print()
-      } catch {
-        window.print()
-      } finally {
-        setTimeout(() => {
-          if (document.body.contains(printFrame)) {
-            document.body.removeChild(printFrame)
-          }
-        }, 1500)
-      }
-    }, 450)
-  }
-
   const handleSendEmail = () => {
     setSimulatedSent(true)
     setTimeout(() => {
@@ -269,7 +180,6 @@ export function ReceiptModal({ order, isOpen, onClose }) {
             <Button
               variant="primary"
               size="small"
-              onClick={handlePrint}
               id="btn-print-receipt"
             >
               <span className="mr-1">🖨️</span> Imprimir Boleta

@@ -3,6 +3,8 @@ import { FormField } from '../../components/molecules/FormField/FormField.jsx'
 import { Input } from '../../components/atoms/Input/Input.jsx'
 import { Button } from '../../components/atoms/Button/Button.jsx'
 import { regionesYcomunas } from '../../data/regiones.js'
+import { ReceiptModal } from '../../components/organisms/ReceiptModal/ReceiptModal.jsx'
+import { ReportsPanel } from '../../components/organisms/ReportsPanel/ReportsPanel.jsx'
 
 export function AdminView({
   products = [],
@@ -424,61 +426,15 @@ export function AdminView({
             )}
           </div>
 
-          {/* Modal / Vista Detalle de Boleta / Orden */}
-          {selectedOrderForDetail && (
-            <div className="notification is-info is-light mb-5 p-4" style={{ borderRadius: '8px' }}>
-              <div className="is-flex is-justify-content-space-between is-align-items-center mb-3">
-                <h4 className="title is-5 mb-0">Detalle de la Boleta / Orden #{selectedOrderForDetail.id}</h4>
-                <button className="delete" onClick={() => setSelectedOrderForDetail(null)}></button>
-              </div>
-              <div className="columns is-multiline is-size-7">
-                <div className="column is-3">
-                  <strong>Cliente:</strong> {selectedOrderForDetail.customerName}
-                </div>
-                <div className="column is-3">
-                  <strong>RUN:</strong> {selectedOrderForDetail.userRun}
-                </div>
-                <div className="column is-3">
-                  <strong>Fecha Emisión:</strong> {selectedOrderForDetail.fecha}
-                </div>
-                <div className="column is-3">
-                  <strong>Estado:</strong> <span className="tag is-success is-light">{selectedOrderForDetail.estado || 'Completado'}</span>
-                </div>
-              </div>
-              <div className="table-container mt-2">
-                <table className="table is-fullwidth is-narrow is-striped">
-                  <thead>
-                    <tr>
-                      <th>Ítem / Camiseta</th>
-                      <th>Talla</th>
-                      <th>Cantidad</th>
-                      <th>Precio Unitario</th>
-                      <th>Subtotal</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {selectedOrderForDetail.items.map((it, idx) => (
-                      <tr key={idx}>
-                        <td>{it.titulo}</td>
-                        <td>{it.talla || 'M'}</td>
-                        <td>{it.cantidad}</td>
-                        <td>${Number(it.precio).toLocaleString('es-CL')}</td>
-                        <td>${(Number(it.precio) * it.cantidad).toLocaleString('es-CL')}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <th colSpan="4" className="has-text-right">Total Facturado:</th>
-                      <th className="has-text-primary has-text-weight-bold">
-                        ${Number(selectedOrderForDetail.total).toLocaleString('es-CL')}
-                      </th>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            </div>
-          )}
+          {/* Modal Detalle de Boleta Electrónica (Atomic Design + Bulma CSS) */}
+          <ReceiptModal
+            order={selectedOrderForDetail ? {
+              ...selectedOrderForDetail,
+              customer: selectedOrderForDetail.customer || users.find(u => String(u.run) === String(selectedOrderForDetail.userRun))
+            } : null}
+            isOpen={!!selectedOrderForDetail}
+            onClose={() => setSelectedOrderForDetail(null)}
+          />
 
           {(() => {
             const displayedOrders = selectedUserForHistory
@@ -772,96 +728,10 @@ export function AdminView({
       )}
 
       {/* ============================================================== */}
-      {/* VISTA 6: REPORTES DETALLADOS DEL SISTEMA                        */}
+      {/* VISTA 6: REPORTES Y MÉTRICAS (ATOMIC DESIGN)                    */}
       {/* ============================================================== */}
       {currentTab === 'reportes' && (
-        <div>
-          <div className="box mb-5">
-            <h2 className="title is-4 mb-1">Informes y Reportes Operativos</h2>
-            <p className="subtitle is-6 has-text-grey">
-              Generación de informes detallados sobre transacciones, productos y clientes.
-            </p>
-          </div>
-
-          <div className="columns is-multiline">
-            <div className="column is-4">
-              <div className="box has-text-centered p-5">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#198754" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto' }}>
-                  <line x1="12" y1="1" x2="12" y2="23"></line>
-                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                </svg>
-                <h3 className="title is-5 mt-3 mb-2">Ingresos Totales</h3>
-                <p className="is-size-3 has-text-weight-bold has-text-primary">
-                  ${orders.reduce((acc, ord) => acc + (Number(ord.total) || 0), 0).toLocaleString('es-CL')}
-                </p>
-                <p className="is-size-7 has-text-grey">Ventas acumuladas de órdenes cerradas</p>
-              </div>
-            </div>
-
-            <div className="column is-4">
-              <div className="box has-text-centered p-5">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto' }}>
-                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                  <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                </svg>
-                <h3 className="title is-5 mt-3 mb-2">Unidades Vendidas</h3>
-                <p className="is-size-3 has-text-weight-bold has-text-info">
-                  {orders.reduce((acc, ord) => acc + ord.items.reduce((s, it) => s + it.cantidad, 0), 0)}
-                </p>
-                <p className="is-size-7 has-text-grey">Camisetas despachadas a clientes</p>
-              </div>
-            </div>
-
-            <div className="column is-4">
-              <div className="box has-text-centered p-5">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto' }}>
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <polyline points="12 6 12 12 16 14"></polyline>
-                </svg>
-                <h3 className="title is-5 mt-3 mb-2">Ticket Promedio</h3>
-                <p className="is-size-3 has-text-weight-bold has-text-warning-dark">
-                  ${orders.length > 0
-                    ? Math.round(orders.reduce((acc, ord) => acc + Number(ord.total), 0) / orders.length).toLocaleString('es-CL')
-                    : '0'}
-                </p>
-                <p className="is-size-7 has-text-grey">Gasto medio por orden de compra</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="box mt-4">
-            <h3 className="title is-5 mb-3">Modelos con Stock Crítico a Reponer</h3>
-            {totalCritical === 0 ? (
-              <p className="has-text-grey">No hay productos en estado crítico actualmente.</p>
-            ) : (
-              <table className="table is-fullwidth is-striped">
-                <thead>
-                  <tr>
-                    <th>Producto</th>
-                    <th>Categoría</th>
-                    <th>Stock Actual</th>
-                    <th>Stock Mínimo</th>
-                    <th>Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products
-                    .filter(p => Number(p.stock) <= (Number(p.stockCritico) || 5))
-                    .map(p => (
-                      <tr key={p.id}>
-                        <td><strong>{p.titulo}</strong></td>
-                        <td>{p.categoria}</td>
-                        <td><span className="tag is-danger">{p.stock}</span></td>
-                        <td>{p.stockCritico || 5}</td>
-                        <td><span className="tag is-warning">Requiere Reposición</span></td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </div>
+        <ReportsPanel orders={orders} products={products} users={users} />
       )}
 
       {/* ============================================================== */}

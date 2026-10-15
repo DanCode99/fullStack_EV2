@@ -915,3 +915,71 @@ aside.menu .menu-list a.is-active {
         padding: 1.25rem;
     }
 }
+
+/* ===================================================
+   13. ESTILOS DE IMPRESIÓN (BOLETA Y REPORTES)
+   =================================================== */
+@media print {
+    body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+    }
+
+    /* Ocultar elementos de navegación y de control siempre */
+    .admin-sidebar, 
+    .navbar, 
+    .admin-mobile-nav, 
+    .modal-background, 
+    .modal-card-foot, 
+    .tabs, 
+    .delete, 
+    .buttons, 
+    button,
+    #btn-print-receipt, 
+    #btn-send-receipt, 
+    #btn-close-receipt, 
+    #btn-print-report {
+        display: none !important;
+    }
+
+    /* Si la boleta está abierta, OCULTAR TODO el contenido de fondo (tabla de órdenes, dashboard, etc.) */
+    body.has-receipt-modal-open .admin-view-wrapper > *:not(#receipt-modal),
+    body.has-receipt-modal-open .admin-main > *:not(.admin-view-wrapper),
+    body.has-receipt-modal-open .modal-card-head {
+        display: none !important;
+    }
+
+    /* Posicionar el modal de boleta ocupando toda la hoja limpia */
+    body.has-receipt-modal-open #receipt-modal {
+        display: block !important;
+        position: static !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+    }
+
+    body.has-receipt-modal-open #receipt-modal .modal-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        background: transparent !important;
+    }
+
+    body.has-receipt-modal-open #printable-receipt {
+        padding: 0 !important;
+        background-color: #ffffff !important;
+    }
+
+    .admin-main {
+        padding: 0 !important;
+    }
+
+    .nowrap {
+        white-space: nowrap !important;
+    }
+}
+

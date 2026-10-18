@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../../atoms/Button/Button.jsx'
-import { Badge } from '../../atoms/Badge/Badge.jsx'
 
 export function ProductCard({
   product,
@@ -9,7 +8,6 @@ export function ProductCard({
 }) {
   const navigate = useNavigate()
   const isOutOfStock = product.stock <= 0
-  const isCriticalStock = product.stock > 0 && product.stock <= (product.stockCritico || 5)
 
   const handleSelect = () => {
     if (onSelect) {
@@ -41,13 +39,6 @@ export function ProductCard({
         <div>
           <div className="is-flex is-justify-content-space-between is-align-items-center mb-2">
             <span className="is-size-7 has-text-grey">{product.categoria}</span>
-            {isOutOfStock ? (
-              <Badge variant="danger">Agotado</Badge>
-            ) : isCriticalStock ? (
-              <Badge variant="warning">¡Últimas unidades!</Badge>
-            ) : (
-              <Badge variant="success">Stock: {product.stock}</Badge>
-            )}
           </div>
 
           <h3

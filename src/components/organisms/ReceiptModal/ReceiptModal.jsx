@@ -180,6 +180,8 @@ export function ReceiptModal({ order, isOpen, onClose }) {
               variant="primary"
               size="small"
               id="btn-print-receipt"
+              onClick={() => {}}
+              style={{ cursor: 'not-allowed' }}
             >
               Imprimir Boleta
             </Button>

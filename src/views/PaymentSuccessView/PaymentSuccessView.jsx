@@ -92,7 +92,8 @@ export function PaymentSuccessView({ order, onNavigate }) {
           <div className="buttons is-centered">
             <Button
               variant="primary"
-              onClick={() => window.print()}
+              onClick={() => {}}
+              style={{ cursor: 'not-allowed' }}
             >
               Imprimir boleta en PDF
             </Button>

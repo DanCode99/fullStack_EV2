@@ -8,7 +8,8 @@ export function Button({
   size = '',
   disabled = false,
   className = '',
-  id
+  id,
+  style
 }) {
   const variantClass = variant ? `is-${variant}` : ''
   const bootstrapVariant = variant ? `btn-${variant}` : ''
@@ -22,6 +23,7 @@ export function Button({
       className={fullClassName}
       onClick={onClick}
       disabled={disabled}
+      style={style}
     >
       {children}
     </button>

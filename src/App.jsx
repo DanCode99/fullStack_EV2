@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom'
 import { productStorage } from './services/productService.js'
 import { userService } from './services/userService.js'
@@ -45,6 +45,20 @@ export function App() {
       return []
     }
   })
+
+  // Estado para alertas toast interactivas
+  const [toast, setToast] = useState(null)
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3500)
+      return () => clearTimeout(timer)
+    }
+  }, [toast])
+
+  const showNotification = (title, message) => {
+    setToast({ title, message })
+  }
 
   // Sincronizar cambios del carrito con LocalStorage
   const updateCart = (newCart) => {
@@ -126,6 +140,7 @@ export function App() {
       }
       updateCart([...cart, newItem])
     }
+    showNotification('¡Producto agregado al carrito!', `${product.titulo || 'Camiseta'} (${product.talla || 'M'}) se añadió con éxito.`)
   }
 
   const handleIncrementCart = (index) => {
@@ -439,6 +454,32 @@ export function App() {
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+
+      {toast && (
+        <div
+          className="cart-toast-notification"
+          role="alert"
+          onClick={() => setToast(null)}
+          title="Haz clic para cerrar"
+        >
+          <div className="cart-toast-icon">✓</div>
+          <div className="cart-toast-body">
+            <div className="cart-toast-title">{toast.title}</div>
+            <div className="cart-toast-message">{toast.message}</div>
+          </div>
+          <button
+            type="button"
+            className="cart-toast-close"
+            onClick={(e) => {
+              e.stopPropagation()
+              setToast(null)
+            }}
+            aria-label="Cerrar"
+          >
+            &times;
+          </button>
+        </div>
+      )}
     </MainLayout>
   )
 }

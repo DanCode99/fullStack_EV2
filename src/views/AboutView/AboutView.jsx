@@ -35,7 +35,6 @@ export function AboutView() {
         <div className="columns">
           <div className="column is-4">
             <div className="box has-text-centered h-100 p-5">
-              <span className="is-size-1 mb-2">⚽</span>
               <h3 className="title is-5 mb-2">100% Oficiales</h3>
               <p className="is-size-7 has-text-grey">
                 Trabajamos con indumentaria oficial y licencias autorizadas de cada institución deportiva.
@@ -44,7 +43,6 @@ export function AboutView() {
           </div>
           <div className="column is-4">
             <div className="box has-text-centered h-100 p-5">
-              <span className="is-size-1 mb-2">🚚</span>
               <h3 className="title is-5 mb-2">Envíos Rápidos</h3>
               <p className="is-size-7 has-text-grey">
                 Despachamos de Arica a Punta Arenas con seguimiento en línea de tu paquete.
@@ -53,7 +51,6 @@ export function AboutView() {
           </div>
           <div className="column is-4">
             <div className="box has-text-centered h-100 p-5">
-              <span className="is-size-1 mb-2">🔒</span>
               <h3 className="title is-5 mb-2">Compra Segura</h3>
               <p className="is-size-7 has-text-grey">
                 Protección al consumidor y múltiples medios de pago verificados.

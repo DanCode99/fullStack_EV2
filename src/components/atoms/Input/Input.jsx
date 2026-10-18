@@ -1,3 +1,4 @@
+import React from 'react'
 
 export function Input({
   id,
@@ -27,3 +28,5 @@ export function Input({
     />
   )
 }
+
+export default Input

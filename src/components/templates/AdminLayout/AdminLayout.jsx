@@ -166,3 +166,6 @@ export function AdminLayout({
     </section>
   )
 }
+
+export default AdminLayout
+

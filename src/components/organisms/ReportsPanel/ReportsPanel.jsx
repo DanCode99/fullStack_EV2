@@ -404,3 +404,5 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
     </div>
   )
 }
+
+export default ReportsPanel

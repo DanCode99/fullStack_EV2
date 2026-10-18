@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { Button } from '../../atoms/Button/Button.jsx'
 import { Badge } from '../../atoms/Badge/Badge.jsx'
 
@@ -6,14 +7,23 @@ export function ProductCard({
   onSelect,
   onAddToCart
 }) {
+  const navigate = useNavigate()
   const isOutOfStock = product.stock <= 0
   const isCriticalStock = product.stock > 0 && product.stock <= (product.stockCritico || 5)
+
+  const handleSelect = () => {
+    if (onSelect) {
+      onSelect(product)
+    } else {
+      navigate(`/products/${product.id}`)
+    }
+  }
 
   return (
     <div className="card h-100">
       <div
         className="card-image"
-        onClick={() => onSelect && onSelect(product)}
+        onClick={handleSelect}
         style={{ cursor: 'pointer' }}
       >
         <figure className="image">
@@ -42,7 +52,7 @@ export function ProductCard({
 
           <h3
             className="title is-6 mb-2"
-            onClick={() => onSelect && onSelect(product)}
+            onClick={handleSelect}
             style={{ cursor: 'pointer' }}
           >
             {product.titulo}
@@ -72,12 +82,12 @@ export function ProductCard({
 
         <div className="buttons mt-3">
           <Button
-            variant="light"
+            variant="primary"
             size="small"
             className="is-fullwidth mb-1"
-            onClick={() => onSelect && onSelect(product)}
+            onClick={handleSelect}
           >
-            Ver Detalle
+            Ver detalles
           </Button>
           <Button
             variant="primary"
@@ -93,3 +103,6 @@ export function ProductCard({
     </div>
   )
 }
+
+export default ProductCard
+

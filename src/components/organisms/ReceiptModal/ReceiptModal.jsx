@@ -205,3 +205,5 @@ export function ReceiptModal({ order, isOpen, onClose }) {
     </div>
   )
 }
+
+export default ReceiptModal

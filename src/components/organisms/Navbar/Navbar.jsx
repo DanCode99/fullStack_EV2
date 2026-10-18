@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../../atoms/Button/Button.jsx'
 
 export function Navbar({
@@ -9,10 +10,15 @@ export function Navbar({
   cartCount = 0
 }) {
   const [burgerActive, setBurgerActive] = useState(false)
+  const navigate = useNavigate()
 
   const handleNav = (view) => {
     setBurgerActive(false)
-    onNavigate(view)
+    if (onNavigate) {
+      onNavigate(view)
+    } else {
+      navigate(view === 'home' ? '/' : `/${view}`)
+    }
   }
 
   const isAdminOrSeller = loggedUser && (
@@ -26,10 +32,11 @@ export function Navbar({
     <nav className="navbar is-dark" role="navigation" aria-label="main navigation">
       <div className="container">
         <div className="navbar-brand">
-          <a
+          <Link
+            to="/"
             className="navbar-item"
-            onClick={() => handleNav('home')}
-            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+            onClick={() => setBurgerActive(false)}
+            style={{ display: 'flex', alignItems: 'center' }}
           >
             <img
               src="/assets/images/logo/logo.png"
@@ -42,7 +49,7 @@ export function Navbar({
             <strong className="has-text-primary is-size-5" style={{ letterSpacing: '0.5px' }}>
               TIENDA DE FÚTBOL
             </strong>
-          </a>
+          </Link>
 
           <a
             role="button"
@@ -59,55 +66,63 @@ export function Navbar({
 
         <div className={`navbar-menu ${burgerActive ? 'is-active' : ''}`}>
           <div className="navbar-start">
-            <a
+            <Link
+              to="/"
               className={`navbar-item ${currentView === 'home' ? 'is-active' : ''}`}
-              onClick={() => handleNav('home')}
+              onClick={() => setBurgerActive(false)}
             >
               Inicio
-            </a>
-            <a
+            </Link>
+            <Link
+              to="/productos"
               className={`navbar-item ${currentView === 'productos' ? 'is-active' : ''}`}
-              onClick={() => handleNav('productos')}
+              onClick={() => setBurgerActive(false)}
             >
               Productos
-            </a>
-            <a
+            </Link>
+            <Link
+              to="/categorias"
               className={`navbar-item ${currentView === 'categorias' ? 'is-active' : ''}`}
-              onClick={() => handleNav('categorias')}
+              onClick={() => setBurgerActive(false)}
             >
               Categorías
-            </a>
-            <a
+            </Link>
+            <Link
+              to="/ofertas"
               className={`navbar-item ${currentView === 'ofertas' ? 'is-active' : ''}`}
-              onClick={() => handleNav('ofertas')}
+              onClick={() => setBurgerActive(false)}
             >
               Ofertas
-            </a>
-            <a
+            </Link>
+            <Link
+              to="/nosotros"
               className={`navbar-item ${currentView === 'nosotros' ? 'is-active' : ''}`}
-              onClick={() => handleNav('nosotros')}
+              onClick={() => setBurgerActive(false)}
             >
               Nosotros
-            </a>
-            <a
+            </Link>
+            <Link
+              to="/blog"
               className={`navbar-item ${currentView === 'blog' ? 'is-active' : ''}`}
-              onClick={() => handleNav('blog')}
+              onClick={() => setBurgerActive(false)}
             >
               Blog
-            </a>
-            <a
+            </Link>
+            <Link
+              to="/contacto"
               className={`navbar-item ${currentView === 'contacto' ? 'is-active' : ''}`}
-              onClick={() => handleNav('contacto')}
+              onClick={() => setBurgerActive(false)}
             >
               Contacto
-            </a>
+            </Link>
             {isAdminOrSeller && (
-              <a
+              <Link
+                to="/admin"
                 className={`navbar-item has-text-warning ${currentView === 'admin' ? 'is-active' : ''}`}
-                onClick={() => handleNav('admin')}
+                onClick={() => setBurgerActive(false)}
               >
                 Panel Admin
-              </a>
+              </Link>
             )}
           </div>
 
@@ -161,3 +176,6 @@ export function Navbar({
     </nav>
   )
 }
+
+export default Navbar
+

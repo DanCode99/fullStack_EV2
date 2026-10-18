@@ -1,3 +1,4 @@
+import React from 'react'
 
 export function Badge({ children, variant = 'primary', className = '' }) {
   return (
@@ -6,3 +7,5 @@ export function Badge({ children, variant = 'primary', className = '' }) {
     </span>
   )
 }
+
+export default Badge

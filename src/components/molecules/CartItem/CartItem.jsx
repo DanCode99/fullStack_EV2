@@ -82,3 +82,6 @@ export function CartItem({
     </div>
   )
 }
+
+export default CartItem
+

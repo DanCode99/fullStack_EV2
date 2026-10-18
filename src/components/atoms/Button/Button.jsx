@@ -1,3 +1,4 @@
+import React from 'react'
 
 export function Button({
   children,
@@ -10,8 +11,9 @@ export function Button({
   id
 }) {
   const variantClass = variant ? `is-${variant}` : ''
+  const bootstrapVariant = variant ? `btn-${variant}` : ''
   const sizeClass = size ? `is-${size}` : ''
-  const fullClassName = `button ${variantClass} ${sizeClass} ${className}`.trim()
+  const fullClassName = `button ${variantClass} ${bootstrapVariant} ${sizeClass} ${className}`.trim()
 
   return (
     <button
@@ -25,3 +27,5 @@ export function Button({
     </button>
   )
 }
+
+export default Button

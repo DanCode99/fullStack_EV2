@@ -70,3 +70,6 @@ export function HomeView({
     </div>
   )
 }
+
+export default HomeView
+

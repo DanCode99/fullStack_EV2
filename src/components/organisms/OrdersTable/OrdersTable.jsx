@@ -251,3 +251,5 @@ export function OrdersTable({
     </div>
   )
 }
+
+export default OrdersTable

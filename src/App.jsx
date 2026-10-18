@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom'
 import { productStorage } from './services/productService.js'
 import { userService } from './services/userService.js'
 import { orderService } from './services/orderService.js'
@@ -25,7 +26,9 @@ import { AdminView } from './views/AdminView/AdminView.jsx'
 const CART_STORAGE_KEY = 'carritoFutbol'
 
 export function App() {
-  const [currentView, setCurrentView] = useState('home')
+  const navigate = useNavigate()
+  const location = useLocation()
+
   const [adminTab, setAdminTab] = useState('dashboard')
   const [products, setProducts] = useState(() => productStorage.getAll())
   const [users, setUsers] = useState(() => userService.getAll())
@@ -49,11 +52,58 @@ export function App() {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(newCart))
   }
 
-  // Navegación
-  const navigateTo = (viewName) => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-    setCurrentView(viewName)
+  // Mapeo amigable de nombres de vistas a rutas
+  const routeMap = {
+    home: '/',
+    productos: '/productos',
+    products: '/productos',
+    categorias: '/categorias',
+    ofertas: '/ofertas',
+    detalle: '/productos',
+    carrito: '/carrito',
+    checkout: '/checkout',
+    'pago-exito': '/pago-exito',
+    'pago-error': '/pago-error',
+    nosotros: '/nosotros',
+    blog: '/blog',
+    contacto: '/contacto',
+    login: '/login',
+    registro: '/registro',
+    admin: '/admin'
   }
+
+  // Navegación centralizada con React Router
+  const navigateTo = (destination) => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    if (typeof destination === 'string' && destination.startsWith('/')) {
+      navigate(destination)
+    } else if (routeMap[destination]) {
+      navigate(routeMap[destination])
+    } else {
+      navigate(`/${destination}`)
+    }
+  }
+
+  // Determinar la vista activa para el Navbar según la ruta actual
+  const currentPath = location.pathname
+  const getCurrentView = () => {
+    if (currentPath === '/' || currentPath === '/home') return 'home'
+    if (currentPath.startsWith('/productos') || currentPath.startsWith('/products') || currentPath.startsWith('/detalle')) return 'productos'
+    if (currentPath.startsWith('/categorias')) return 'categorias'
+    if (currentPath.startsWith('/ofertas')) return 'ofertas'
+    if (currentPath.startsWith('/carrito')) return 'carrito'
+    if (currentPath.startsWith('/checkout')) return 'checkout'
+    if (currentPath.startsWith('/pago-exito')) return 'pago-exito'
+    if (currentPath.startsWith('/pago-error')) return 'pago-error'
+    if (currentPath.startsWith('/nosotros')) return 'nosotros'
+    if (currentPath.startsWith('/blog')) return 'blog'
+    if (currentPath.startsWith('/contacto')) return 'contacto'
+    if (currentPath.startsWith('/login')) return 'login'
+    if (currentPath.startsWith('/registro')) return 'registro'
+    if (currentPath.startsWith('/admin')) return 'admin'
+    return 'home'
+  }
+  const currentView = getCurrentView()
 
   // Operaciones del Carrito
   const handleAddToCart = (product, quantity = 1) => {
@@ -167,18 +217,16 @@ export function App() {
   // Selección de Producto para Detalle
   const handleSelectProduct = (prod) => {
     setSelectedProduct(prod)
-    navigateTo('detalle')
+    navigateTo(`/productos/${prod.id}`)
   }
 
   // Envío de Orden (Checkout)
   const handleSubmitOrder = ({ success, order }) => {
     setLastOrder(order)
     if (success) {
-      // 1. Descontar del stock de los productos comprados
       productStorage.reduceStock(order.items || [])
       setProducts(productStorage.getAll())
 
-      // 2. Registrar en el historial de órdenes
       const registeredOrder = {
         id: `ORD-${order.orderNumber}`,
         userRun: loggedUser?.run || '444444444',
@@ -192,7 +240,6 @@ export function App() {
       orderService.create(registeredOrder)
       setOrders(orderService.getAll())
 
-      // 3. Vaciar carrito y navegar al resumen
       handleClearCart()
       navigateTo('pago-exito')
     } else {
@@ -200,150 +247,38 @@ export function App() {
     }
   }
 
-
   const totalCartCount = cart.reduce((acc, item) => acc + item.cantidad, 0)
 
-  // Renderizado condicional según vista
-  const renderViewContent = () => {
-    switch (currentView) {
-      case 'home':
-        return (
-          <HomeView
-            products={products}
-            onSelectProduct={handleSelectProduct}
-            onAddToCart={handleAddToCart}
-            onNavigate={navigateTo}
-          />
-        )
-      case 'productos':
-        return (
-          <ProductsView
-            products={products}
-            onSelectProduct={handleSelectProduct}
-            onAddToCart={handleAddToCart}
-          />
-        )
-      case 'categorias':
-        return (
-          <CategoriesView
-            products={products}
-            onSelectProduct={handleSelectProduct}
-            onAddToCart={handleAddToCart}
-          />
-        )
-      case 'ofertas':
-        return (
-          <OffersView
-            products={products}
-            onSelectProduct={handleSelectProduct}
-            onAddToCart={handleAddToCart}
-          />
-        )
-      case 'detalle':
-        return (
-          <ProductDetailView
-            product={selectedProduct}
-            onAddToCart={handleAddToCart}
-            onBack={() => navigateTo('productos')}
-          />
-        )
-      case 'carrito':
-        return (
-          <CartView
-            cart={cart}
-            onIncrement={handleIncrementCart}
-            onDecrement={handleDecrementCart}
-            onRemove={handleRemoveCart}
-            onClear={handleClearCart}
-            onNavigate={navigateTo}
-          />
-        )
-      case 'checkout':
-        return (
-          <CheckoutView
-            cart={cart}
-            loggedUser={loggedUser}
-            onSubmitOrder={handleSubmitOrder}
-            onNavigate={navigateTo}
-          />
-        )
-      case 'pago-exito':
-        return (
-          <PaymentSuccessView
-            order={lastOrder}
-            onNavigate={navigateTo}
-          />
-        )
-      case 'pago-error':
-        return (
-          <PaymentErrorView
-            order={lastOrder}
-            onRetry={() => navigateTo('checkout')}
-            onNavigate={navigateTo}
-          />
-        )
-      case 'nosotros':
-        return <AboutView />
-      case 'blog':
-        return <BlogView />
-      case 'contacto':
-        return <ContactView />
-      case 'login':
-        return (
-          <LoginView
-            onLoginSuccess={handleLogin}
-            onNavigate={navigateTo}
-          />
-        )
-      case 'registro':
-        return (
-          <RegisterView
-            onRegisterUser={handleRegisterUser}
-            onNavigate={navigateTo}
-          />
-        )
-      case 'admin':
-        return (
-          <AdminLayout
-            currentAdminTab={adminTab}
-            onSelectTab={setAdminTab}
-            onNavigateHome={() => navigateTo('home')}
-            onLogout={handleLogout}
-            loggedUser={loggedUser}
-          >
-            <AdminView
-              currentTab={adminTab}
-              onSelectTab={setAdminTab}
-              products={products}
-              users={users}
-              onCreateProduct={handleCreateProduct}
-              onUpdateProduct={handleUpdateProduct}
-              onDeleteProduct={handleDeleteProduct}
-              onCreateUser={handleCreateUser}
-              onUpdateUser={handleUpdateUser}
-              onDeleteUser={handleDeleteUser}
-              orders={orders}
-              loggedUser={loggedUser}
-              onNavigateHome={() => navigateTo('home')}
-            />
-          </AdminLayout>
-        )
-      default:
-        return (
-          <HomeView
-            products={products}
-            onSelectProduct={handleSelectProduct}
-            onAddToCart={handleAddToCart}
-            onNavigate={navigateTo}
-          />
-        )
-    }
+  // Si estamos en la ruta de administración, renderizamos con AdminLayout
+  if (location.pathname.startsWith('/admin')) {
+    return (
+      <AdminLayout
+        currentAdminTab={adminTab}
+        onSelectTab={setAdminTab}
+        onNavigateHome={() => navigateTo('home')}
+        onLogout={handleLogout}
+        loggedUser={loggedUser}
+      >
+        <AdminView
+          currentTab={adminTab}
+          onSelectTab={setAdminTab}
+          products={products}
+          users={users}
+          onCreateProduct={handleCreateProduct}
+          onUpdateProduct={handleUpdateProduct}
+          onDeleteProduct={handleDeleteProduct}
+          onCreateUser={handleCreateUser}
+          onUpdateUser={handleUpdateUser}
+          onDeleteUser={handleDeleteUser}
+          orders={orders}
+          loggedUser={loggedUser}
+          onNavigateHome={() => navigateTo('home')}
+        />
+      </AdminLayout>
+    )
   }
 
-  if (currentView === 'admin') {
-    return renderViewContent()
-  }
-
+  // Para el resto de rutas, renderizamos con MainLayout y Routes de React Router
   return (
     <MainLayout
       currentView={currentView}
@@ -352,7 +287,158 @@ export function App() {
       onLogout={handleLogout}
       cartCount={totalCartCount}
     >
-      {renderViewContent()}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <HomeView
+              products={products}
+              onSelectProduct={handleSelectProduct}
+              onAddToCart={handleAddToCart}
+              onNavigate={navigateTo}
+            />
+          }
+        />
+        <Route path="/home" element={<Navigate to="/" replace />} />
+        <Route
+          path="/productos"
+          element={
+            <ProductsView
+              products={products}
+              onSelectProduct={handleSelectProduct}
+              onAddToCart={handleAddToCart}
+            />
+          }
+        />
+        <Route
+          path="/products"
+          element={
+            <ProductsView
+              products={products}
+              onSelectProduct={handleSelectProduct}
+              onAddToCart={handleAddToCart}
+            />
+          }
+        />
+        <Route
+          path="/productos/:id"
+          element={
+            <ProductDetailView
+              product={selectedProduct}
+              products={products}
+              onAddToCart={handleAddToCart}
+              onBack={() => navigateTo('productos')}
+            />
+          }
+        />
+        <Route
+          path="/products/:id"
+          element={
+            <ProductDetailView
+              product={selectedProduct}
+              products={products}
+              onAddToCart={handleAddToCart}
+              onBack={() => navigateTo('productos')}
+            />
+          }
+        />
+        <Route
+          path="/detalle"
+          element={
+            <ProductDetailView
+              product={selectedProduct}
+              products={products}
+              onAddToCart={handleAddToCart}
+              onBack={() => navigateTo('productos')}
+            />
+          }
+        />
+        <Route
+          path="/categorias"
+          element={
+            <CategoriesView
+              products={products}
+              onSelectProduct={handleSelectProduct}
+              onAddToCart={handleAddToCart}
+            />
+          }
+        />
+        <Route
+          path="/ofertas"
+          element={
+            <OffersView
+              products={products}
+              onSelectProduct={handleSelectProduct}
+              onAddToCart={handleAddToCart}
+            />
+          }
+        />
+        <Route
+          path="/carrito"
+          element={
+            <CartView
+              cart={cart}
+              onIncrement={handleIncrementCart}
+              onDecrement={handleDecrementCart}
+              onRemove={handleRemoveCart}
+              onClear={handleClearCart}
+              onNavigate={navigateTo}
+            />
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <CheckoutView
+              cart={cart}
+              loggedUser={loggedUser}
+              onSubmitOrder={handleSubmitOrder}
+              onNavigate={navigateTo}
+            />
+          }
+        />
+        <Route
+          path="/pago-exito"
+          element={
+            <PaymentSuccessView
+              order={lastOrder}
+              onNavigate={navigateTo}
+            />
+          }
+        />
+        <Route
+          path="/pago-error"
+          element={
+            <PaymentErrorView
+              order={lastOrder}
+              onRetry={() => navigateTo('checkout')}
+              onNavigate={navigateTo}
+            />
+          }
+        />
+        <Route path="/nosotros" element={<AboutView />} />
+        <Route path="/blog" element={<BlogView />} />
+        <Route path="/contacto" element={<ContactView />} />
+        <Route
+          path="/login"
+          element={
+            <LoginView
+              onLoginSuccess={handleLogin}
+              onNavigate={navigateTo}
+            />
+          }
+        />
+        <Route
+          path="/registro"
+          element={
+            <RegisterView
+              onRegisterUser={handleRegisterUser}
+              onNavigate={navigateTo}
+            />
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </MainLayout>
   )
 }

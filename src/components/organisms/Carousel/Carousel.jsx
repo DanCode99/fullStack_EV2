@@ -60,3 +60,6 @@ export function Carousel({ items = [], onSelectItem }) {
     </div>
   )
 }
+
+export default Carousel
+

@@ -1,3 +1,4 @@
+import React from 'react'
 
 export function Heading({ level = 2, children, className = '' }) {
   const Tag = `h${level}`
@@ -8,3 +9,5 @@ export function Heading({ level = 2, children, className = '' }) {
     </Tag>
   )
 }
+
+export default Heading

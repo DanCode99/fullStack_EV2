@@ -1,27 +1,53 @@
 import { useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import { Button } from '../../components/atoms/Button/Button.jsx'
 import { Badge } from '../../components/atoms/Badge/Badge.jsx'
+import { productStorage } from '../../services/productService.js'
 
 export function ProductDetailView({
-  product,
+  product: initialProduct,
+  products = [],
   onAddToCart,
   onBack
 }) {
-  const [selectedImage, setSelectedImage] = useState(product ? product.img : '')
+  const { id } = useParams()
+  const navigate = useNavigate()
+
+  // Buscar el producto por prop o por parámetro de URL
+  const product = initialProduct && (!id || String(initialProduct.id) === String(id))
+    ? initialProduct
+    : (id
+      ? (products.find((p) => String(p.id) === String(id)) || productStorage.getById(id))
+      : initialProduct)
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack()
+    } else {
+      navigate('/productos')
+    }
+  }
+
+  const [userSelectedImage, setUserSelectedImage] = useState(null)
   const [selectedSize, setSelectedSize] = useState('M')
   const [quantity, setQuantity] = useState(1)
   const [feedback, setFeedback] = useState('')
+
+  const selectedImage = userSelectedImage || (product ? product.img : '')
+
 
   if (!product) {
     return (
       <div className="section">
         <div className="container has-text-centered py-6">
-          <p className="is-size-5 mb-4">No se ha seleccionado ningún producto.</p>
-          <Button variant="dark" onClick={onBack}>Volver a la tienda</Button>
+          <h1 className="title is-3 mb-4">Producto no encontrado</h1>
+          <p className="is-size-5 mb-4">El producto solicitado no existe o no se encuentra disponible.</p>
+          <Button variant="dark" onClick={handleBack}>Volver a la tienda</Button>
         </div>
       </div>
     )
   }
+
 
   const images = [product.img, product.img2].filter(Boolean)
   const sizes = ['S', 'M', 'L', 'XL']
@@ -59,7 +85,7 @@ export function ProductDetailView({
                     <div
                       key={idx}
                       className={`miniatura-item ${selectedImage === imgSrc ? 'activa' : ''}`}
-                      onClick={() => setSelectedImage(imgSrc)}
+                      onClick={() => setUserSelectedImage(imgSrc)}
                     >
                       <img src={imgSrc} alt={`Vista ${idx + 1}`} />
                     </div>
@@ -170,3 +196,6 @@ export function ProductDetailView({
     </div>
   )
 }
+
+export default ProductDetailView
+

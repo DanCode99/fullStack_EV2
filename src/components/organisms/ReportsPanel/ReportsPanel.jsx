@@ -358,12 +358,6 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
               })}
             </div>
 
-            <div className="notification is-primary is-light p-3 is-size-7">
-              <p className="has-text-weight-bold mb-1">Conclusión Comercial:</p>
-              <p className="mb-0">
-                Las camisetas de selecciones internacionales lideran la demanda gracias a los torneos de este año, seguidas por los clubes nacionales de primera división.
-              </p>
-            </div>
           </div>
         </div>
       </div>
@@ -403,4 +397,4 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
   )
 }
 
-export default ReportsPanel
+export default ReportsPanel

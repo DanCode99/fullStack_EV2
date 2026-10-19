@@ -673,6 +673,109 @@ aside.menu .menu-list a.is-active {
     z-index: 20;
 }
 
+.admin-topbar-left,
+.admin-topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.admin-topbar-logo {
+    max-height: 30px;
+    object-fit: contain;
+    cursor: pointer;
+}
+
+.admin-topbar-brand {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.admin-search-wrapper {
+    margin-left: 1rem;
+    position: relative;
+}
+
+.admin-search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.admin-search-input {
+    background-color: #1b1e22;
+    border: 1px solid #343a40;
+    border-radius: 20px;
+    padding: 0.4rem 1rem 0.4rem 2.2rem;
+    color: #ced4da;
+    font-size: 0.85rem;
+    width: 260px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.admin-search-input:focus {
+    border-color: #00b89c;
+}
+
+.admin-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.admin-user-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: #00b89c;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.admin-user-info {
+    line-height: 1.2;
+}
+
+.admin-user-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.admin-user-role {
+    font-size: 0.75rem;
+    color: #adb5bd;
+}
+
+.admin-btn-logout-outline {
+    background-color: transparent;
+    border: 1px solid #e63946;
+    color: #e63946;
+    border-radius: 6px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-btn-logout-outline:hover {
+    background-color: #e63946;
+    color: #ffffff;
+}
+
 .admin-container {
     display: flex;
     flex: 1;
@@ -1071,5 +1174,143 @@ aside.menu .menu-list a.is-active {
         opacity: 1;
         transform: translateX(0) scale(1);
     }
+}
+
+/* ===================================================
+   CLASES UTILITARIAS Y DE LIMPIEZA DE CSS INLINE
+   =================================================== */
+.cursor-pointer { cursor: pointer !important; }
+.cursor-not-allowed { cursor: not-allowed !important; }
+.min-h-100vh { min-height: 100vh !important; }
+.line-height-1-7 { line-height: 1.7 !important; }
+.line-height-1-8 { line-height: 1.8 !important; }
+.line-height-1-9 { line-height: 1.9 !important; }
+.line-through { text-decoration: line-through !important; }
+
+/* Contenedores con anchos máximos específicos */
+.container-max-440 { max-width: 440px !important; }
+.container-max-500 { max-width: 500px !important; }
+.container-max-700 { max-width: 700px !important; }
+.container-max-720 { max-width: 720px !important; }
+.container-max-750 { max-width: 750px !important; }
+.container-max-800 { max-width: 800px !important; }
+.container-max-850 { max-width: 850px !important; }
+.container-max-900 { max-width: 900px !important; }
+.container-max-960 { max-width: 960px !important; }
+
+/* Miniaturas e imágenes */
+.thumb-35 {
+    width: 35px !important;
+    height: 35px !important;
+    object-fit: cover !important;
+    border-radius: 4px !important;
+}
+.thumb-38 {
+    width: 38px !important;
+    height: 38px !important;
+    object-fit: cover !important;
+    border-radius: 6px !important;
+}
+.thumb-40 {
+    width: 40px !important;
+    height: 40px !important;
+    object-fit: cover !important;
+    border-radius: 4px !important;
+}
+.icon-svg-48 {
+    width: 48px !important;
+    height: 48px !important;
+}
+.img-max-h-200 {
+    max-height: 200px !important;
+}
+.sticky-top-2 {
+    position: sticky !important;
+    top: 2rem !important;
+}
+
+/* Categorías y Tabs */
+.category-box-selectable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid #e1e4e8;
+}
+.category-box-selectable.is-active {
+    border: 2px solid #00b89c !important;
+}
+.category-filter-card {
+    border: 1px solid #e9ecef;
+    cursor: pointer;
+}
+.category-filter-card.is-active {
+    border: 2px solid #1a73e8 !important;
+}
+
+/* Modales y tablas de boleta */
+.receipt-modal-card {
+    width: 92% !important;
+    max-width: 720px !important;
+    border-radius: 12px !important;
+}
+.border-dashed-bottom {
+    border-bottom: 2px dashed #dbdbdb !important;
+}
+.receipt-stamp-box {
+    border: 2px solid #00b89c !important;
+}
+.receipt-info-box {
+    border: 1px solid #e2e8f0 !important;
+}
+.table-receipt {
+    font-size: 0.875rem !important;
+}
+.table-reports-ranking {
+    font-size: 0.9rem !important;
+}
+.table-col-40 { width: 40px !important; }
+.table-col-60 { width: 60px !important; }
+.table-col-100 { width: 100px !important; }
+.table-col-110 { width: 110px !important; }
+.table-col-120 { width: 120px !important; }
+.table-col-180 { width: 180px !important; }
+.table-col-55pct { width: 55% !important; }
+.rounded-6 { border-radius: 6px !important; }
+.rounded-8 { border-radius: 8px !important; }
+.rounded-12 { border-radius: 12px !important; }
+.border-t-divider { border-top: 1px solid #ddd !important; }
+.border-warning-light { border: 1px solid #ffe08a !important; }
+.border-slate-light { border: 1px solid #e2e8f0 !important; }
+.progress-h-7 { height: 7px !important; }
+.progress-h-8 { height: 8px !important; }
+
+/* MetricCard */
+.metric-card-box {
+    border-radius: 10px !important;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    cursor: default;
+}
+.metric-card-box.is-clickable {
+    cursor: pointer !important;
+}
+.metric-card-title {
+    letter-spacing: 0.5px !important;
+}
+.metric-card-value {
+    line-height: 1.1 !important;
+}
+.metric-card-footer {
+    border-top: 1px solid rgba(255,255,255,0.2) !important;
+}
+
+/* Clases utilitarias finales para AdminView */
+.admin-alert-link {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.admin-cat-form {
+    gap: 0.75rem;
+    max-width: 500px;
 }
 

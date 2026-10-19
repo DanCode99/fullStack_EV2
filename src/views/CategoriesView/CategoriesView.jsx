@@ -29,8 +29,7 @@ export function CategoriesView({
           {categories.map((cat) => (
             <div key={cat.id} className="column is-6">
               <div
-                className={`box has-text-centered p-5 ${activeCategory === cat.id ? 'has-background-primary-light has-border-primary' : ''}`}
-                style={{ cursor: 'pointer', transition: 'all 0.2s ease', border: activeCategory === cat.id ? '2px solid #00b89c' : '1px solid #e1e4e8' }}
+                className={`box has-text-centered p-5 category-box-selectable ${activeCategory === cat.id ? 'is-active has-background-primary-light has-border-primary' : ''}`}
                 onClick={() => setActiveCategory(cat.id)}
               >
                 <h3 className="title is-4 mb-2">{cat.title}</h3>

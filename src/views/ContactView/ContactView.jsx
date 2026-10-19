@@ -38,7 +38,7 @@ export function ContactView() {
 
   return (
     <div className="section min-vh-70">
-      <div className="container" style={{ maxWidth: '700px' }}>
+      <div className="container container-max-700">
         <div className="has-text-centered mb-5">
           <h1 className="title is-2">Contáctanos</h1>
           <p className="subtitle is-6 has-text-grey">

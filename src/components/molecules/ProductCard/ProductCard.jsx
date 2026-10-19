@@ -20,9 +20,8 @@ export function ProductCard({
   return (
     <div className="card h-100">
       <div
-        className="card-image"
+        className="card-image cursor-pointer"
         onClick={handleSelect}
-        style={{ cursor: 'pointer' }}
       >
         <figure className="image">
           <img
@@ -42,9 +41,8 @@ export function ProductCard({
           </div>
 
           <h3
-            className="title is-6 mb-2"
+            className="title is-6 mb-2 cursor-pointer"
             onClick={handleSelect}
-            style={{ cursor: 'pointer' }}
           >
             {product.titulo}
           </h3>
@@ -55,7 +53,7 @@ export function ProductCard({
                 <span className="tag is-danger is-light has-text-weight-bold mr-2">
                   -{product.descuento}% OFF
                 </span>
-                <span className="is-size-7 has-text-grey" style={{ textDecoration: 'line-through' }}>
+                <span className="is-size-7 has-text-grey line-through">
                   ${Number(product.precioOriginal || product.precio).toLocaleString('es-CL')}
                 </span>
               </div>

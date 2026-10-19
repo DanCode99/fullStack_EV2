@@ -16,11 +16,11 @@ export function PaymentSuccessView({ order, onNavigate }) {
 
   return (
     <div className="section">
-      <div className="container" style={{ maxWidth: '850px' }}>
+      <div className="container container-max-850">
         <div className="box p-6 has-background-white">
           <div className="has-text-centered mb-5">
             <span className="icon has-text-success is-large mb-3">
-              <svg style={{ width: '48px', height: '48px' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg className="icon-svg-48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="M8 12l2 2 4-4"></path>
               </svg>
@@ -70,7 +70,7 @@ export function PaymentSuccessView({ order, onNavigate }) {
                       <img
                         src={it.img}
                         alt={it.titulo}
-                        style={{ width: '35px', height: '35px', objectFit: 'cover', borderRadius: '4px' }}
+                        className="thumb-35"
                       />
                     </td>
                     <td>{it.titulo} {it.talla && `(${it.talla})`}</td>
@@ -93,7 +93,7 @@ export function PaymentSuccessView({ order, onNavigate }) {
             <Button
               variant="primary"
               onClick={() => {}}
-              style={{ cursor: 'not-allowed' }}
+              className="cursor-not-allowed"
             >
               Imprimir boleta en PDF
             </Button>

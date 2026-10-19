@@ -2,7 +2,7 @@
 export function AboutView() {
   return (
     <div className="section min-vh-70">
-      <div className="container" style={{ maxWidth: '900px' }}>
+      <div className="container container-max-900">
         <div className="has-text-centered mb-6">
           <h1 className="title is-2">Nuestra Historia y Pasión</h1>
           <p className="subtitle is-6 has-text-grey">
@@ -14,10 +14,10 @@ export function AboutView() {
           <div className="columns is-vcentered">
             <div className="column is-7">
               <h2 className="title is-4 mb-3">La casa de la camiseta futbolera</h2>
-              <p className="has-text-grey-dark mb-4" style={{ lineHeight: '1.8' }}>
+              <p className="has-text-grey-dark mb-4 line-height-1-8">
                 Nacimos como un proyecto apasionado entre amigos y coleccionistas que buscaban democratizar el acceso a camisetas originales, tanto históricas como contemporáneas. Desde ediciones conmemorativas de selecciones mundiales hasta las equipaciones oficiales del fútbol nacional.
               </p>
-              <p className="has-text-grey-dark" style={{ lineHeight: '1.8' }}>
+              <p className="has-text-grey-dark line-height-1-8">
                 Nos enorgullece certificar la calidad de cada una de nuestras piezas y garantizar despachos rápidos y seguros a todas las regiones de Chile.
               </p>
             </div>
@@ -25,7 +25,7 @@ export function AboutView() {
               <img
                 src="/assets/images/logo/logo.png"
                 alt="Logo"
-                style={{ maxHeight: '200px' }}
+                className="img-max-h-200"
                 onError={(e) => { e.target.style.display = 'none' }}
               />
             </div>

@@ -23,71 +23,44 @@ export function AdminLayout({
     <section className="admin-section">
       {/* Barra superior con Buscador, Sistema de Administración, Usuario y Botón Salir */}
       <div className="admin-topbar">
-        <div className="admin-topbar-left" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div className="admin-topbar-left">
           <img
             src="/assets/images/logo/logo.png"
             alt="Logo Tienda"
-            style={{ maxHeight: '30px', objectFit: 'contain', cursor: 'pointer' }}
+            className="admin-topbar-logo"
             onClick={onNavigateHome}
             onError={(e) => {
               e.target.style.display = 'none'
             }}
           />
-          <span style={{ fontWeight: 700, letterSpacing: '0.5px', color: '#ffffff', fontSize: '1rem', cursor: 'pointer' }} onClick={onNavigateHome}>
+          <span className="admin-topbar-brand" onClick={onNavigateHome}>
             TIENDA DE FÚTBOL
           </span>
 
           {/* Input Buscador */}
-          <div className="admin-search-wrapper" style={{ marginLeft: '1rem', position: 'relative' }}>
-            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.7, pointerEvents: 'none' }}>
+          <div className="admin-search-wrapper">
+            <span className="admin-search-icon">
               🔍
             </span>
             <input
               type="text"
               placeholder="Buscar en panel admin..."
               className="admin-search-input"
-              style={{
-                backgroundColor: '#1b1e22',
-                border: '1px solid #343a40',
-                borderRadius: '20px',
-                padding: '0.4rem 1rem 0.4rem 2.2rem',
-                color: '#ced4da',
-                fontSize: '0.85rem',
-                width: '260px',
-                outline: 'none',
-                transition: 'border-color 0.2s'
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#00b89c'}
-              onBlur={(e) => e.target.style.borderColor = '#343a40'}
             />
           </div>
         </div>
 
         {/* Zona Derecha: Usuario y Botón Salir */}
-        <div className="admin-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <div
-              style={{
-                width: '34px',
-                height: '34px',
-                borderRadius: '50%',
-                backgroundColor: '#00b89c',
-                color: '#ffffff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 700,
-                fontSize: '0.9rem',
-                boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
-              }}
-            >
+        <div className="admin-topbar-right">
+          <div className="admin-user-profile">
+            <div className="admin-user-avatar">
               {loggedUser?.nombre ? loggedUser.nombre.charAt(0).toUpperCase() : 'A'}
             </div>
-            <div style={{ lineHeight: 1.2 }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffffff' }}>
+            <div className="admin-user-info">
+              <div className="admin-user-name">
                 Sistema de administración
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#adb5bd' }}>
+              <div className="admin-user-role">
                 {loggedUser?.tipoUsuario || 'Administrador'}
               </div>
             </div>
@@ -96,25 +69,7 @@ export function AdminLayout({
           <button
             type="button"
             onClick={onLogout}
-            style={{
-              backgroundColor: 'transparent',
-              border: '1px solid #e63946',
-              color: '#e63946',
-              borderRadius: '6px',
-              padding: '0.35rem 0.85rem',
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = '#e63946'
-              e.currentTarget.style.color = '#ffffff'
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent'
-              e.currentTarget.style.color = '#e63946'
-            }}
+            className="admin-btn-logout-outline"
           >
             Salir
           </button>

@@ -25,7 +25,7 @@ export function LoginView({ onLoginSuccess, onNavigate }) {
 
   return (
     <div className="section min-vh-70 is-flex is-align-items-center">
-      <div className="container" style={{ maxWidth: '440px' }}>
+      <div className="container container-max-440">
         <div className="box p-5">
           <div className="has-text-centered mb-5">
             <h1 className="title is-3 mb-2">Iniciar Sesión</h1>

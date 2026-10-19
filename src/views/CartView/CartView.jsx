@@ -68,7 +68,7 @@ export function CartView({
           </div>
 
           <div className="column is-12-mobile is-4-tablet">
-            <div className="box p-5" style={{ position: 'sticky', top: '2rem' }}>
+            <div className="box p-5 sticky-top-2">
               <h2 className="title is-5 mb-4">Resumen del Pedido</h2>
               
               <div className="is-flex is-justify-content-space-between mb-3">

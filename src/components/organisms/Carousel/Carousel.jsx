@@ -27,9 +27,8 @@ export function Carousel({ items = [], onSelectItem }) {
       </button>
 
       <div
-        className="carrusel-slide-link"
+        className="carrusel-slide-link cursor-pointer"
         onClick={() => onSelectItem && onSelectItem(currentItem)}
-        style={{ cursor: 'pointer' }}
       >
         <img
           src={currentItem.img}

@@ -10,7 +10,7 @@ export function MainLayout({
   cartCount
 }) {
   return (
-    <div className="is-flex is-flex-direction-column" style={{ minHeight: '100vh' }}>
+    <div className="is-flex is-flex-direction-column min-h-100vh">
       <Navbar
         currentView={currentView}
         onNavigate={onNavigate}

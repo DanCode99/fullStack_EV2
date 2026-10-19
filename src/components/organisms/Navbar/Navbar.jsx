@@ -34,19 +34,18 @@ export function Navbar({
         <div className="navbar-brand">
           <Link
             to="/"
-            className="navbar-item"
+            className="navbar-item is-flex is-align-items-center"
             onClick={() => setBurgerActive(false)}
-            style={{ display: 'flex', alignItems: 'center' }}
           >
             <img
               src="/assets/images/logo/logo.png"
               alt="Logo Tienda de Fútbol"
-              style={{ maxHeight: '38px', marginRight: '8px', objectFit: 'contain' }}
+              className="mr-2"
               onError={(e) => {
                 e.target.style.display = 'none'
               }}
             />
-            <strong className="has-text-primary is-size-5" style={{ letterSpacing: '0.5px' }}>
+            <strong className="has-text-primary is-size-5">
               TIENDA DE FÚTBOL
             </strong>
           </Link>

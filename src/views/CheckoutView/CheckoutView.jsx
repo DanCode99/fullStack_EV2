@@ -96,7 +96,7 @@ export function CheckoutView({
 
   return (
     <div className="section">
-      <div className="container" style={{ maxWidth: '960px' }}>
+      <div className="container container-max-960">
         <div className="has-text-centered mb-5">
           <h1 className="title is-2">Finalizar Compra (Checkout)</h1>
           <p className="subtitle is-6 has-text-grey">
@@ -127,7 +127,7 @@ export function CheckoutView({
                       <img
                         src={it.img}
                         alt={it.titulo}
-                        style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }}
+                        className="thumb-40"
                       />
                     </td>
                     <td><strong>{it.titulo}</strong> {it.talla && `(${it.talla})`}</td>
@@ -264,7 +264,7 @@ export function CheckoutView({
           </FormField>
 
           {/* Opción para probar el caso de error estipulado en la rúbrica */}
-          <div className="field mt-4 p-3 has-background-white-ter" style={{ borderRadius: '6px' }}>
+          <div className="field mt-4 p-3 has-background-white-ter rounded-6">
             <label className="checkbox">
               <input
                 type="checkbox"

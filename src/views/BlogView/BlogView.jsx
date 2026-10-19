@@ -8,7 +8,7 @@ export function BlogView() {
   if (selectedPost) {
     return (
       <div className="section min-vh-70">
-        <div className="container" style={{ maxWidth: '800px' }}>
+        <div className="container container-max-800">
           <Button
             variant="light"
             size="small"
@@ -32,10 +32,7 @@ export function BlogView() {
             />
           </div>
 
-          <div
-            className="content is-medium has-text-grey-dark"
-            style={{ lineHeight: '1.9' }}
-          >
+          <div className="content is-medium has-text-grey-dark line-height-1-9">
             {selectedPost.contenido.split('\n\n').map((parrafo, i) => (
               <p key={i}>{parrafo}</p>
             ))}

@@ -74,7 +74,7 @@ export function RegisterView({ onRegisterUser, onNavigate }) {
 
   return (
     <div className="section min-vh-70">
-      <div className="container" style={{ maxWidth: '750px' }}>
+      <div className="container container-max-750">
         <div className="box p-5">
           <div className="has-text-centered mb-5">
             <h1 className="title is-3 mb-2">Crear Cuenta Nueva</h1>

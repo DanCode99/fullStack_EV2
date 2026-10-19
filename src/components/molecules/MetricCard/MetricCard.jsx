@@ -11,17 +11,11 @@ export function MetricCard({
 
   return (
     <div
-      className={`box has-background-${variant} has-text-white p-5 ${isClickable ? 'is-clickable' : ''}`}
+      className={`box has-background-${variant} has-text-white p-5 metric-card-box ${isClickable ? 'is-clickable' : ''}`}
       onClick={onClick}
-      style={{
-        borderRadius: '10px',
-        boxShadow: '0 4px 14px rgba(0,0,0,0.12)',
-        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-        cursor: isClickable ? 'pointer' : 'default'
-      }}
     >
       <div className="is-flex is-justify-content-space-between is-align-items-start mb-2">
-        <h3 className="is-size-7 has-text-weight-bold has-text-white-ter is-uppercase" style={{ letterSpacing: '0.5px' }}>
+        <h3 className="is-size-7 has-text-weight-bold has-text-white-ter is-uppercase metric-card-title">
           {title}
         </h3>
         {icon && (
@@ -31,12 +25,12 @@ export function MetricCard({
         )}
       </div>
 
-      <p className="is-size-3 has-text-weight-bold mb-1" style={{ lineHeight: 1.1 }}>
+      <p className="is-size-3 has-text-weight-bold mb-1 metric-card-value">
         {value}
       </p>
 
       {(subtitle || trend) && (
-        <div className="is-flex is-align-items-center is-justify-content-space-between mt-2 pt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+        <div className="is-flex is-align-items-center is-justify-content-space-between mt-2 pt-2 metric-card-footer">
           {subtitle && (
             <p className="is-size-7 has-text-white-bis mb-0">
               {subtitle}

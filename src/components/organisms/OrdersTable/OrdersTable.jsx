@@ -67,7 +67,7 @@ export function OrdersTable({
   }
 
   return (
-    <div className="box p-5" style={{ borderRadius: '12px' }}>
+    <div className="box p-5 rounded-12">
       {/* Encabezado y Filtro por Usuario Activo */}
       <div className="is-flex is-justify-content-space-between is-align-items-center mb-4 is-flex-wrap-wrap gap-2">
         <div>
@@ -208,7 +208,7 @@ export function OrdersTable({
                 return (
                   <tr key={ord.id}>
                     <td>
-                      <span className="tag is-dark has-text-weight-bold" style={{ letterSpacing: '0.5px' }}>
+                      <span className="tag is-dark has-text-weight-bold">
                         {ord.id}
                       </span>
                     </td>

@@ -292,10 +292,10 @@ export function AdminView({
         <div>
           {/* Encabezado Dashboard con alto contraste */}
           <div className="mb-5">
-            <h1 className="title is-3 mb-1" style={{ color: '#111827', fontWeight: 800 }}>
+            <h1 className="title is-3 mb-1">
               Dashboard
             </h1>
-            <p className="subtitle is-6" style={{ color: '#4b5563', margin: 0, fontWeight: 500 }}>
+            <p className="subtitle is-6">
               Resumen de las actividades diarias
             </p>
           </div>
@@ -373,7 +373,7 @@ export function AdminView({
           {/* Alerta de Stock Crítico si aplica */}
           {totalCritical > 0 && (
             <div className="notification is-warning is-light mb-5">
-              <strong>Alerta de Inventario:</strong> Existen <strong>{totalCritical} modelos</strong> con stock crítico o bajo. Puedes gestionarlos en la sección de <a onClick={() => onSelectTab('productos')} style={{ textDecoration: 'underline', cursor: 'pointer' }}>Productos</a>.
+              <strong>Alerta de Inventario:</strong> Existen <strong>{totalCritical} modelos</strong> con stock crítico o bajo. Puedes gestionarlos en la sección de <a onClick={() => onSelectTab('productos')} className="admin-alert-link">Productos</a>.
             </div>
           )}
 
@@ -541,7 +541,7 @@ export function AdminView({
                       <img
                         src={p.img}
                         alt={p.titulo}
-                        style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }}
+                        className="thumb-40"
                       />
                     </td>
                     <td><strong>{p.titulo}</strong></td>
@@ -581,7 +581,7 @@ export function AdminView({
               Crea nuevas categorías o inspecciona los productos asociados a cada una.
             </p>
 
-            <form onSubmit={handleAddCategory} className="is-flex is-align-items-center" style={{ gap: '0.75rem', maxWidth: '500px' }}>
+            <form onSubmit={handleAddCategory} className="is-flex is-align-items-center admin-cat-form">
               <input
                 type="text"
                 className="input"
@@ -602,8 +602,7 @@ export function AdminView({
               return (
                 <div key={catName} className="column is-6">
                   <div
-                    className={`box ${categoryFilter === catName ? 'has-background-link-light' : ''}`}
-                    style={{ border: categoryFilter === catName ? '2px solid #1a73e8' : '1px solid #e9ecef', cursor: 'pointer' }}
+                    className={`box category-filter-card cursor-pointer ${categoryFilter === catName ? 'has-background-link-light is-active' : ''}`}
                     onClick={() => setCategoryFilter(categoryFilter === catName ? 'Todas' : catName)}
                   >
                     <div className="is-flex is-justify-content-space-between is-align-items-center">
@@ -738,7 +737,7 @@ export function AdminView({
       {/* VISTA 7: PERFIL DEL ADMINISTRADOR                              */}
       {/* ============================================================== */}
       {currentTab === 'perfil' && (
-        <div className="box" style={{ maxWidth: '800px' }}>
+        <div className="box container-max-800">
           <h2 className="title is-4 mb-1">Perfil del Administrador</h2>
           <p className="subtitle is-6 has-text-grey mb-4">
             Administración de la información personal y configuraciones de cuenta.

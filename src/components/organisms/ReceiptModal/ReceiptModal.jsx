@@ -39,7 +39,7 @@ export function ReceiptModal({ order, isOpen, onClose }) {
   return (
     <div className="modal is-active" id="receipt-modal">
       <div className="modal-background" onClick={onClose}></div>
-      <div className="modal-card" style={{ width: '92%', maxWidth: '720px', borderRadius: '12px' }}>
+      <div className="modal-card receipt-modal-card">
         <header className="modal-card-head has-background-dark py-3 px-5">
           <div className="is-flex is-align-items-center">
             <p className="modal-card-title has-text-white is-size-5 mb-0 has-text-weight-bold">
@@ -51,7 +51,7 @@ export function ReceiptModal({ order, isOpen, onClose }) {
 
         <section className="modal-card-body p-5" id="printable-receipt">
           {/* Header Boleta */}
-          <div className="columns is-mobile is-vcentered mb-4 pb-3" style={{ borderBottom: '2px dashed #dbdbdb' }}>
+          <div className="columns is-mobile is-vcentered mb-4 pb-3 border-dashed-bottom">
             <div className="column is-7">
               <h2 className="title is-4 mb-1 has-text-primary has-text-weight-bold">
                 TIENDA DE FÚTBOL
@@ -60,7 +60,7 @@ export function ReceiptModal({ order, isOpen, onClose }) {
               <p className="is-size-7 has-text-grey mb-0">RUT: 76.892.410-K &bull; Santiago, Chile</p>
             </div>
             <div className="column is-5 has-text-right">
-              <div className="box p-3 has-background-light has-text-centered" style={{ border: '2px solid #00b89c' }}>
+              <div className="box p-3 has-background-light has-text-centered receipt-stamp-box">
                 <p className="is-size-7 has-text-weight-bold has-text-grey-dark mb-1">BOLETA ELECTRÓNICA</p>
                 <p className="is-size-5 has-text-weight-bold has-text-primary mb-1">
                   N° {order.id?.replace('ORD-', '') || order.id}
@@ -73,7 +73,7 @@ export function ReceiptModal({ order, isOpen, onClose }) {
           </div>
 
           {/* Información del Cliente */}
-          <div className="box p-3 mb-4 has-background-white-bis" style={{ border: '1px solid #e2e8f0' }}>
+          <div className="box p-3 mb-4 has-background-white-bis receipt-info-box">
             <div className="columns is-multiline is-mobile is-size-7">
               <div className="column is-6 py-1">
                 <strong>Cliente:</strong> {customerName}
@@ -96,15 +96,15 @@ export function ReceiptModal({ order, isOpen, onClose }) {
           {/* Tabla de Productos */}
           <h3 className="title is-6 mb-2 has-text-weight-bold">Detalle de Productos Adquiridos</h3>
           <div className="table-container mb-4">
-            <table className="table is-fullwidth is-striped is-narrow is-hoverable" style={{ fontSize: '0.875rem' }}>
+            <table className="table is-fullwidth is-striped is-narrow is-hoverable table-receipt">
               <thead>
                 <tr className="has-background-light">
-                  <th style={{ width: '40px' }}>Ítem</th>
+                  <th className="table-col-40">Ítem</th>
                   <th>Descripción</th>
-                  <th className="has-text-centered" style={{ width: '60px' }}>Talla</th>
-                  <th className="has-text-centered" style={{ width: '60px' }}>Cant.</th>
-                  <th className="has-text-right" style={{ width: '100px', whiteSpace: 'nowrap' }}>Precio Unit.</th>
-                  <th className="has-text-right" style={{ width: '110px', whiteSpace: 'nowrap' }}>Subtotal</th>
+                  <th className="has-text-centered table-col-60">Talla</th>
+                  <th className="has-text-centered table-col-60">Cant.</th>
+                  <th className="has-text-right table-col-100 nowrap">Precio Unit.</th>
+                  <th className="has-text-right table-col-110 nowrap">Subtotal</th>
                 </tr>
               </thead>
               <tbody>
@@ -124,8 +124,8 @@ export function ReceiptModal({ order, isOpen, onClose }) {
                         </span>
                       </td>
                       <td className="has-text-centered">{qty}</td>
-                      <td className="has-text-right" style={{ whiteSpace: 'nowrap' }}>${unitPrice.toLocaleString('es-CL')}</td>
-                      <td className="has-text-right has-text-weight-semibold" style={{ whiteSpace: 'nowrap' }}>
+                      <td className="has-text-right nowrap">${unitPrice.toLocaleString('es-CL')}</td>
+                      <td className="has-text-right has-text-weight-semibold nowrap">
                         ${subtotal.toLocaleString('es-CL')}
                       </td>
                     </tr>
@@ -144,19 +144,19 @@ export function ReceiptModal({ order, isOpen, onClose }) {
               </div>
             </div>
             <div className="column is-6">
-              <table className="table is-fullwidth is-narrow has-background-white mb-0" style={{ fontSize: '0.875rem' }}>
+              <table className="table is-fullwidth is-narrow has-background-white mb-0 table-receipt">
                 <tbody>
                   <tr>
-                    <td className="has-text-grey" style={{ whiteSpace: 'nowrap', width: '55%' }}>Subtotal Neto:</td>
-                    <td className="has-text-right" style={{ whiteSpace: 'nowrap' }}>${neto.toLocaleString('es-CL')}</td>
+                    <td className="has-text-grey nowrap table-col-55pct">Subtotal Neto:</td>
+                    <td className="has-text-right nowrap">${neto.toLocaleString('es-CL')}</td>
                   </tr>
                   <tr>
-                    <td className="has-text-grey" style={{ whiteSpace: 'nowrap' }}>IVA (19%):</td>
-                    <td className="has-text-right" style={{ whiteSpace: 'nowrap' }}>${iva.toLocaleString('es-CL')}</td>
+                    <td className="has-text-grey nowrap">IVA (19%):</td>
+                    <td className="has-text-right nowrap">${iva.toLocaleString('es-CL')}</td>
                   </tr>
                   <tr className="has-background-white-ter">
-                    <td className="has-text-weight-bold is-size-6" style={{ whiteSpace: 'nowrap' }}>TOTAL:</td>
-                    <td className="has-text-right has-text-weight-bold is-size-5 has-text-primary" style={{ whiteSpace: 'nowrap' }}>
+                    <td className="has-text-weight-bold is-size-6 nowrap">TOTAL:</td>
+                    <td className="has-text-right has-text-weight-bold is-size-5 has-text-primary nowrap">
                       ${total.toLocaleString('es-CL')}
                     </td>
                   </tr>
@@ -181,7 +181,7 @@ export function ReceiptModal({ order, isOpen, onClose }) {
               size="small"
               id="btn-print-receipt"
               onClick={() => {}}
-              style={{ cursor: 'not-allowed' }}
+              className="cursor-not-allowed"
             >
               Imprimir Boleta
             </Button>

@@ -176,17 +176,17 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
 
       {/* Alerta Visual de Stock Crítico */}
       {criticalProducts.length > 0 && (
-        <div className="box mb-5 has-background-warning-light" style={{ border: '1px solid #ffe08a', borderRadius: '12px' }}>
+        <div className="box mb-5 has-background-warning-light border-warning-light rounded-12">
           <p className="has-text-warning-dark mb-3">
             <strong>Alerta de Inventario:</strong> Existen <strong>{criticalProducts.length}</strong> modelos con stock crítico o bajo. Puedes gestionarlos en la sección de Productos.
           </p>
           <div className="table-container mb-0">
-            <table className="table is-fullwidth is-narrow has-background-white is-bordered" style={{ borderRadius: '6px' }}>
+            <table className="table is-fullwidth is-narrow has-background-white is-bordered rounded-6">
               <thead>
                 <tr>
                   <th>Producto (Stock Crítico)</th>
-                  <th className="has-text-centered" style={{ width: '120px' }}>Stock Actual</th>
-                  <th className="has-text-centered" style={{ width: '120px' }}>Límite Crítico</th>
+                  <th className="has-text-centered table-col-120">Stock Actual</th>
+                  <th className="has-text-centered table-col-120">Límite Crítico</th>
                 </tr>
               </thead>
               <tbody>
@@ -249,7 +249,7 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
       {/* Sección 2: Ranking de Productos Más Vendidos */}
       <div className="columns mb-5">
         <div className="column is-8">
-          <div className="box p-5" style={{ borderRadius: '12px', height: '100%' }}>
+          <div className="box p-5 h-100 rounded-12">
             <div className="is-flex is-justify-content-space-between is-align-items-center mb-4">
               <div>
                 <h3 className="title is-5 mb-1 has-text-weight-bold">
@@ -265,14 +265,14 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
             </div>
 
             <div className="table-container">
-              <table className="table is-fullwidth is-striped is-hoverable is-vcentered" style={{ fontSize: '0.9rem' }}>
+              <table className="table is-fullwidth is-striped is-hoverable is-vcentered table-reports-ranking">
                 <thead>
                   <tr className="has-background-light">
-                    <th style={{ width: '40px' }}>Rank</th>
+                    <th className="table-col-40">Rank</th>
                     <th>Producto</th>
                     <th>Categoría</th>
                     <th className="has-text-centered">Unidades</th>
-                    <th style={{ width: '180px' }}>Volumen Relativo</th>
+                    <th className="table-col-180">Volumen Relativo</th>
                     <th className="has-text-right">Recaudación</th>
                   </tr>
                 </thead>
@@ -287,7 +287,7 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
                             <img
                               src={p.img}
                               alt={p.titulo}
-                              style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '6px', marginRight: '10px' }}
+                              className="thumb-38 mr-2"
                               onError={(e) => { e.target.src = '/assets/images/brasil/brasil1.jpeg' }}
                             />
                             <strong>{p.titulo}</strong>
@@ -304,10 +304,9 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
                         <td>
                           <div className="is-flex is-align-items-center">
                             <progress
-                              className="progress is-primary is-small mb-0 mr-2"
+                              className="progress is-primary is-small mb-0 mr-2 progress-h-8"
                               value={p.percentage}
                               max="100"
-                              style={{ height: '8px' }}
                             ></progress>
                             <span className="is-size-7 has-text-grey">{p.percentage}%</span>
                           </div>
@@ -326,7 +325,7 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
 
         {/* Sección 3: Ventas por Categoría */}
         <div className="column is-4">
-          <div className="box p-5" style={{ borderRadius: '12px', height: '100%' }}>
+          <div className="box p-5 h-100 rounded-12">
             <h3 className="title is-5 mb-1 has-text-weight-bold">
               Distribución por Categoría
             </h3>
@@ -338,16 +337,15 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
               {salesByCategory.map((cat, idx) => {
                 const colorClass = idx === 0 ? 'is-primary' : idx === 1 ? 'is-info' : 'is-warning'
                 return (
-                  <div key={cat.categoria} className="mb-4 p-3 has-background-white-bis" style={{ borderRadius: '8px' }}>
+                  <div key={cat.categoria} className="mb-4 p-3 has-background-white-bis rounded-8">
                     <div className="is-flex is-justify-content-space-between mb-1">
                       <span className="has-text-weight-semibold is-size-7">{cat.categoria}</span>
                       <span className="has-text-weight-bold is-size-7">{cat.porcentaje}%</span>
                     </div>
                     <progress
-                      className={`progress ${colorClass} is-small mb-2`}
+                      className={`progress ${colorClass} is-small mb-2 progress-h-7`}
                       value={cat.porcentaje}
                       max="100"
-                      style={{ height: '7px' }}
                     ></progress>
                     <div className="is-flex is-justify-content-space-between is-size-7 has-text-grey">
                       <span>{cat.unidades} prendas vendidas</span>
@@ -371,7 +369,7 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
       </div>
 
       {/* Sección 4: Top Clientes de Mayor Facturación */}
-      <div className="box p-5" style={{ borderRadius: '12px' }}>
+      <div className="box p-5 rounded-12">
         <h3 className="title is-5 mb-1 has-text-weight-bold">
           Top Clientes con Mayor Fidelidad y Compra
         </h3>
@@ -382,7 +380,7 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
         <div className="columns is-multiline">
           {topCustomers.map((cust, idx) => (
             <div key={cust.run} className="column is-4-desktop is-6-tablet">
-              <div className="box p-4 has-background-light mb-0" style={{ border: '1px solid #e2e8f0', borderRadius: '8px' }}>
+              <div className="box p-4 has-background-light mb-0 border-slate-light rounded-8">
                 <div className="is-flex is-align-items-center mb-2">
                   <span className="tag is-rounded is-dark mr-2">#{idx + 1}</span>
                   <div>
@@ -390,7 +388,7 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
                     <p className="is-size-7 has-text-grey mb-0">RUN: <code>{cust.run}</code></p>
                   </div>
                 </div>
-                <div className="is-flex is-justify-content-space-between is-size-7 pt-2" style={{ borderTop: '1px solid #ddd' }}>
+                <div className="is-flex is-justify-content-space-between is-size-7 pt-2 border-t-divider">
                   <span>{cust.ordenes} compras realizadas</span>
                   <strong className="has-text-primary is-size-6">
                     ${cust.totalGastado.toLocaleString('es-CL')}

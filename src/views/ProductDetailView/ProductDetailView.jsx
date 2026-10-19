@@ -121,7 +121,7 @@ export function ProductDetailView({
               ${Number(product.precio).toLocaleString('es-CL')}
             </p>
 
-            <p className="has-text-grey-dark mb-5" style={{ lineHeight: '1.7' }}>
+            <p className="has-text-grey-dark mb-5 line-height-1-7">
               {product.descripcion}
             </p>
 

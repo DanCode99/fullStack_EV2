@@ -5,11 +5,11 @@ export function PaymentErrorView({ order, onRetry, onNavigate }) {
 
   return (
     <div className="section">
-      <div className="container" style={{ maxWidth: '850px' }}>
+      <div className="container container-max-850">
         <div className="box p-6 has-background-white">
           <div className="has-text-centered mb-5">
             <span className="icon has-text-danger is-large mb-3">
-              <svg style={{ width: '48px', height: '48px' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg className="icon-svg-48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10"></circle>
                 <line x1="15" y1="9" x2="9" y2="15"></line>
                 <line x1="9" y1="9" x2="15" y2="15"></line>
@@ -67,7 +67,7 @@ export function PaymentErrorView({ order, onRetry, onNavigate }) {
                       <img
                         src={it.img}
                         alt={it.titulo}
-                        style={{ width: '35px', height: '35px', objectFit: 'cover', borderRadius: '4px' }}
+                        className="thumb-35"
                       />
                     </td>
                     <td>{it.titulo} {it.talla && `(${it.talla})`}</td>

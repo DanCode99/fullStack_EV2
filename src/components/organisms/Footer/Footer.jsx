@@ -16,36 +16,32 @@ export function Footer({ onNavigate }) {
             <ul className="footer-list">
               <li>
                 <a
-                  className="has-text-grey-light footer-link"
+                  className="has-text-grey-light footer-link cursor-pointer"
                   onClick={() => handleNav('home')}
-                  style={{ cursor: 'pointer' }}
                 >
                   Inicio
                 </a>
               </li>
               <li>
                 <a
-                  className="has-text-grey-light footer-link"
+                  className="has-text-grey-light footer-link cursor-pointer"
                   onClick={() => handleNav('productos')}
-                  style={{ cursor: 'pointer' }}
                 >
                   Catálogo
                 </a>
               </li>
               <li>
                 <a
-                  className="has-text-grey-light footer-link"
+                  className="has-text-grey-light footer-link cursor-pointer"
                   onClick={() => handleNav('carrito')}
-                  style={{ cursor: 'pointer' }}
                 >
                   Carrito de Compras
                 </a>
               </li>
               <li>
                 <a
-                  className="has-text-grey-light footer-link"
+                  className="has-text-grey-light footer-link cursor-pointer"
                   onClick={() => handleNav('blog')}
-                  style={{ cursor: 'pointer' }}
                 >
                   Blog / Historias
                 </a>
@@ -58,18 +54,16 @@ export function Footer({ onNavigate }) {
             <ul className="footer-list">
               <li>
                 <a
-                  className="has-text-grey-light footer-link"
+                  className="has-text-grey-light footer-link cursor-pointer"
                   onClick={() => handleNav('login')}
-                  style={{ cursor: 'pointer' }}
                 >
                   Iniciar Sesión
                 </a>
               </li>
               <li>
                 <a
-                  className="has-text-grey-light footer-link"
+                  className="has-text-grey-light footer-link cursor-pointer"
                   onClick={() => handleNav('registro')}
-                  style={{ cursor: 'pointer' }}
                 >
                   Crear Cuenta
                 </a>
@@ -82,18 +76,16 @@ export function Footer({ onNavigate }) {
             <ul className="footer-list">
               <li>
                 <a
-                  className="has-text-grey-light footer-link"
+                  className="has-text-grey-light footer-link cursor-pointer"
                   onClick={() => handleNav('nosotros')}
-                  style={{ cursor: 'pointer' }}
                 >
                   Nosotros
                 </a>
               </li>
               <li>
                 <a
-                  className="has-text-grey-light footer-link"
+                  className="has-text-grey-light footer-link cursor-pointer"
                   onClick={() => handleNav('contacto')}
-                  style={{ cursor: 'pointer' }}
                 >
                   Contacto
                 </a>

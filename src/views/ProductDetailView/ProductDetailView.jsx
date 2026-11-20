@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Button } from '../../components/atoms/Button/Button.jsx'
 import { Badge } from '../../components/atoms/Badge/Badge.jsx'
-import { productStorage } from '../../services/productService.js'
+import { productService } from '../../services/productService.js'
 
 export function ProductDetailView({
   product: initialProduct,
@@ -13,12 +13,36 @@ export function ProductDetailView({
   const { id } = useParams()
   const navigate = useNavigate()
 
-  // Buscar el producto por prop o por parámetro de URL
-  const product = initialProduct && (!id || String(initialProduct.id) === String(id))
+  const [fetchedProduct, setFetchedProduct] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  // Buscar el producto por prop o por id de lista
+  const localMatch = initialProduct && (!id || String(initialProduct.id) === String(id))
     ? initialProduct
-    : (id
-      ? (products.find((p) => String(p.id) === String(id)) || productStorage.getById(id))
-      : initialProduct)
+    : (id ? products.find((p) => String(p.id) === String(id)) : initialProduct)
+
+  const product = localMatch || fetchedProduct
+
+  useEffect(() => {
+    if (!localMatch && id) {
+      let isMounted = true
+      const fetchById = async () => {
+        try {
+          setLoading(true)
+          const data = await productService.getById(id)
+          if (isMounted && data) {
+            setFetchedProduct(data)
+          }
+        } catch (err) {
+          console.warn('Error al cargar detalle del producto:', err)
+        } finally {
+          if (isMounted) setLoading(false)
+        }
+      }
+      fetchById()
+      return () => { isMounted = false }
+    }
+  }, [localMatch, id])
 
   const handleBack = () => {
     if (onBack) {
@@ -35,6 +59,15 @@ export function ProductDetailView({
 
   const selectedImage = userSelectedImage || (product ? product.img : '')
 
+  if (loading) {
+    return (
+      <div className="section">
+        <div className="container has-text-centered py-6">
+          <p className="is-size-5">Cargando información del producto...</p>
+        </div>
+      </div>
+    )
+  }
 
   if (!product) {
     return (
@@ -47,7 +80,6 @@ export function ProductDetailView({
       </div>
     )
   }
-
 
   const images = [product.img, product.img2].filter(Boolean)
   const sizes = ['S', 'M', 'L', 'XL']
@@ -70,7 +102,7 @@ export function ProductDetailView({
           variant="light"
           size="small"
           className="mb-4"
-          onClick={onBack}
+          onClick={handleBack}
         >
           &larr; Volver
         </Button>
@@ -108,7 +140,7 @@ export function ProductDetailView({
           {/* Información y compra */}
           <div className="column is-12-mobile is-6-tablet">
             <div className="mb-2">
-              <span className="tag is-info is-light mr-2">{product.categoria}</span>
+              <span className="tag is-info is-light mr-2">{product.categoria || product.nombreMarca || 'Deporte'}</span>
               {product.stock <= 0 ? (
                 <Badge variant="danger">Sin Stock</Badge>
               ) : (
@@ -122,7 +154,7 @@ export function ProductDetailView({
             </p>
 
             <p className="has-text-grey-dark mb-5 line-height-1-7">
-              {product.descripcion}
+              {product.descripcion || 'Indumentaria oficial de alta calidad con tecnología transpirable.'}
             </p>
 
             <div className="mb-4">
@@ -198,4 +230,3 @@ export function ProductDetailView({
 }
 
 export default ProductDetailView
-

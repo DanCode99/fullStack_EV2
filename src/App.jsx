@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom'
-import { productStorage } from './services/productService.js'
+import { productService } from './services/productService.js'
 import { userService } from './services/userService.js'
 import { orderService } from './services/orderService.js'
 import { MainLayout } from './components/templates/MainLayout/MainLayout.jsx'
@@ -29,11 +29,29 @@ export function App() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const [adminTab, setAdminTab] = useState('dashboard')
-  const [products, setProducts] = useState(() => productStorage.getAll())
-  const [users, setUsers] = useState(() => userService.getAll())
-  const [orders, setOrders] = useState(() => orderService.getAll())
-  const [loggedUser, setLoggedUser] = useState(() => userService.getLoggedUser())
+  // 3. PERSISTENCIA DE SESIÓN (F5) Y SEGURIDAD DE RUTAS
+  // Inicializa loggedUser leyendo localStorage.getItem('loggedUser') y localStorage.getItem('token') dentro de useState(() => ...)
+  const [loggedUser, setLoggedUser] = useState(() => {
+    try {
+      const token = localStorage.getItem('token')
+      const stored = localStorage.getItem('loggedUser')
+      if (token && stored) {
+        return JSON.parse(stored)
+      }
+      return null
+    } catch {
+      return null
+    }
+  })
+
+  const [adminTab, setAdminTab] = useState(() => {
+    const isSeller = loggedUser?.rol === 'VENDEDOR' || loggedUser?.tipoUsuario === 'Vendedor'
+    return isSeller ? 'ordenes' : 'dashboard'
+  })
+
+  const [products, setProducts] = useState([])
+  const [users, setUsers] = useState([])
+  const [orders, setOrders] = useState([])
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [lastOrder, setLastOrder] = useState(null)
 
@@ -59,6 +77,75 @@ export function App() {
   const showNotification = (title, message) => {
     setToast({ title, message })
   }
+
+  // Cargar productos del catálogo asíncronamente
+  const loadProducts = useCallback(async () => {
+    try {
+      const data = await productService.getAll()
+      if (Array.isArray(data)) {
+        setProducts(data)
+      }
+    } catch (err) {
+      console.warn('Error al cargar productos desde la API:', err.message)
+    }
+  }, [])
+
+  // Cargar datos administrativos (órdenes y usuarios) según el rol autenticado
+  const loadAdminData = useCallback(async () => {
+    const role = (loggedUser?.rol || loggedUser?.tipoUsuario || '').toUpperCase()
+    if (role === 'ADMIN' || role === 'VENDEDOR' || role === 'ADMINISTRADOR') {
+      try {
+        const ords = await orderService.getAll()
+        if (Array.isArray(ords)) setOrders(ords)
+      } catch (err) {
+        console.warn('Error al cargar órdenes de la API:', err.message)
+      }
+    }
+    if (role === 'ADMIN' || role === 'ADMINISTRADOR') {
+      try {
+        const usrs = await userService.getAll()
+        if (Array.isArray(usrs)) setUsers(usrs)
+      } catch (err) {
+        console.warn('Error al cargar usuarios de la API:', err.message)
+      }
+    }
+  }, [loggedUser])
+
+  useEffect(() => {
+    let ignore = false
+    productService.getAll()
+      .then(data => {
+        if (!ignore && Array.isArray(data)) {
+          setProducts(data)
+        }
+      })
+      .catch(err => {
+        console.warn('Error al cargar productos desde la API:', err.message)
+      })
+    return () => { ignore = true }
+  }, [])
+
+  useEffect(() => {
+    let ignore = false
+    if (!loggedUser) return
+
+    const role = (loggedUser.rol || loggedUser.tipoUsuario || '').toUpperCase()
+    if (role === 'ADMIN' || role === 'VENDEDOR' || role === 'ADMINISTRADOR') {
+      orderService.getAll()
+        .then(ords => {
+          if (!ignore && Array.isArray(ords)) setOrders(ords)
+        })
+        .catch(err => console.warn('Error al cargar órdenes:', err.message))
+    }
+    if (role === 'ADMIN' || role === 'ADMINISTRADOR') {
+      userService.getAll()
+        .then(usrs => {
+          if (!ignore && Array.isArray(usrs)) setUsers(usrs)
+        })
+        .catch(err => console.warn('Error al cargar usuarios:', err.message))
+    }
+    return () => { ignore = true }
+  }, [loggedUser])
 
   // Sincronizar cambios del carrito con LocalStorage
   const updateCart = (newCart) => {
@@ -168,65 +255,92 @@ export function App() {
     updateCart([])
   }
 
-  // Operaciones de Usuario
-  const handleLogin = (correo, password) => {
-    const user = userService.login(correo, password)
-    if (user) {
-      setLoggedUser(user)
-      if (user.tipoUsuario === 'Administrador' || user.tipoUsuario === 'Vendedor') {
-        navigateTo('admin')
-      } else {
-        navigateTo('home')
+  // 3. EN HANDLELOGIN Y LOGOUT:
+  // En handleLogin, guarda token y loggedUser en localStorage y redirige a /admin si el rol es ADMIN o VENDEDOR, o a home si es CLIENTE.
+  const handleLogin = async (correo, password) => {
+    try {
+      const data = await userService.login(correo, password)
+      if (data && data.token) {
+        const userObj = {
+          run: data.run,
+          nombre: data.nombre,
+          apellidos: data.apellidos,
+          correo: data.correo,
+          rol: data.rol, // "ADMIN", "VENDEDOR" o "CLIENTE"
+          tipoUsuario: data.rol === 'ADMIN' ? 'Administrador' : (data.rol === 'VENDEDOR' ? 'Vendedor' : 'Cliente')
+        }
+        localStorage.setItem('token', data.token)
+        localStorage.setItem('loggedUser', JSON.stringify(userObj))
+        setLoggedUser(userObj)
+
+        showNotification('¡Bienvenido!', `Has iniciado sesión como ${userObj.nombre}`)
+
+        if (userObj.rol === 'ADMIN' || userObj.rol === 'VENDEDOR') {
+          navigateTo('admin')
+        } else {
+          navigateTo('home')
+        }
+        return { success: true }
       }
-      return true
+      return { success: false, message: 'Respuesta inválida del servidor' }
+    } catch (err) {
+      return { success: false, message: err.message || 'Error al iniciar sesión' }
     }
-    return false
   }
 
+  // En handleLogout, limpia ambos de localStorage
   const handleLogout = () => {
     userService.logout()
     setLoggedUser(null)
+    setOrders([])
+    setUsers([])
     navigateTo('home')
   }
 
-  const handleRegisterUser = (newUser) => {
-    const exists = users.some(u => String(u.run) === String(newUser.run))
-    if (exists) return false
-    const created = userService.create(newUser)
-    setUsers(userService.getAll())
-    return !!created
+  const handleRegisterUser = async (newUserData) => {
+    try {
+      const res = await userService.register(newUserData)
+      return { success: true, data: res }
+    } catch (err) {
+      return { success: false, message: err.message }
+    }
   }
 
   // Operaciones CRUD de Productos (Admin)
-  const handleCreateProduct = (newProd) => {
-    productStorage.create(newProd)
-    setProducts(productStorage.getAll())
+  const handleCreateProduct = async (newProd) => {
+    await productService.create(newProd)
+    await loadProducts()
+    showNotification('Catálogo Actualizado', 'Producto creado exitosamente.')
   }
 
-  const handleUpdateProduct = (id, fields) => {
-    productStorage.update(id, fields)
-    setProducts(productStorage.getAll())
+  const handleUpdateProduct = async (id, fields) => {
+    await productService.update(id, fields)
+    await loadProducts()
+    showNotification('Catálogo Actualizado', 'Producto actualizado exitosamente.')
   }
 
-  const handleDeleteProduct = (id) => {
-    productStorage.delete(id)
-    setProducts(productStorage.getAll())
+  const handleDeleteProduct = async (id) => {
+    await productService.delete(id)
+    await loadProducts()
+    showNotification('Catálogo Actualizado', 'Producto eliminado exitosamente.')
   }
 
   // Operaciones CRUD de Usuarios (Admin)
-  const handleCreateUser = (newUser) => {
-    userService.create(newUser)
-    setUsers(userService.getAll())
+  const handleCreateUser = async (newUser) => {
+    await userService.create(newUser)
+    await loadAdminData()
+    showNotification('Gestión de Usuarios', 'Usuario creado en el sistema.')
   }
 
-  const handleUpdateUser = (run, fields) => {
-    userService.update(run, fields)
-    setUsers(userService.getAll())
+  const handleUpdateUser = async (run, fields) => {
+    if (userService.update) await userService.update(run, fields)
+    await loadAdminData()
   }
 
-  const handleDeleteUser = (run) => {
-    userService.delete(run)
-    setUsers(userService.getAll())
+  const handleDeleteUser = async (run) => {
+    await userService.delete(run)
+    await loadAdminData()
+    showNotification('Gestión de Usuarios', 'Usuario eliminado del sistema.')
   }
 
   // Selección de Producto para Detalle
@@ -235,37 +349,51 @@ export function App() {
     navigateTo(`/productos/${prod.id}`)
   }
 
-  // Envío de Orden (Checkout)
-  const handleSubmitOrder = ({ success, order }) => {
-    setLastOrder(order)
-    if (success) {
-      productStorage.reduceStock(order.items || [])
-      setProducts(productStorage.getAll())
+  // Envío de Orden (Checkout) hacia POST /ordenes
+  const handleSubmitOrder = async ({ success, orderData, customer, items, total, error }) => {
+    if (!success) {
+      setLastOrder({ customer, items, total, error })
+      navigateTo('pago-error')
+      return
+    }
 
+    try {
+      const res = await orderService.create(orderData)
       const registeredOrder = {
-        id: `ORD-${order.orderNumber}`,
-        userRun: loggedUser?.run || '444444444',
-        customerName: `${order.customer?.nombre || ''} ${order.customer?.apellidos || ''}`.trim() || 'Cliente Web',
-        customer: order.customer,
+        id: res?.idOrden || res?.id || `ORD-${Math.floor(100000 + Math.random() * 900000)}`,
+        idOrden: res?.idOrden || res?.id,
+        userRun: loggedUser?.run,
+        customerName: `${customer.nombre || ''} ${customer.apellidos || ''}`.trim() || 'Cliente Web',
+        customer,
         fecha: new Date().toISOString().split('T')[0],
-        total: order.total,
-        items: order.items,
+        total,
+        items,
         estado: 'Completado'
       }
-      orderService.create(registeredOrder)
-      setOrders(orderService.getAll())
 
+      setLastOrder(registeredOrder)
       handleClearCart()
+      await loadProducts()
       navigateTo('pago-exito')
-    } else {
+    } catch (err) {
+      setLastOrder({ customer, items, total, error: err.message })
       navigateTo('pago-error')
     }
   }
 
   const totalCartCount = cart.reduce((acc, item) => acc + item.cantidad, 0)
 
-  // Si estamos en la ruta de administración, renderizamos con AdminLayout
+  // 3. SEGURIDAD DE RUTAS: Protege la ruta /admin
+  // Si no hay loggedUser redirige a /login; si loggedUser.rol no es 'ADMIN' ni 'VENDEDOR', expulsa a '/'
   if (location.pathname.startsWith('/admin')) {
+    if (!loggedUser) {
+      return <Navigate to="/login" replace />
+    }
+    const userRole = (loggedUser.rol || loggedUser.tipoUsuario || '').toUpperCase()
+    if (userRole !== 'ADMIN' && userRole !== 'VENDEDOR') {
+      return <Navigate to="/" replace />
+    }
+
     return (
       <AdminLayout
         currentAdminTab={adminTab}

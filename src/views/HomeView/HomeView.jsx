@@ -12,7 +12,8 @@ export function HomeView({
   const [activeFilter, setActiveFilter] = useState('Todas')
   const bannerProducts = products.slice(0, 3)
 
-  const categories = ['Todas', 'Selecciones Nacionales', 'Clubes Chilenos']
+  const dynamicCategories = Array.from(new Set(products.map(p => p.categoria).filter(Boolean)))
+  const categories = ['Todas', ...(dynamicCategories.length > 0 ? dynamicCategories : ['Selecciones Nacionales', 'Clubes Chilenos'])]
 
   const filteredProducts = activeFilter === 'Todas'
     ? products

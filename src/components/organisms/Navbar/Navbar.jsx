@@ -21,11 +21,11 @@ export function Navbar({
     }
   }
 
+  const userRole = (loggedUser?.rol || loggedUser?.tipoUsuario || '').toUpperCase()
   const isAdminOrSeller = loggedUser && (
-    loggedUser.tipoUsuario === 'Administrador' ||
-    loggedUser.tipoUsuario === 'Vendedor' ||
-    loggedUser.tipo === 'Administrador' ||
-    loggedUser.tipo === 'Vendedor'
+    userRole === 'ADMIN' ||
+    userRole === 'VENDEDOR' ||
+    userRole === 'ADMINISTRADOR'
   )
 
   return (
@@ -120,7 +120,7 @@ export function Navbar({
                 className={`navbar-item has-text-warning ${currentView === 'admin' ? 'is-active' : ''}`}
                 onClick={() => setBurgerActive(false)}
               >
-                Panel Admin
+                Panel Admin ({userRole})
               </Link>
             )}
           </div>
@@ -177,4 +177,3 @@ export function Navbar({
 }
 
 export default Navbar
-

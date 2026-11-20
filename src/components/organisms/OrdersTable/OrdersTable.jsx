@@ -29,7 +29,8 @@ export function OrdersTable({
         // Búsqueda por término libre (id, customerName, userRun)
         if (!searchTerm.trim()) return true
         const term = searchTerm.toLowerCase()
-        const idMatch = ord.id?.toLowerCase().includes(term)
+        const orderId = ord.idOrden || ord.id || ''
+        const idMatch = String(orderId).toLowerCase().includes(term)
         const nameMatch = ord.customerName?.toLowerCase().includes(term)
         const runMatch = String(ord.userRun || '').toLowerCase().includes(term)
         const itemMatch = ord.items?.some(it => it.titulo?.toLowerCase().includes(term))
@@ -204,12 +205,13 @@ export function OrdersTable({
             </thead>
             <tbody>
               {filteredOrders.map(ord => {
+                const orderId = ord.idOrden || ord.id
                 const itemsCount = ord.items?.reduce((s, it) => s + (Number(it.cantidad) || 1), 0) || 0
                 return (
-                  <tr key={ord.id}>
+                  <tr key={orderId}>
                     <td>
                       <span className="tag is-dark has-text-weight-bold">
-                        {ord.id}
+                        {orderId}
                       </span>
                     </td>
                     <td className="is-size-7">{ord.fecha}</td>
@@ -236,7 +238,7 @@ export function OrdersTable({
                         size="small"
                         onClick={() => onViewReceipt(ord)}
                         className="is-outlined"
-                        id={`btn-view-receipt-${ord.id}`}
+                        id={`btn-view-receipt-${orderId}`}
                       >
                         <span className="mr-1">🧾</span> Ver Boleta
                       </Button>

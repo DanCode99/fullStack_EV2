@@ -8,12 +8,20 @@ export function CategoriesView({
 }) {
   const [activeCategory, setActiveCategory] = useState('Selecciones Nacionales')
 
-  const categories = [
-    { id: 'Selecciones Nacionales', title: 'Selecciones Nacionales', count: products.filter(p => p.categoria === 'Selecciones Nacionales').length },
-    { id: 'Clubes Chilenos', title: 'Clubes Chilenos', count: products.filter(p => p.categoria === 'Clubes Chilenos').length }
-  ]
+  const uniqueCats = Array.from(new Set(products.map(p => p.categoria).filter(Boolean)))
+  const categoriesList = uniqueCats.length > 0 ? uniqueCats : ['Selecciones Nacionales', 'Clubes Chilenos']
 
-  const categoryProducts = products.filter(p => p.categoria === activeCategory)
+  const categories = categoriesList.map(cat => ({
+    id: cat,
+    title: cat,
+    count: products.filter(p => p.categoria === cat).length
+  }))
+
+  const effectiveActiveCategory = categories.some(c => c.id === activeCategory)
+    ? activeCategory
+    : (categories[0]?.id || 'Selecciones Nacionales')
+
+  const categoryProducts = products.filter(p => p.categoria === effectiveActiveCategory)
 
   return (
     <div className="section">
@@ -29,15 +37,15 @@ export function CategoriesView({
           {categories.map((cat) => (
             <div key={cat.id} className="column is-6">
               <div
-                className={`box has-text-centered p-5 category-box-selectable ${activeCategory === cat.id ? 'is-active has-background-primary-light has-border-primary' : ''}`}
+                className={`box has-text-centered p-5 category-box-selectable ${effectiveActiveCategory === cat.id ? 'is-active has-background-primary-light has-border-primary' : ''}`}
                 onClick={() => setActiveCategory(cat.id)}
               >
                 <h3 className="title is-4 mb-2">{cat.title}</h3>
                 <p className="subtitle is-6 has-text-grey">
                   {cat.count} modelos disponibles
                 </p>
-                <span className={`button is-small ${activeCategory === cat.id ? 'is-primary' : 'is-light'}`}>
-                  {activeCategory === cat.id ? 'Categoría Activa' : 'Ver Productos'}
+                <span className={`button is-small ${effectiveActiveCategory === cat.id ? 'is-primary' : 'is-light'}`}>
+                  {effectiveActiveCategory === cat.id ? 'Categoría Activa' : 'Ver Productos'}
                 </span>
               </div>
             </div>
@@ -45,7 +53,7 @@ export function CategoriesView({
         </div>
 
         <div className="mb-4">
-          <h2 className="title is-4">{activeCategory}</h2>
+          <h2 className="title is-4">{effectiveActiveCategory}</h2>
           <hr />
         </div>
 

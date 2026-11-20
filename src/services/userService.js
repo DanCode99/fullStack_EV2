@@ -1,83 +1,114 @@
-export const initialUsers = [
-  { run: "111111111", nombre: "Admin", apellidos: "Sistema", correo: "admin@duoc.cl", fechaNacimiento: "1980-01-01", tipoUsuario: "Administrador", region: "Región Metropolitana de Santiago", comuna: "Santiago", direccion: "Calle 1", password: "123456" },
-  { run: "222222222", nombre: "Vendedor", apellidos: "Uno", correo: "vendedor1@duoc.cl", fechaNacimiento: "1990-05-15", tipoUsuario: "Vendedor", region: "Región de Valparaíso", comuna: "Viña del Mar", direccion: "Avenida 2", password: "123456" },
-  { run: "333333333", nombre: "Vendedor", apellidos: "Dos", correo: "vendedor2@duoc.cl", fechaNacimiento: "1992-08-20", tipoUsuario: "Vendedor", region: "Región del Biobío", comuna: "Concepción", direccion: "Pasaje 3", password: "123456" },
-  { run: "444444444", nombre: "Cliente", apellidos: "A", correo: "clienteA@gmail.com", fechaNacimiento: "1995-12-10", tipoUsuario: "Cliente", region: "Región Metropolitana de Santiago", comuna: "Maipú", direccion: "Calle 4", password: "123456" },
-  { run: "555555555", nombre: "Cliente", apellidos: "B", correo: "clienteB@gmail.com", fechaNacimiento: "1996-11-11", tipoUsuario: "Cliente", region: "Región Metropolitana de Santiago", comuna: "Puente Alto", direccion: "Calle 5", password: "123456" },
-  { run: "666666666", nombre: "Cliente", apellidos: "C", correo: "clienteC@gmail.com", fechaNacimiento: "1997-10-12", tipoUsuario: "Cliente", region: "Región de Valparaíso", comuna: "Valparaíso", direccion: "Calle 6", password: "123456" },
-  { run: "777777777", nombre: "Cliente", apellidos: "D", correo: "clienteD@gmail.com", fechaNacimiento: "1998-09-13", tipoUsuario: "Cliente", region: "Región del Biobío", comuna: "Talcahuano", direccion: "Calle 7", password: "123456" },
-  { run: "888888888", nombre: "Cliente", apellidos: "E", correo: "clienteE@gmail.com", fechaNacimiento: "1999-08-14", tipoUsuario: "Cliente", region: "Región de Coquimbo", comuna: "La Serena", direccion: "Calle 8", password: "123456" },
-  { run: "999999999", nombre: "Cliente", apellidos: "F", correo: "clienteF@gmail.com", fechaNacimiento: "2000-07-15", tipoUsuario: "Cliente", region: "Región de Antofagasta", comuna: "Antofagasta", direccion: "Calle 9", password: "123456" },
-  { run: "101010101", nombre: "Cliente", apellidos: "G", correo: "clienteG@gmail.com", fechaNacimiento: "2001-06-16", tipoUsuario: "Cliente", region: "Región de Tarapacá", comuna: "Iquique", direccion: "Calle 10", password: "123456" },
-  { run: "121212121", nombre: "Cliente", apellidos: "H", correo: "clienteH@gmail.com", fechaNacimiento: "2002-05-17", tipoUsuario: "Cliente", region: "Región Metropolitana de Santiago", comuna: "Providencia", direccion: "Calle 11", password: "123456" },
-  { run: "131313131", nombre: "Cliente", apellidos: "I", correo: "clienteI@gmail.com", fechaNacimiento: "2003-04-18", tipoUsuario: "Cliente", region: "Región de Valparaíso", comuna: "Quilpué", direccion: "Calle 12", password: "123456" },
-  { run: "141414141", nombre: "Cliente", apellidos: "J", correo: "clienteJ@gmail.com", fechaNacimiento: "1994-03-19", tipoUsuario: "Cliente", region: "Región del Maule", comuna: "Talca", direccion: "Calle 13", password: "123456" }
-];
-
-
-const USERS_STORAGE_KEY = 'tienda_usuarios';
-const LOGGED_USER_KEY = 'loggedUser';
+import { apiFetch } from './apiClient.js';
 
 export const userService = {
-  getAll: () => {
-    try {
-      const stored = localStorage.getItem(USERS_STORAGE_KEY);
-      if (!stored) {
-        localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(initialUsers));
-        return initialUsers;
-      }
-      return JSON.parse(stored);
-    } catch {
-      return initialUsers;
-    }
+  /**
+   * Inicio de sesión
+   * POST /auth/login
+   * @param {string} correo
+   * @param {string} password
+   * @returns {Promise<{ token, run, nombre, apellidos, correo, rol }>}
+   */
+  login: async (correo, password) => {
+    return await apiFetch('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ correo, password })
+    });
   },
 
-  getByRun: (run) => {
-    const users = userService.getAll();
-    return users.find(u => String(u.run) === String(run));
+  /**
+   * Registro de clientes
+   * POST /auth/registro
+   * @param {{ run, nombre, apellidos, correo, password, idComuna, direccion, fechaNacimiento }} userData
+   * @returns {Promise<{ token, rol: "CLIENTE", ... }>}
+   */
+  register: async (userData) => {
+    return await apiFetch('/auth/registro', {
+      method: 'POST',
+      body: JSON.stringify(userData)
+    });
   },
 
-  create: (newUser) => {
-    const users = userService.getAll();
-    const updated = [newUser, ...users];
-    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(updated));
-    return newUser;
+  /**
+   * Obtener todas las regiones para selects dinámicos
+   * GET /ubicaciones/regiones
+   * @returns {Promise<Array<{ idRegion, nombreRegion }>>}
+   */
+  getRegiones: async () => {
+    return await apiFetch('/ubicaciones/regiones');
   },
 
-  update: (run, updatedFields) => {
-    const users = userService.getAll();
-    const updated = users.map(u => String(u.run) === String(run) ? { ...u, ...updatedFields } : u);
-    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(updated));
-    return updated.find(u => String(u.run) === String(run));
+  /**
+   * Obtener comunas pertenecientes a una región
+   * GET /ubicaciones/regiones/{id}/comunas
+   * @param {number|string} idRegion
+   * @returns {Promise<Array<{ idComuna, nombreComuna, idRegion }>>}
+   */
+  getComunasByRegion: async (idRegion) => {
+    return await apiFetch(`/ubicaciones/regiones/${idRegion}/comunas`);
   },
 
-  delete: (run) => {
-    const users = userService.getAll();
-    const filtered = users.filter(u => String(u.run) !== String(run));
-    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(filtered));
-    return true;
+  /**
+   * Listar todos los usuarios (Admin)
+   * GET /usuarios (Bearer ADMIN)
+   * @returns {Promise<Array<{ run, nombre, apellidos, correo, nombreRol, idComuna, direccion }>>}
+   */
+  getAll: async () => {
+    return await apiFetch('/usuarios');
   },
 
-  login: (correo, password) => {
-    const users = userService.getAll();
-    const user = users.find(u => u.correo.toLowerCase() === correo.toLowerCase() && u.password === password);
-    if (user) {
-      localStorage.setItem(LOGGED_USER_KEY, JSON.stringify(user));
-      return user;
-    }
-    return null;
+  /**
+   * Crear nuevo usuario desde el panel de administración
+   * POST /usuarios (Bearer ADMIN)
+   * @param {{ run, nombre, apellidos, correo, password, nombreRol, idComuna, direccion }} userData
+   */
+  create: async (userData) => {
+    return await apiFetch('/usuarios', {
+      method: 'POST',
+      body: JSON.stringify(userData)
+    });
   },
 
+  /**
+   * Eliminar usuario por RUN (Admin)
+   * DELETE /usuarios/{run} (Bearer ADMIN)
+   * @param {string} run
+   */
+  delete: async (run) => {
+    return await apiFetch(`/usuarios/${run}`, {
+      method: 'DELETE'
+    });
+  },
+
+  /**
+   * Cerrar sesión y limpiar almacenamiento
+   */
   logout: () => {
-    localStorage.removeItem(LOGGED_USER_KEY);
+    localStorage.removeItem('token');
+    localStorage.removeItem('loggedUser');
   },
 
+  /**
+   * Obtener usuario almacenado en sesión local
+   */
   getLoggedUser: () => {
     try {
-      const stored = localStorage.getItem(LOGGED_USER_KEY);
-      return stored ? JSON.parse(stored) : null;
+      const token = localStorage.getItem('token');
+      const stored = localStorage.getItem('loggedUser');
+      if (token && stored) {
+        return JSON.parse(stored);
+      }
+      return null;
     } catch {
       return null;
     }
+  },
+
+  /**
+   * Obtener JWT actual
+   */
+  getToken: () => {
+    return localStorage.getItem('token');
   }
 };
+
+export default userService;

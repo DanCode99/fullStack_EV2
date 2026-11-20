@@ -7,8 +7,9 @@ export function LoginView({ onLoginSuccess, onNavigate }) {
   const [correo, setCorreo] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
 
@@ -17,9 +18,16 @@ export function LoginView({ onLoginSuccess, onNavigate }) {
       return
     }
 
-    const success = onLoginSuccess(correo, password)
-    if (!success) {
-      setError('Credenciales incorrectas. Verifica tu correo y contraseña.')
+    try {
+      setLoading(true)
+      const res = await onLoginSuccess(correo, password)
+      if (!res?.success) {
+        setError(res?.message || 'Credenciales incorrectas. Verifica tu correo y contraseña.')
+      }
+    } catch (err) {
+      setError(err.message || 'Error al conectar con el servidor de autenticación.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -47,6 +55,7 @@ export function LoginView({ onLoginSuccess, onNavigate }) {
                 value={correo}
                 onChange={(e) => setCorreo(e.target.value)}
                 placeholder="Ej: admin@duoc.cl"
+                disabled={loading}
                 required
               />
             </FormField>
@@ -57,6 +66,7 @@ export function LoginView({ onLoginSuccess, onNavigate }) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="******"
+                disabled={loading}
                 required
               />
             </FormField>
@@ -64,9 +74,10 @@ export function LoginView({ onLoginSuccess, onNavigate }) {
             <Button
               type="submit"
               variant="primary"
-              className="is-fullwidth mt-4"
+              className={`is-fullwidth mt-4 ${loading ? 'is-loading' : ''}`}
+              disabled={loading}
             >
-              Ingresar
+              {loading ? 'Ingresando...' : 'Ingresar'}
             </Button>
           </form>
 
@@ -80,13 +91,15 @@ export function LoginView({ onLoginSuccess, onNavigate }) {
               variant="light"
               size="small"
               onClick={() => onNavigate('registro')}
+              disabled={loading}
             >
               Crear una cuenta nueva
             </Button>
           </div>
         </div>
       </div>
-
     </div>
   )
 }
+
+export default LoginView

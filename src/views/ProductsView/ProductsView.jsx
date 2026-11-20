@@ -11,11 +11,13 @@ export function ProductsView({
   const [selectedCategory, setSelectedCategory] = useState('Todas')
   const [sortOrder, setSortOrder] = useState('default')
 
-  const categories = ['Todas', 'Selecciones Nacionales', 'Clubes Chilenos']
+  const dynamicCategories = Array.from(new Set(products.map(p => p.categoria).filter(Boolean)))
+  const categories = ['Todas', ...(dynamicCategories.length > 0 ? dynamicCategories : ['Selecciones Nacionales', 'Clubes Chilenos'])]
 
   let filtered = products.filter(p => {
-    const matchesSearch = p.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          p.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
+    const titleMatch = (p.titulo || '').toLowerCase().includes(searchTerm.toLowerCase())
+    const descMatch = (p.descripcion || p.nombreMarca || '').toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesSearch = titleMatch || descMatch
     const matchesCategory = selectedCategory === 'Todas' || p.categoria === selectedCategory
     return matchesSearch && matchesCategory
   })

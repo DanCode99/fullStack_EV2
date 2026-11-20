@@ -63,7 +63,7 @@ export function ReceiptModal({ order, isOpen, onClose }) {
               <div className="box p-3 has-background-light has-text-centered receipt-stamp-box">
                 <p className="is-size-7 has-text-weight-bold has-text-grey-dark mb-1">BOLETA ELECTRÓNICA</p>
                 <p className="is-size-5 has-text-weight-bold has-text-primary mb-1">
-                  N° {order.id?.replace('ORD-', '') || order.id}
+                  N° {order.idOrden || (typeof order.id === 'string' ? order.id.replace('ORD-', '') : order.id)}
                 </p>
                 <span className="tag is-success is-light is-size-7">
                   {order.estado || 'Completado'}

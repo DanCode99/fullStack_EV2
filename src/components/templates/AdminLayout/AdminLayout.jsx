@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 
 export function AdminLayout({
   children,
@@ -7,17 +8,36 @@ export function AdminLayout({
   onLogout,
   loggedUser
 }) {
-  const isSeller = loggedUser && (loggedUser.tipoUsuario === 'Vendedor' || loggedUser.tipo === 'Vendedor')
+  const isSeller = loggedUser?.rol === 'VENDEDOR' || loggedUser?.tipoUsuario === 'Vendedor' || loggedUser?.tipo === 'Vendedor'
 
-  const menuItems = [
-    { id: 'dashboard', label: 'Dashboard' },
-    { id: 'ordenes', label: 'Órdenes' },
-    { id: 'productos', label: 'Productos' },
-    { id: 'categorias', label: 'Categorías' },
-    ...(!isSeller ? [{ id: 'usuarios', label: 'Usuarios' }] : []),
-    { id: 'reportes', label: 'Reportes' },
-    { id: 'perfil', label: 'Perfil' }
-  ]
+  // Si es VENDEDOR, limitar estrictamente a Órdenes y Productos conforme al requerimiento
+  const menuItems = isSeller
+    ? [
+        { id: 'ordenes', label: 'Órdenes / Boletas' },
+        { id: 'productos', label: 'Catálogo de Productos' }
+      ]
+    : [
+        { id: 'dashboard', label: 'Dashboard' },
+        { id: 'ordenes', label: 'Órdenes' },
+        { id: 'productos', label: 'Productos' },
+        { id: 'categorias', label: 'Categorías' },
+        { id: 'usuarios', label: 'Usuarios' },
+        { id: 'reportes', label: 'Reportes' },
+        { id: 'perfil', label: 'Perfil' }
+      ]
+
+  // Asegurar que si el rol es VENDEDOR, su pestaña activa sea 'ordenes'
+  useEffect(() => {
+    if (isSeller && currentAdminTab !== 'ordenes' && currentAdminTab !== 'productos') {
+      onSelectTab('ordenes')
+    }
+  }, [isSeller, currentAdminTab, onSelectTab])
+
+  const userDisplayName = loggedUser?.nombre
+    ? `${loggedUser.nombre} ${loggedUser.apellidos || ''}`.trim()
+    : 'Sistema de administración'
+
+  const userRoleDisplay = loggedUser?.rol || loggedUser?.tipoUsuario || 'Administrador'
 
   return (
     <section className="admin-section">
@@ -58,10 +78,12 @@ export function AdminLayout({
             </div>
             <div className="admin-user-info">
               <div className="admin-user-name">
-                Sistema de administración
+                {userDisplayName}
               </div>
               <div className="admin-user-role">
-                {loggedUser?.tipoUsuario || 'Administrador'}
+                <span className={`tag is-small ${isSeller ? 'is-warning' : 'is-danger'} has-text-weight-bold`}>
+                  {userRoleDisplay}
+                </span>
               </div>
             </div>
           </div>
@@ -123,4 +145,3 @@ export function AdminLayout({
 }
 
 export default AdminLayout
-

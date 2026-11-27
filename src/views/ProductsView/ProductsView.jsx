@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 import { ProductCard } from '../../components/molecules/ProductCard/ProductCard.jsx'
 import { Button } from '../../components/atoms/Button/Button.jsx'
+import { enrichProductWithDiscounts } from '../../context/cartHelpers.js'
 
 export function ProductsView({
   products = [],
@@ -10,31 +11,48 @@ export function ProductsView({
 }) {
   const location = useLocation()
 
+  // 0. Enriquecer productos con descuentos unificados y marcas oficiales (Colo-Colo -> Adidas, cero Puma)
+  const enrichedProducts = useMemo(() => {
+    return (products || []).map(enrichProductWithDiscounts)
+  }, [products])
+
   // 1. Extraer query params de URL inicial
   const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search])
   const initialSearch = queryParams.get('buscar') || ''
   const initialCategory = queryParams.get('categoria')
+  const initialBrand = queryParams.get('marca')
 
   // 2. Extraer dinámicamente precios extremos del catálogo
   const { minCatalogPrice, maxCatalogPrice } = useMemo(() => {
-    if (!products || products.length === 0) {
+    if (!enrichedProducts || enrichedProducts.length === 0) {
       return { minCatalogPrice: 0, maxCatalogPrice: 100000 }
     }
-    const prices = products.map(p => Number(p.precio) || 0)
+    const prices = enrichedProducts.map(p => Number(p.precio) || 0)
     return {
       minCatalogPrice: Math.min(...prices),
       maxCatalogPrice: Math.max(...prices)
     }
-  }, [products])
+  }, [enrichedProducts])
 
   // 3. Estados de filtros con inicialización perezosa / default
   const [searchTerm, setSearchTerm] = useState(initialSearch)
   const [selectedCategories, setSelectedCategories] = useState(initialCategory ? [initialCategory] : [])
-  const [selectedBrands, setSelectedBrands] = useState([])
+  const [selectedBrands, setSelectedBrands] = useState(initialBrand ? [initialBrand] : [])
   const [sortOrder, setSortOrder] = useState('default')
   const [userMinPrice, setUserMinPrice] = useState(null)
   const [userMaxPrice, setUserMaxPrice] = useState(null)
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+
+  // Sincronizar reactivamente cuando cambia location.search (ej. navegación desde Mega-Menú)
+  const [prevSearch, setPrevSearch] = useState(location.search)
+  if (prevSearch !== location.search) {
+    setPrevSearch(location.search)
+    setSearchTerm(initialSearch)
+    if (initialCategory) setSelectedCategories([initialCategory])
+    else if (location.search === '') setSelectedCategories([])
+    if (initialBrand) setSelectedBrands([initialBrand])
+    else if (location.search === '') setSelectedBrands([])
+  }
 
   // Precios efectivos
   const minPrice = userMinPrice !== null ? userMinPrice : minCatalogPrice
@@ -43,7 +61,7 @@ export function ProductsView({
   // 4. Lista dinámica de categorías con conteo real en BD
   const categoryStats = useMemo(() => {
     const counts = {}
-    products.forEach(p => {
+    enrichedProducts.forEach(p => {
       if (p.categoria) {
         counts[p.categoria] = (counts[p.categoria] || 0) + 1
       }
@@ -56,28 +74,26 @@ export function ProductsView({
       name: cat,
       count: counts[cat] || 0
     }))
-  }, [products])
+  }, [enrichedProducts])
 
-  // 5. Lista dinámica de marcas con conteo real en BD
+  // 5. Lista dinámica de marcas oficiales (únicamente Nike y Adidas, sin Puma)
   const brandStats = useMemo(() => {
-    const counts = {}
-    products.forEach(p => {
-      let b = p.nombreMarca || p.marca
-      if (!b) {
-        const text = `${p.titulo} ${p.descripcion || ''}`.toLowerCase()
-        if (text.includes('adidas')) b = 'Adidas'
-        else if (text.includes('nike')) b = 'Nike'
-        else if (text.includes('puma')) b = 'Puma'
-        else b = 'Oficial'
+    const counts = { Nike: 0, Adidas: 0 }
+    enrichedProducts.forEach(p => {
+      const b = p.nombreMarca || p.marca
+      if (b && counts[b] !== undefined) {
+        counts[b] += 1
+      } else if (b) {
+        if (b.toLowerCase().includes('adidas')) counts.Adidas += 1
+        else if (b.toLowerCase().includes('nike')) counts.Nike += 1
       }
-      counts[b] = (counts[b] || 0) + 1
     })
 
     return Object.entries(counts).map(([brand, count]) => ({
       name: brand,
       count
     }))
-  }, [products])
+  }, [enrichedProducts])
 
   // 6. Toggle de categorías
   const handleCategoryToggle = (categoryName) => {
@@ -118,7 +134,7 @@ export function ProductsView({
 
   // 9. Filtrado reactivo en tiempo real combinando todos los criterios
   const filteredProducts = useMemo(() => {
-    let result = products.filter(p => {
+    let result = enrichedProducts.filter(p => {
       // Búsqueda por texto (título, descripción, marca, categoría)
       const term = searchTerm.trim().toLowerCase()
       if (term) {
@@ -134,16 +150,9 @@ export function ProductsView({
         if (!selectedCategories.includes(p.categoria)) return false
       }
 
-      // Filtro por marcas seleccionadas
+      // Filtro por marcas seleccionadas (Nike / Adidas)
       if (selectedBrands.length > 0) {
-        let b = p.nombreMarca || p.marca
-        if (!b) {
-          const text = `${p.titulo} ${p.descripcion || ''}`.toLowerCase()
-          if (text.includes('adidas')) b = 'Adidas'
-          else if (text.includes('nike')) b = 'Nike'
-          else if (text.includes('puma')) b = 'Puma'
-          else b = 'Oficial'
-        }
+        const b = p.nombreMarca || p.marca
         if (!selectedBrands.includes(b)) return false
       }
 
@@ -164,7 +173,7 @@ export function ProductsView({
     }
 
     return result
-  }, [products, searchTerm, selectedCategories, selectedBrands, minPrice, maxPrice, sortOrder])
+  }, [enrichedProducts, searchTerm, selectedCategories, selectedBrands, minPrice, maxPrice, sortOrder])
 
   // Controles del slider sincronizados
   const handleMinSliderChange = (e) => {

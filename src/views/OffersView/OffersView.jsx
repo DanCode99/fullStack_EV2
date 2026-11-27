@@ -1,33 +1,29 @@
 import { ProductCard } from '../../components/molecules/ProductCard/ProductCard.jsx'
+import { enrichProductWithDiscounts } from '../../context/cartHelpers.js'
 
 export function OffersView({
   products = [],
   onSelectProduct,
   onAddToCart
 }) {
-  // Productos seleccionados para la sección de ofertas
-  // Con precio original, porcentaje de descuento y precio rebajado
-  const discountsMap = {
-    7: 25,  // Palestino
-    8: 20,  // Audax Italiano
-    10: 30, // Colo-Colo
-    12: 15, // Venezuela
-    2: 20,  // U de Chile
-    6: 25   // USA
-  }
-
+  // Productos seleccionados para la sección de ofertas con descuentos unificados
   const offersProducts = products
-    .filter(p => discountsMap[p.id] || p.precio <= 45000)
+    .map(enrichProductWithDiscounts)
+    .filter(p => p.descuento > 0 || (p.precio && p.precio <= 45000))
     .map(p => {
-      const discountPercent = discountsMap[p.id] || 20
-      const precioOriginal = p.precio
-      const precioFinal = Math.round(precioOriginal * (1 - discountPercent / 100))
-      return {
-        ...p,
-        descuento: discountPercent,
-        precioOriginal,
-        precioFinal
+      if (!p.descuento) {
+        const discountPercent = 15
+        const precioOriginal = p.precio
+        const precioFinal = Math.round(precioOriginal * 0.85)
+        return {
+          ...p,
+          descuento: discountPercent,
+          precioOriginal,
+          precioFinal,
+          precio: precioFinal
+        }
       }
+      return p
     })
 
   const handleAddDiscounted = (product) => {

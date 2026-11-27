@@ -12,10 +12,30 @@ export function Navbar({
   onOpenCart
 }) {
   const [burgerActive, setBurgerActive] = useState(false)
+  const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false)
+  const [megaTimer, setMegaTimer] = useState(null)
   const navigate = useNavigate()
+
+  const handleMouseEnterMega = () => {
+    if (megaTimer) clearTimeout(megaTimer)
+    setIsMegaMenuOpen(true)
+  }
+
+  const handleMouseLeaveMega = () => {
+    const timer = setTimeout(() => {
+      setIsMegaMenuOpen(false)
+    }, 180)
+    setMegaTimer(timer)
+  }
+
+  const handleMegaLinkClick = () => {
+    setIsMegaMenuOpen(false)
+    setBurgerActive(false)
+  }
 
   const handleNav = (view) => {
     setBurgerActive(false)
+    setIsMegaMenuOpen(false)
     if (onNavigate) {
       onNavigate(view)
     } else {
@@ -75,27 +95,42 @@ export function Navbar({
               >
                 Inicio
               </Link>
-              <Link
-                to="/productos"
-                className={`navbar-item ${currentView === 'productos' ? 'is-active' : ''}`}
-                onClick={() => setBurgerActive(false)}
+              <div
+                className="navbar-item-mega-trigger-wrap is-flex"
+                onMouseEnter={handleMouseEnterMega}
+                onMouseLeave={handleMouseLeaveMega}
               >
-                Productos
-              </Link>
-              <Link
-                to="/categorias"
-                className={`navbar-item ${currentView === 'categorias' ? 'is-active' : ''}`}
-                onClick={() => setBurgerActive(false)}
-              >
-                Categorías
-              </Link>
-              <Link
-                to="/ofertas"
-                className={`navbar-item ${currentView === 'ofertas' ? 'is-active' : ''}`}
-                onClick={() => setBurgerActive(false)}
-              >
-                Ofertas
-              </Link>
+                <Link
+                  to="/productos"
+                  className={`navbar-item ${currentView === 'productos' ? 'is-active' : ''}`}
+                  onClick={() => {
+                    setBurgerActive(false)
+                    setIsMegaMenuOpen(false)
+                  }}
+                >
+                  Productos
+                </Link>
+                <Link
+                  to="/categorias"
+                  className={`navbar-item ${currentView === 'categorias' ? 'is-active' : ''}`}
+                  onClick={() => {
+                    setBurgerActive(false)
+                    setIsMegaMenuOpen(false)
+                  }}
+                >
+                  Categorías
+                </Link>
+                <Link
+                  to="/ofertas"
+                  className={`navbar-item ${currentView === 'ofertas' ? 'is-active' : ''}`}
+                  onClick={() => {
+                    setBurgerActive(false)
+                    setIsMegaMenuOpen(false)
+                  }}
+                >
+                  Ofertas
+                </Link>
+              </div>
               <Link
                 to="/nosotros"
                 className={`navbar-item ${currentView === 'nosotros' ? 'is-active' : ''}`}
@@ -182,6 +217,158 @@ export function Navbar({
           </div>
         </div>
       </nav>
+
+      {/* Mega-Menú Desplegable al pasar el puntero (onMouseEnter) */}
+      {isMegaMenuOpen && (
+        <div
+          className="mega-menu-wrapper"
+          onMouseEnter={handleMouseEnterMega}
+          onMouseLeave={handleMouseLeaveMega}
+        >
+          <div className="mega-menu-inner-grid">
+            {/* Columna 1 — Selecciones Nacionales */}
+            <div className="mega-menu-col">
+              <div className="mega-menu-col-header">
+                <h4 className="mega-menu-col-title">Selecciones Nacionales</h4>
+              </div>
+              <ul className="mega-menu-links">
+                <li className="mega-menu-link-item">
+                  <Link
+                    to="/productos?buscar=Brasil"
+                    className="mega-menu-link"
+                    onClick={handleMegaLinkClick}
+                  >
+                    Brasil 2026
+                  </Link>
+                </li>
+                <li className="mega-menu-link-item">
+                  <Link
+                    to="/productos?buscar=Argentina"
+                    className="mega-menu-link"
+                    onClick={handleMegaLinkClick}
+                  >
+                    Argentina Tres Estrellas
+                  </Link>
+                </li>
+                <li className="mega-menu-link-item">
+                  <Link
+                    to="/productos?buscar=Francia"
+                    className="mega-menu-link"
+                    onClick={handleMegaLinkClick}
+                  >
+                    Francia Local 2026
+                  </Link>
+                </li>
+                <li className="mega-menu-link-item">
+                  <Link
+                    to="/productos?buscar=Espa%C3%B1a"
+                    className="mega-menu-link"
+                    onClick={handleMegaLinkClick}
+                  >
+                    España Local 2026
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Columna 2 — Clubes Chilenos */}
+            <div className="mega-menu-col">
+              <div className="mega-menu-col-header">
+                <h4 className="mega-menu-col-title">Clubes Chilenos</h4>
+              </div>
+              <ul className="mega-menu-links">
+                <li className="mega-menu-link-item">
+                  <Link
+                    to="/productos?buscar=Universidad+de+Chile"
+                    className="mega-menu-link"
+                    onClick={handleMegaLinkClick}
+                  >
+                    Universidad de Chile Local
+                    <span className="mega-menu-link-badge">-20%</span>
+                  </Link>
+                </li>
+                <li className="mega-menu-link-item">
+                  <Link
+                    to="/productos?buscar=Colo-Colo"
+                    className="mega-menu-link"
+                    onClick={handleMegaLinkClick}
+                  >
+                    Colo-Colo Local 2026
+                    <span className="mega-menu-link-badge">-25%</span>
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Columna 3 — Marcas Oficiales */}
+            <div className="mega-menu-col">
+              <div className="mega-menu-col-header">
+                <h4 className="mega-menu-col-title">Marcas Oficiales</h4>
+              </div>
+              <ul className="mega-menu-links">
+                <li className="mega-menu-link-item">
+                  <Link
+                    to="/productos?marca=Nike"
+                    className="mega-menu-link"
+                    onClick={handleMegaLinkClick}
+                  >
+                    Nike
+                    <span className="mega-menu-link-badge is-brand">Oficial</span>
+                  </Link>
+                </li>
+                <li className="mega-menu-link-item">
+                  <Link
+                    to="/productos?marca=Adidas"
+                    className="mega-menu-link"
+                    onClick={handleMegaLinkClick}
+                  >
+                    Adidas
+                    <span className="mega-menu-link-badge is-brand">Oficial</span>
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Columna 4 — Destacados y Promociones */}
+            <div className="mega-menu-col">
+              <div className="mega-menu-col-header">
+                <h4 className="mega-menu-col-title">Destacados y Promociones</h4>
+              </div>
+              <ul className="mega-menu-links">
+                <li className="mega-menu-link-item">
+                  <Link
+                    to="/ofertas"
+                    className="mega-menu-link"
+                    onClick={handleMegaLinkClick}
+                  >
+                    Liquidación hasta 25% OFF
+                    <span className="mega-menu-link-badge">OFERTA</span>
+                  </Link>
+                </li>
+                <li className="mega-menu-link-item">
+                  <Link
+                    to="/productos?buscar=2026"
+                    className="mega-menu-link"
+                    onClick={handleMegaLinkClick}
+                  >
+                    Colección 2026
+                    <span className="mega-menu-link-badge is-accent">Nuevo</span>
+                  </Link>
+                </li>
+                <li className="mega-menu-link-item">
+                  <Link
+                    to="/productos"
+                    className="mega-menu-link"
+                    onClick={handleMegaLinkClick}
+                  >
+                    Ver Catálogo Completo &rarr;
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 2. Barra de Anuncios Rotativa debajo del Header */}
       <PromoAnnouncementBar onNavigate={onNavigate} />

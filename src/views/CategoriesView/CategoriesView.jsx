@@ -11,9 +11,15 @@ export function CategoriesView({
   const uniqueCats = Array.from(new Set(products.map(p => p.categoria).filter(Boolean)))
   const categoriesList = uniqueCats.length > 0 ? uniqueCats : ['Selecciones Nacionales', 'Clubes Chilenos']
 
+  const categoryImages = {
+    'Selecciones Nacionales': '/assets/images/brasil/brasil1.jpeg',
+    'Clubes Chilenos': '/assets/images/u_de_chile/lau1.webp'
+  }
+
   const categories = categoriesList.map(cat => ({
     id: cat,
     title: cat,
+    img: categoryImages[cat] || (products.find(p => p.categoria === cat)?.img || '/assets/images/logo/logo.png'),
     count: products.filter(p => p.categoria === cat).length
   }))
 
@@ -24,37 +30,46 @@ export function CategoriesView({
   const categoryProducts = products.filter(p => p.categoria === effectiveActiveCategory)
 
   return (
-    <div className="section">
+    <div className="section pro-categories-section py-5">
       <div className="container">
         <div className="has-text-centered mb-5">
-          <h1 className="title is-2">Comprar por Categoría</h1>
+          <span className="editorial-kicker">COLECCIÓN 2026</span>
+          <h1 className="title is-2 mb-2 has-text-weight-bold">Comprar por Categoría</h1>
           <p className="subtitle is-6 has-text-grey">
             Explora las colecciones exclusivas divididas por tipo de competición
           </p>
         </div>
 
-        <div className="columns mb-6">
+        {/* Grilla limpia de categorías estilo Nike */}
+        <div className="nike-teams-grid mb-6">
           {categories.map((cat) => (
-            <div key={cat.id} className="column is-6">
-              <div
-                className={`box has-text-centered p-5 category-box-selectable ${effectiveActiveCategory === cat.id ? 'is-active has-background-primary-light has-border-primary' : ''}`}
-                onClick={() => setActiveCategory(cat.id)}
-              >
-                <h3 className="title is-4 mb-2">{cat.title}</h3>
-                <p className="subtitle is-6 has-text-grey">
-                  {cat.count} modelos disponibles
-                </p>
-                <span className={`button is-small ${effectiveActiveCategory === cat.id ? 'is-primary' : 'is-light'}`}>
-                  {effectiveActiveCategory === cat.id ? 'Categoría Activa' : 'Ver Productos'}
-                </span>
+            <div
+              key={cat.id}
+              className={`nike-team-item cursor-pointer ${effectiveActiveCategory === cat.id ? 'is-selected' : ''}`}
+              onClick={() => setActiveCategory(cat.id)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter') setActiveCategory(cat.id) }}
+            >
+              <div className="nike-team-img-wrap">
+                <img
+                  src={cat.img}
+                  alt={cat.title}
+                  className="nike-team-img"
+                  onError={(e) => {
+                    e.target.src = 'https://placehold.co/85x85/FFFFFF/111827?text=' + cat.title
+                  }}
+                />
               </div>
+              <span className="nike-team-name">{cat.title}</span>
+              <span className="is-size-7 has-text-grey mt-1">({cat.count} modelos)</span>
             </div>
           ))}
         </div>
 
-        <div className="mb-4">
-          <h2 className="title is-4">{effectiveActiveCategory}</h2>
-          <hr />
+        <div className="mb-4 is-flex is-justify-content-space-between is-align-items-center border-bottom-subtle pb-2">
+          <h2 className="title is-4 mb-0 has-text-weight-bold">{effectiveActiveCategory}</h2>
+          <span className="tag is-dark is-rounded">{categoryProducts.length} camisetas</span>
         </div>
 
         <div className="columns is-multiline">
@@ -72,3 +87,5 @@ export function CategoriesView({
     </div>
   )
 }
+
+export default CategoriesView

@@ -2030,3 +2030,256 @@ aside.menu .menu-list a.is-active {
         padding: 0 1rem;
     }
 }
+
+
+/* ===================================================
+   13. ESTILO NIKE / ADIDAS: HEADER STICKY, TICKER Y ENCUENTRA TU EQUIPO
+   =================================================== */
+
+/* --- A. HEADER STICKY & NAVBAR ENGROSADA --- */
+.main-sticky-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.pro-master-navbar {
+    min-height: 82px !important;
+    padding: 1.15rem 2rem !important;
+    background-color: #111827 !important; /* Estilo Nike Dark Premium */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    display: flex;
+    align-items: center;
+}
+
+.pro-brand-link {
+    padding: 0 0.75rem !important;
+}
+
+.pro-brand-logo {
+    max-height: 44px !important;
+    width: auto;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+
+.pro-brand-link:hover .pro-brand-logo {
+    transform: scale(1.05);
+}
+
+.pro-brand-title {
+    font-size: 1.35rem !important;
+    letter-spacing: 1.5px;
+    font-weight: 900 !important;
+    text-transform: uppercase;
+}
+
+/* --- B. BARRA DE ANUNCIOS ROTATIVA (TICKER ESTILO NIKE) --- */
+.promo-ticker-bar {
+    background-color: #F5F5F5 !important;
+    border-bottom: 1px solid #E5E7EB;
+    padding: 0.55rem 1rem;
+    font-size: 0.82rem;
+    color: #111827;
+    overflow: hidden;
+}
+
+.promo-ticker-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 960px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.promo-ticker-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    text-align: center;
+    flex: 1;
+    animation: promoFadeIn 0.35s ease-out;
+}
+
+.promo-ticker-text {
+    font-weight: 500;
+    color: #1f2937;
+    letter-spacing: 0.2px;
+}
+
+.promo-ticker-action-link {
+    font-weight: 700 !important;
+    color: #111827 !important;
+    text-decoration: underline !important;
+    text-underline-offset: 3px;
+    white-space: nowrap;
+    transition: color 0.15s ease;
+}
+
+.promo-ticker-action-link:hover {
+    color: #00b89c !important;
+}
+
+.promo-ticker-arrow {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 50%;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.promo-ticker-arrow:hover {
+    background-color: #e5e7eb;
+    color: #111827;
+}
+
+@keyframes promoFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- C. ICONOS SVG MINIMALISTAS EN BENEFICIOS --- */
+.trust-badge-svg-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #f1f5f9;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.trust-badge-item:hover .trust-badge-svg-wrap {
+    background-color: #e2e8f0;
+    transform: translateY(-2px);
+}
+
+.trust-badge-svg-wrap svg {
+    display: block;
+}
+
+/* --- D. GRILLA LIMPIA ESTILO NIKE: ENCUENTRA TU EQUIPO Y CATEGORÍAS --- */
+.find-team-clean-section {
+    background-color: #ffffff;
+    border-top: 1px solid #f1f5f9;
+}
+
+.nike-teams-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.5rem;
+    justify-items: center;
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0.5rem 0;
+}
+
+.nike-team-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    max-width: 140px;
+    padding: 0.75rem 0.5rem;
+    border-radius: 12px;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.2s ease-in-out;
+}
+
+.nike-team-item:hover {
+    transform: translateY(-4px);
+}
+
+.nike-team-item.is-selected {
+    border-color: #00b89c;
+    background-color: #f0fdfa;
+}
+
+.nike-team-img-wrap {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.85rem;
+    overflow: hidden;
+    padding: 6px;
+    transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.nike-team-item:hover .nike-team-img-wrap {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    border-color: #cbd5e1;
+    transform: scale(1.06);
+}
+
+.nike-team-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain !important;
+    border-radius: 50%;
+}
+
+.nike-team-name {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #111827 !important;
+    letter-spacing: 0.2px;
+    line-height: 1.25;
+    text-transform: none;
+    transition: color 0.15s ease;
+}
+
+.nike-team-item:hover .nike-team-name {
+    color: #00b89c !important;
+}
+
+/* Responsividad para móviles */
+@media screen and (max-width: 1023px) {
+    .nike-teams-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.25rem 0.75rem;
+    }
+
+    .pro-master-navbar {
+        min-height: 72px !important;
+        padding: 0.75rem 1rem !important;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .nike-teams-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem 0.5rem;
+    }
+
+    .promo-ticker-content {
+        font-size: 0.75rem;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+}

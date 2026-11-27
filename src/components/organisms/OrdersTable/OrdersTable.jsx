@@ -58,10 +58,10 @@ export function OrdersTable({
         return <span className="tag is-success is-light has-text-weight-semibold">✓ {estado}</span>
       case 'En Despacho':
       case 'Enviado':
-        return <span className="tag is-info is-light has-text-weight-semibold">🚚 {estado}</span>
+        return <span className="tag is-info is-light has-text-weight-semibold">Enviado</span>
       case 'Pendiente':
       case 'En Preparación':
-        return <span className="tag is-warning is-light has-text-weight-semibold">⏳ {estado}</span>
+        return <span className="tag is-warning is-light has-text-weight-semibold">Pendiente</span>
       default:
         return <span className="tag is-light">{estado}</span>
     }
@@ -108,7 +108,12 @@ export function OrdersTable({
                 onChange={(e) => setSearchTerm(e.target.value)}
                 id="search-orders-input"
               />
-              <span className="icon is-small is-left">🔍</span>
+              <span className="icon is-small is-left">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </span>
             </div>
           </div>
         </div>
@@ -169,7 +174,13 @@ export function OrdersTable({
       {/* Tabla de Órdenes */}
       {filteredOrders.length === 0 ? (
         <div className="notification is-light has-text-centered py-6">
-          <p className="is-size-3 mb-2">📦</p>
+          <div className="mb-2">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+              <line x1="12" y1="22.08" x2="12" y2="12" />
+            </svg>
+          </div>
           <p className="is-size-5 has-text-weight-bold mb-1">No se encontraron órdenes</p>
           <p className="is-size-6 has-text-grey mb-4">
             No hay registros que coincidan con los criterios de búsqueda aplicados.
@@ -240,7 +251,7 @@ export function OrdersTable({
                         className="is-outlined"
                         id={`btn-view-receipt-${orderId}`}
                       >
-                        <span className="mr-1">🧾</span> Ver Boleta
+                        Ver Boleta
                       </Button>
                     </td>
                   </tr>

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import { Carousel } from '../../components/organisms/Carousel/Carousel.jsx'
 import { ProductCard } from '../../components/molecules/ProductCard/ProductCard.jsx'
 import { Button } from '../../components/atoms/Button/Button.jsx'
@@ -9,117 +9,57 @@ export function HomeView({
   onAddToCart,
   onNavigate
 }) {
-  const [activeFilter, setActiveFilter] = useState('Todas')
-  const [teamCategoryFilter, setTeamCategoryFilter] = useState('Todas')
-
-  // Carrusel con los productos más destacados (hasta 5)
+  // 1. Carrusel principal (Hero Banner con autoplay funcional)
   const bannerProducts = useMemo(() => {
     if (!products || products.length === 0) return []
     return products.slice(0, 5)
   }, [products])
 
-  const dynamicCategories = useMemo(() => {
-    return Array.from(new Set(products.map(p => p.categoria).filter(Boolean)))
+  // 2. Curación de 4 camisetas destacadas para la fila principal (products.slice(0, 4))
+  const featuredProducts = useMemo(() => {
+    if (!products || products.length === 0) return []
+    return products.slice(0, 4)
   }, [products])
 
-  const categories = useMemo(() => {
-    return ['Todas', ...(dynamicCategories.length > 0 ? dynamicCategories : ['Selecciones Nacionales', 'Clubes Chilenos'])]
-  }, [dynamicCategories])
-
-  const filteredProducts = useMemo(() => {
-    if (activeFilter === 'Todas') return products
-    return products.filter(p => p.categoria === activeFilter)
-  }, [products, activeFilter])
-
-  // Equipos y selecciones reconocidas para la sección "ENCUENTRA TU EQUIPO"
-  const knownTeams = useMemo(() => [
+  // 3. Equipos y selecciones reales disponibles en nuestra base de datos
+  const availableTeams = useMemo(() => [
     {
       id: 'brasil',
       name: 'Brasil',
       query: 'Brasil',
-      category: 'Selecciones Nacionales',
-      subtitle: 'Pentacampeón',
-      flag: '🇧🇷',
-      bgColor: '#105B38',
-      textColor: '#FFE11F'
+      img: '/assets/images/brasil/brasil1.jpeg'
     },
     {
       id: 'udechile',
       name: 'U. de Chile',
       query: 'Universidad de Chile',
-      category: 'Clubes Chilenos',
-      subtitle: 'El Romántico Viajero',
-      flag: '🇨🇱',
-      bgColor: '#002B7F',
-      textColor: '#D6001C'
+      img: '/assets/images/u_de_chile/lau1.webp'
     },
     {
       id: 'francia',
       name: 'Francia',
       query: 'Francia',
-      category: 'Selecciones Nacionales',
-      subtitle: 'Les Bleus',
-      flag: '🇫🇷',
-      bgColor: '#002654',
-      textColor: '#CE1126'
-    },
-    {
-      id: 'colocolo',
-      name: 'Colo-Colo',
-      query: 'Colo-Colo',
-      category: 'Clubes Chilenos',
-      subtitle: 'El Eterno Campeón',
-      flag: '🇨🇱',
-      bgColor: '#111827',
-      textColor: '#FFFFFF'
-    },
-    {
-      id: 'argentina',
-      name: 'Argentina',
-      query: 'Argentina',
-      category: 'Selecciones Nacionales',
-      subtitle: 'Tres Estrellas',
-      flag: '🇦🇷',
-      bgColor: '#75AADB',
-      textColor: '#FFFFFF'
-    },
-    {
-      id: 'catolica',
-      name: 'U. Católica',
-      query: 'Católica',
-      category: 'Clubes Chilenos',
-      subtitle: 'Los Cruzados',
-      flag: '🇨🇱',
-      bgColor: '#003366',
-      textColor: '#FFFFFF'
+      img: '/assets/images/francia/francia1.png'
     },
     {
       id: 'espana',
       name: 'España',
       query: 'España',
-      category: 'Selecciones Nacionales',
-      subtitle: 'La Roja Europea',
-      flag: '🇪🇸',
-      bgColor: '#AA151B',
-      textColor: '#F1BF00'
+      img: '/assets/images/españa/españa2.jpg'
     },
     {
-      id: 'palestino',
-      name: 'Palestino',
-      query: 'Palestino',
-      category: 'Clubes Chilenos',
-      subtitle: 'Tricolor Árabe',
-      flag: '🇵🇸',
-      bgColor: '#007A3D',
-      textColor: '#FFFFFF'
+      id: 'argentina',
+      name: 'Argentina',
+      query: 'Argentina',
+      img: '/assets/images/argentina/argentina1.jpg'
+    },
+    {
+      id: 'colocolo',
+      name: 'Colo-Colo',
+      query: 'Colo-Colo',
+      img: '/assets/images/zorras/zorra1.jpg'
     }
   ], [])
-
-  // Filtrar tarjetas de equipos según pestaña de categoría
-  const displayedTeams = useMemo(() => {
-    if (teamCategoryFilter === 'Todas') return knownTeams
-    return knownTeams.filter(t => t.category === teamCategoryFilter)
-  }, [knownTeams, teamCategoryFilter])
 
   const handleTeamClick = (team) => {
     if (onNavigate) {
@@ -129,21 +69,29 @@ export function HomeView({
 
   return (
     <div className="home-view-wrapper">
-      {/* 1. HERO CAROUSEL EDITORIAL */}
-      <div className="container px-3 pt-3">
+      {/* 1. HERO BANNER / CARRUSEL PRINCIPAL */}
+      <div className="container px-3 pt-4">
         <Carousel
           items={bannerProducts}
           onSelectItem={onSelectProduct}
         />
       </div>
 
-      {/* 2. FRANJA DE BENEFICIOS / CONFIANZA */}
+      {/* 2. BARRA DE BENEFICIOS / CONFIANZA CON ICONOS VECTORIALES SVG MINIMALISTAS */}
       <section className="trust-badges-bar py-4 my-2" aria-label="Beneficios de la tienda">
         <div className="container">
           <div className="columns is-mobile is-multiline is-vcentered has-text-centered">
+            {/* Envíos a todo Chile */}
             <div className="column is-6-mobile is-3-tablet">
               <div className="trust-badge-item">
-                <span className="trust-badge-icon">🚚</span>
+                <span className="trust-badge-svg-wrap">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111827" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="1" y="3" width="15" height="13" />
+                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                    <circle cx="5.5" cy="18.5" r="2.5" />
+                    <circle cx="18.5" cy="18.5" r="2.5" />
+                  </svg>
+                </span>
                 <div className="trust-badge-text">
                   <strong className="is-size-7 is-uppercase">Envíos a todo Chile</strong>
                   <p className="is-size-7 has-text-grey">Rápido, seguro y con seguimiento</p>
@@ -151,29 +99,47 @@ export function HomeView({
               </div>
             </div>
 
+            {/* Camisetas 100% Oficiales */}
             <div className="column is-6-mobile is-3-tablet">
               <div className="trust-badge-item">
-                <span className="trust-badge-icon">⭐</span>
+                <span className="trust-badge-svg-wrap">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111827" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                </span>
                 <div className="trust-badge-text">
-                  <strong className="is-size-7 is-uppercase">100% Oficiales</strong>
+                  <strong className="is-size-7 is-uppercase">Camisetas 100% Oficiales</strong>
                   <p className="is-size-7 has-text-grey">Calidad prémium garantizada</p>
                 </div>
               </div>
             </div>
 
+            {/* Pago Seguro */}
             <div className="column is-6-mobile is-3-tablet">
               <div className="trust-badge-item">
-                <span className="trust-badge-icon">🔒</span>
+                <span className="trust-badge-svg-wrap">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111827" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                </span>
                 <div className="trust-badge-text">
-                  <strong className="is-size-7 is-uppercase">Pago 100% Seguro</strong>
+                  <strong className="is-size-7 is-uppercase">Pago Seguro</strong>
                   <p className="is-size-7 has-text-grey">Transbank Webpay Plus y Débito</p>
                 </div>
               </div>
             </div>
 
+            {/* Cambios y Devoluciones */}
             <div className="column is-6-mobile is-3-tablet">
               <div className="trust-badge-item">
-                <span className="trust-badge-icon">🔄</span>
+                <span className="trust-badge-svg-wrap">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111827" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="23 4 23 10 17 10" />
+                    <polyline points="1 20 1 14 7 14" />
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                  </svg>
+                </span>
                 <div className="trust-badge-text">
                   <strong className="is-size-7 is-uppercase">Cambios y Devoluciones</strong>
                   <p className="is-size-7 has-text-grey">Garantía de satisfacción 30 días</p>
@@ -184,98 +150,20 @@ export function HomeView({
         </div>
       </section>
 
-      {/* 3. SECCIÓN "ENCUENTRA TU EQUIPO" */}
-      <section className="section py-5 find-team-section">
-        <div className="container">
-          <div className="section-editorial-header mb-4">
-            <div className="is-flex is-justify-content-space-between is-align-items-flex-end is-flex-wrap-wrap gap-2">
-              <div>
-                <span className="editorial-kicker">SELECCIÓN PERSONALIZADA</span>
-                <h2 className="title is-3 mb-1 has-text-weight-bold">ENCUENTRA TU EQUIPO</h2>
-                <p className="subtitle is-6 has-text-grey mb-0">
-                  Explora las camisetas de tus clubes chilenos y selecciones internacionales favoritas
-                </p>
-              </div>
-
-              {/* Filtros rápidos de categoría para equipos */}
-              <div className="buttons are-small team-filter-tabs mb-0">
-                {['Todas', 'Selecciones Nacionales', 'Clubes Chilenos'].map((tabCat) => (
-                  <button
-                    key={tabCat}
-                    type="button"
-                    className={`button is-rounded ${teamCategoryFilter === tabCat ? 'is-dark' : 'is-light'}`}
-                    onClick={() => setTeamCategoryFilter(tabCat)}
-                  >
-                    {tabCat}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="columns is-mobile is-multiline teams-grid">
-            {displayedTeams.map((team) => {
-              // Contar productos reales existentes en el catálogo
-              const teamProductCount = products.filter(p =>
-                (p.titulo || '').toLowerCase().includes(team.query.toLowerCase())
-              ).length
-
-              return (
-                <div key={team.id} className="column is-6-mobile is-3-tablet is-3-desktop">
-                  <div
-                    className="team-quick-card cursor-pointer"
-                    onClick={() => handleTeamClick(team)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => { if (e.key === 'Enter') handleTeamClick(team) }}
-                  >
-                    <div className="team-quick-card-badge" style={{ backgroundColor: team.bgColor, color: team.textColor }}>
-                      <span className="team-flag">{team.flag}</span>
-                    </div>
-
-                    <div className="team-quick-card-info">
-                      <h4 className="team-name">{team.name}</h4>
-                      <p className="team-subtitle">{team.subtitle}</p>
-                      <span className="team-products-count">
-                        {teamProductCount > 0 ? `${teamProductCount} disponibles` : 'Ver catálogo'} &rarr;
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* 4. GRILLA "COLECCIÓN DESTACADA 2026" */}
+      {/* 3. SECCIÓN "COLECCIÓN DESTACADA": 4 CAMISETAS EN UNA FILA DE 4 COLUMNAS */}
       <section className="section py-5 featured-collection-section">
         <div className="container">
           <div className="has-text-centered mb-5">
             <span className="editorial-kicker">TEMPORADA 2026</span>
             <h2 className="title is-2 mb-2 has-text-weight-bold">COLECCIÓN DESTACADA</h2>
             <p className="subtitle is-6 has-text-grey">
-              Camisetas oficiales de selecciones mundiales y clubes del fútbol chileno.
+              Selección exclusiva de camisetas oficiales de selecciones y clubes del fútbol chileno.
             </p>
-
-            <div className="buttons is-centered mt-4">
-              {categories.map((cat) => (
-                <Button
-                  key={cat}
-                  variant={activeFilter === cat ? 'primary' : 'light'}
-                  size="small"
-                  className="is-rounded px-4"
-                  onClick={() => setActiveFilter(cat)}
-                >
-                  {cat}
-                </Button>
-              ))}
-            </div>
           </div>
 
           <div className="columns is-multiline">
-            {filteredProducts.map((prod) => (
-              <div key={prod.id} className="column is-12-mobile is-6-tablet is-4-desktop is-3-widescreen">
+            {featuredProducts.map((prod) => (
+              <div key={prod.id} className="column is-12-mobile is-6-tablet is-3-desktop">
                 <ProductCard
                   product={prod}
                   onSelect={onSelectProduct}
@@ -292,8 +180,46 @@ export function HomeView({
               className="px-5 has-text-weight-bold is-rounded"
               onClick={() => onNavigate && onNavigate('productos')}
             >
-              EXPLORAR TODO EL CATÁLOGO &rarr;
+              VER TODO EL CATÁLOGO &rarr;
             </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. SECCIÓN "ENCUENTRA TU EQUIPO" (AL FINAL, ESTILO NIKE CON MINIATURAS LIMPIAS) */}
+      <section className="section py-5 find-team-clean-section">
+        <div className="container">
+          <div className="has-text-centered mb-5">
+            <span className="editorial-kicker">CATÁLOGO OFICIAL</span>
+            <h2 className="title is-3 mb-2 has-text-weight-bold">ENCUENTRA TU EQUIPO</h2>
+            <p className="subtitle is-6 has-text-grey">
+              Elige tu equipo o selección para acceder de inmediato a sus camisetas disponibles
+            </p>
+          </div>
+
+          <div className="nike-teams-grid">
+            {availableTeams.map((team) => (
+              <div
+                key={team.id}
+                className="nike-team-item cursor-pointer"
+                onClick={() => handleTeamClick(team)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleTeamClick(team) }}
+              >
+                <div className="nike-team-img-wrap">
+                  <img
+                    src={team.img}
+                    alt={team.name}
+                    className="nike-team-img"
+                    onError={(e) => {
+                      e.target.src = 'https://placehold.co/85x85/FFFFFF/111827?text=' + team.name
+                    }}
+                  />
+                </div>
+                <span className="nike-team-name">{team.name}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>

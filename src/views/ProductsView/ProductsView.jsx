@@ -204,7 +204,18 @@ export function ProductsView({
                 className="button is-dark is-rounded pro-mobile-filter-btn"
                 onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
               >
-                <span>⚙️ {isMobileFilterOpen ? 'Ocultar filtros' : 'Filtrar productos'}</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                  <line x1="4" y1="21" x2="4" y2="14" />
+                  <line x1="4" y1="10" x2="4" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12" y2="3" />
+                  <line x1="20" y1="21" x2="20" y2="16" />
+                  <line x1="20" y1="12" x2="20" y2="3" />
+                  <line x1="1" y1="14" x2="7" y2="14" />
+                  <line x1="9" y1="8" x2="15" y2="8" />
+                  <line x1="17" y1="16" x2="23" y2="16" />
+                </svg>
+                <span>{isMobileFilterOpen ? 'Ocultar filtros' : 'Filtrar productos'}</span>
                 {isFiltered && <span className="tag is-primary is-rounded ml-2">!</span>}
               </button>
             </div>
@@ -220,7 +231,10 @@ export function ProductsView({
             <div className="box catalog-filters-sidebar">
               <div className="is-flex is-justify-content-space-between is-align-items-center mb-4 pb-2 border-bottom-subtle">
                 <h3 className="title is-5 mb-0 has-text-weight-bold is-flex is-align-items-center">
-                  <span className="mr-2">⚡</span> FILTROS
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00b89c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                  </svg>
+                  FILTROS
                 </h3>
 
                 {isFiltered && (
@@ -394,7 +408,10 @@ export function ProductsView({
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
                       <span className="icon is-small is-left has-text-grey">
-                        🔍
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="11" cy="11" r="8" />
+                          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
                       </span>
                     </div>
                   </div>
@@ -499,7 +516,12 @@ export function ProductsView({
             {/* Grilla de productos o Estado Vacío */}
             {filteredProducts.length === 0 ? (
               <div className="box catalog-empty-state has-text-centered py-6 px-4">
-                <span className="empty-state-icon">⚽</span>
+                <div className="empty-state-svg-wrap mb-3">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                  </svg>
+                </div>
                 <h3 className="title is-4 mb-2 has-text-weight-bold">No se encontraron productos</h3>
                 <p className="subtitle is-6 has-text-grey mb-4">
                   No hay camisetas que coincidan con los filtros de búsqueda o rango de precio seleccionados.

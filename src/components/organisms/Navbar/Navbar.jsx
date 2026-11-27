@@ -8,7 +8,8 @@ export function Navbar({
   onNavigate,
   loggedUser,
   onLogout,
-  cartCount = 0
+  cartCount = 0,
+  onOpenCart
 }) {
   const [burgerActive, setBurgerActive] = useState(false)
   const navigate = useNavigate()
@@ -165,7 +166,13 @@ export function Navbar({
                     variant="primary"
                     size="small"
                     className="is-outlined"
-                    onClick={() => handleNav('carrito')}
+                    onClick={() => {
+                      if (onOpenCart) {
+                        onOpenCart()
+                      } else {
+                        handleNav('carrito')
+                      }
+                    }}
                   >
                     Carrito ({cartCount})
                   </Button>

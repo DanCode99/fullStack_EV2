@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom'
+import { useCart } from './context/useCart.js'
 import { productService } from './services/productService.js'
 import { userService } from './services/userService.js'
 import { orderService } from './services/orderService.js'
@@ -22,8 +23,6 @@ import { ContactView } from './views/ContactView/ContactView.jsx'
 import { LoginView } from './views/LoginView/LoginView.jsx'
 import { RegisterView } from './views/RegisterView/RegisterView.jsx'
 import { AdminView } from './views/AdminView/AdminView.jsx'
-
-const CART_STORAGE_KEY = 'carritoFutbol'
 
 export function App() {
   const navigate = useNavigate()
@@ -55,14 +54,10 @@ export function App() {
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [lastOrder, setLastOrder] = useState(null)
 
-  const [cart, setCart] = useState(() => {
-    try {
-      const saved = localStorage.getItem(CART_STORAGE_KEY)
-      return saved ? JSON.parse(saved) : []
-    } catch {
-      return []
-    }
-  })
+  const cartCtx = useCart()
+  const cart = cartCtx?.cart || []
+  const totalCartCount = cartCtx?.totalCartCount ?? cart.reduce((acc, item) => acc + (item.cantidad || 1), 0)
+  const openCart = cartCtx?.openCart
 
   // Estado para alertas toast interactivas
   const [toast, setToast] = useState(null)
@@ -147,12 +142,6 @@ export function App() {
     return () => { ignore = true }
   }, [loggedUser])
 
-  // Sincronizar cambios del carrito con LocalStorage
-  const updateCart = (newCart) => {
-    setCart(newCart)
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(newCart))
-  }
-
   // Mapeo amigable de nombres de vistas a rutas
   const routeMap = {
     home: '/',
@@ -206,53 +195,36 @@ export function App() {
   }
   const currentView = getCurrentView()
 
-  // Operaciones del Carrito
+  // Operaciones del Carrito conectadas a CartContext
   const handleAddToCart = (product, quantity = 1) => {
-    const existingIndex = cart.findIndex(
-      item => item.id === product.id && item.talla === (product.talla || 'M')
-    )
-
-    if (existingIndex > -1) {
-      const updated = [...cart]
-      updated[existingIndex].cantidad += quantity
-      updateCart(updated)
-    } else {
-      const newItem = {
-        id: product.id,
-        titulo: product.titulo,
-        precio: product.precio,
-        img: product.img,
-        talla: product.talla || 'M',
-        cantidad: quantity
-      }
-      updateCart([...cart, newItem])
+    if (cartCtx?.addToCart) {
+      cartCtx.addToCart(product, quantity)
     }
-    showNotification('¡Producto agregado al carrito!', `${product.titulo || 'Camiseta'} (${product.talla || 'M'}) se añadió con éxito.`)
+    showNotification('¡Producto agregado al carrito!', `${product?.titulo || 'Camiseta'} (${product?.talla || 'M'}) se añadió con éxito.`)
   }
 
   const handleIncrementCart = (index) => {
-    const updated = [...cart]
-    updated[index].cantidad += 1
-    updateCart(updated)
+    if (cartCtx?.incrementCart) {
+      cartCtx.incrementCart(index)
+    }
   }
 
   const handleDecrementCart = (index) => {
-    const updated = [...cart]
-    if (updated[index].cantidad > 1) {
-      updated[index].cantidad -= 1
-      updateCart(updated)
-    } else {
-      handleRemoveCart(index)
+    if (cartCtx?.decrementCart) {
+      cartCtx.decrementCart(index)
     }
   }
 
   const handleRemoveCart = (index) => {
-    const updated = cart.filter((_, i) => i !== index)
-    updateCart(updated)
+    if (cartCtx?.removeFromCart) {
+      cartCtx.removeFromCart(index)
+    }
   }
 
   const handleClearCart = () => {
-    updateCart([])
+    if (cartCtx?.clearCart) {
+      cartCtx.clearCart()
+    }
   }
 
   // 3. EN HANDLELOGIN Y LOGOUT:
@@ -381,8 +353,6 @@ export function App() {
     }
   }
 
-  const totalCartCount = cart.reduce((acc, item) => acc + item.cantidad, 0)
-
   // 3. SEGURIDAD DE RUTAS: Protege la ruta /admin
   // Si no hay loggedUser redirige a /login; si loggedUser.rol no es 'ADMIN' ni 'VENDEDOR', expulsa a '/'
   if (location.pathname.startsWith('/admin')) {
@@ -429,6 +399,8 @@ export function App() {
       loggedUser={loggedUser}
       onLogout={handleLogout}
       cartCount={totalCartCount}
+      onOpenCart={openCart}
+      catalogProducts={products}
     >
       <Routes>
         <Route

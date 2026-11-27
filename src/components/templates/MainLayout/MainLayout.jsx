@@ -1,5 +1,6 @@
 import { Navbar } from '../../organisms/Navbar/Navbar.jsx'
 import { Footer } from '../../organisms/Footer/Footer.jsx'
+import { CartDrawer } from '../../organisms/CartDrawer/CartDrawer.jsx'
 
 export function MainLayout({
   children,
@@ -7,7 +8,9 @@ export function MainLayout({
   onNavigate,
   loggedUser,
   onLogout,
-  cartCount
+  cartCount,
+  onOpenCart,
+  catalogProducts = []
 }) {
   return (
     <div className="is-flex is-flex-direction-column min-h-100vh">
@@ -17,14 +20,17 @@ export function MainLayout({
         loggedUser={loggedUser}
         onLogout={onLogout}
         cartCount={cartCount}
+        onOpenCart={onOpenCart}
       />
       <main className="is-flex-grow-1">
         {children}
       </main>
       <Footer onNavigate={onNavigate} />
+      <CartDrawer catalogProducts={catalogProducts} onNavigate={onNavigate} />
     </div>
   )
 }
 
 export default MainLayout
+
 

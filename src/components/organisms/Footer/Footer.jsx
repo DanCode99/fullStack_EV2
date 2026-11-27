@@ -100,7 +100,12 @@ export function Footer({ onNavigate }) {
               <span className="has-background-grey-dark has-text-white is-flex is-justify-content-center is-align-items-center footer-social-link footer-social-link-small">YT</span>
               <span className="has-background-grey-dark has-text-white is-flex is-justify-content-center is-align-items-center footer-social-link footer-social-link-small">IG</span>
               <span className="has-text-weight-bold ml-4 has-text-white is-flex is-align-items-center">
-                <span className="mr-2 is-size-5">🇨🇱</span> Chile
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
+                Chile
               </span>
             </div>
           </div>

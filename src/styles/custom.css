@@ -1314,3 +1314,972 @@ aside.menu .menu-list a.is-active {
     max-width: 500px;
 }
 
+
+
+/* ===================================================
+   12. REDISEÑO EDITORIAL E-COMMERCE DEPORTIVO
+   =================================================== */
+
+/* --- A. HERO CAROUSEL EDITORIAL DINÁMICO --- */
+.hero-editorial-carousel {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    background-color: #0b0f19;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    min-height: 440px;
+}
+
+.hero-slide {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 440px;
+    background: radial-gradient(circle at 75% 50%, #1e293b 0%, #0b0f19 70%);
+}
+
+.hero-slide-bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(11, 15, 25, 0.95) 0%, rgba(11, 15, 25, 0.75) 45%, rgba(11, 15, 25, 0.1) 100%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.hero-slide-img {
+    position: absolute;
+    right: 2%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 52%;
+    max-height: 400px;
+    object-fit: contain !important;
+    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.5));
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 1;
+}
+
+.hero-editorial-carousel:hover .hero-slide-img {
+    transform: translateY(-50%) scale(1.03);
+}
+
+.hero-editorial-content {
+    position: relative;
+    z-index: 3;
+    padding: 3.5rem 3rem;
+    max-width: 580px;
+    background: transparent !important;
+}
+
+.hero-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.hero-tag-season {
+    background-color: #00b89c;
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    padding: 0.3rem 0.75rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.hero-tag-category {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 0.3rem 0.65rem;
+    border-radius: 4px;
+    backdrop-filter: blur(4px);
+}
+
+.hero-title {
+    font-size: 2.25rem !important;
+    font-weight: 900 !important;
+    line-height: 1.15;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    margin-bottom: 0.75rem !important;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.hero-subtitle {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1.75rem;
+    color: #94a3b8 !important;
+    max-width: 440px;
+}
+
+.hero-price-action {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.hero-price-wrap {
+    display: flex;
+    flex-direction: column;
+}
+
+.hero-price-label {
+    font-size: 0.68rem;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    color: #64748b;
+}
+
+.hero-price-value {
+    font-size: 1.75rem !important;
+    font-weight: 900 !important;
+    color: #00d1b2 !important;
+    line-height: 1;
+}
+
+.hero-cta-btn {
+    border-radius: 30px !important;
+    font-weight: 800 !important;
+    letter-spacing: 1px;
+    padding: 0 1.75rem !important;
+    height: 3rem !important;
+    box-shadow: 0 8px 20px rgba(0, 184, 156, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.hero-cta-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 12px 25px rgba(0, 184, 156, 0.55);
+}
+
+.carousel-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 44px;
+    height: 44px;
+    background-color: rgba(15, 23, 42, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+}
+
+.carousel-nav-btn:hover {
+    background-color: #00b89c !important;
+    border-color: #00b89c !important;
+    color: #ffffff !important;
+    transform: translateY(-50%) scale(1.08);
+}
+
+.carousel-nav-btn.prev-btn { left: 20px; }
+.carousel-nav-btn.next-btn { right: 20px; }
+
+.carousel-dots-container {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.carousel-dot {
+    width: 24px;
+    height: 5px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.25);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.carousel-dot.is-active {
+    width: 45px;
+    background-color: #00d1b2;
+    box-shadow: 0 0 8px rgba(0, 209, 178, 0.8);
+}
+
+/* --- B. FRANJA DE BENEFICIOS / CONFIANZA --- */
+.trust-badges-bar {
+    background-color: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.trust-badge-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 0.5rem;
+}
+
+.trust-badge-icon {
+    font-size: 1.75rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.trust-badge-text {
+    text-align: left;
+    line-height: 1.25;
+}
+
+.trust-badge-text strong {
+    color: #0f172a;
+    display: block;
+    letter-spacing: 0.5px;
+}
+
+/* --- C. SECCIÓN ENCUENTRA TU EQUIPO --- */
+.find-team-section {
+    background-color: #f8fafc;
+}
+
+.editorial-kicker {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #00b89c;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+.team-filter-tabs .button {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.team-quick-card {
+    background-color: #F4F5F7;
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    min-height: 140px;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.team-quick-card:hover {
+    background-color: #ffffff;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+    border-color: #cbd5e1;
+}
+
+.team-quick-card-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.85rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.team-flag {
+    font-size: 1.4rem;
+}
+
+.team-name {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+    margin-bottom: 0.2rem;
+}
+
+.team-subtitle {
+    font-size: 0.78rem;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+}
+
+.team-products-count {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #00b89c;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* --- D. REDISEÑO PROFESIONAL DE PRODUCTCARD (ASPECT-RATIO 4/5) --- */
+.pro-sport-card {
+    border-radius: 14px !important;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.pro-sport-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 30px -8px rgba(0, 0, 0, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.04) !important;
+}
+
+.pro-card-image-wrap {
+    position: relative;
+    width: 100%;
+    background-color: #f1f5f9;
+    overflow: hidden;
+}
+
+.pro-card-badges {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.pro-badge-discount {
+    background-color: #e11d48;
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+.pro-badge-tag {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.pro-badge-club {
+    background-color: #0f172a;
+    color: #ffffff;
+}
+
+.pro-badge-intl {
+    background-color: #0284c7;
+    color: #ffffff;
+}
+
+.pro-badge-stock {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+.pro-badge-stock.is-warning {
+    background-color: #fef08a;
+    color: #854d0e;
+}
+
+.pro-badge-stock.is-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.pro-card-figure {
+    width: 100%;
+    margin: 0 !important;
+    aspect-ratio: 4 / 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #f8fafc;
+}
+
+.pro-product-img {
+    width: 100%;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pro-sport-card:hover .pro-product-img {
+    transform: scale(1.05);
+}
+
+.pro-card-content {
+    padding: 1.15rem !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
+.pro-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.35rem;
+}
+
+.pro-card-category {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.pro-card-brand {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #00b89c;
+    letter-spacing: 0.5px;
+}
+
+.pro-card-title {
+    font-size: 0.98rem !important;
+    font-weight: 700 !important;
+    line-height: 1.3 !important;
+    color: #0f172a;
+    min-height: 2.6rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 0.5rem !important;
+    transition: color 0.2s;
+}
+
+.pro-card-title:hover {
+    color: #00b89c;
+}
+
+.pro-price-current {
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
+    line-height: 1.2;
+}
+
+.pro-price-discount-wrap {
+    display: flex;
+    align-items: center;
+}
+
+.pro-btn-cart {
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+    border: none !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.pro-btn-cart:hover {
+    background-color: #00b89c !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+}
+
+.pro-btn-details {
+    background-color: #f1f5f9 !important;
+    color: #334155 !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+}
+
+.pro-btn-details:hover {
+    background-color: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+/* --- E. REDISEÑO DEL CATÁLOGO (SIDEBAR + GRILLA) --- */
+.pro-catalog-section {
+    background-color: #f8fafc;
+    min-height: 80vh;
+}
+
+.catalog-hero-header {
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 1.25rem;
+}
+
+.catalog-filters-sidebar {
+    position: sticky;
+    top: 1.5rem;
+    border-radius: 12px !important;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important;
+    padding: 1.5rem !important;
+}
+
+.border-bottom-subtle {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.border-top-subtle {
+    border-top: 1px solid #e2e8f0;
+}
+
+.filter-group-title {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #0f172a;
+    text-transform: uppercase;
+    margin-bottom: 0.65rem;
+}
+
+.filter-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-checkbox-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #334155;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.15s;
+}
+
+.filter-checkbox-item:hover {
+    color: #00b89c;
+}
+
+.filter-checkbox-item input[type="checkbox"] {
+    margin-right: 8px;
+    accent-color: #00b89c;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+.filter-checkbox-label {
+    flex-grow: 1;
+}
+
+.filter-item-count {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-left: 4px;
+}
+
+/* Dual Range Slider */
+.range-slider-wrapper {
+    position: relative;
+    padding: 0.5rem 0;
+}
+
+.range-inputs-dual {
+    position: relative;
+    height: 20px;
+}
+
+.slider-input {
+    position: absolute;
+    width: 100%;
+    pointer-events: none;
+    appearance: none;
+    height: 6px;
+    background: transparent;
+    top: 5px;
+    margin: 0;
+}
+
+.slider-input::-webkit-slider-thumb {
+    pointer-events: auto;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #00b89c;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.slider-input::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.slider-input.min-slider {
+    z-index: 3;
+}
+
+.slider-input.max-slider {
+    z-index: 4;
+}
+
+.slider-input::-moz-range-thumb {
+    pointer-events: auto;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #00b89c;
+    border: 2px solid #ffffff;
+    cursor: pointer;
+}
+
+/* Toolbar superior */
+.catalog-toolbar-box {
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02) !important;
+}
+
+.search-catalog-input {
+    border-color: #cbd5e1 !important;
+    background-color: #f8fafc !important;
+    box-shadow: none !important;
+}
+
+.search-catalog-input:focus {
+    background-color: #ffffff !important;
+    border-color: #00b89c !important;
+}
+
+.catalog-empty-state {
+    background-color: #ffffff;
+    border: 1px dashed #cbd5e1;
+    border-radius: 16px !important;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    display: inline-block;
+    margin-bottom: 0.75rem;
+}
+
+/* Responsividad para móviles */
+@media screen and (max-width: 768px) {
+    .hero-editorial-carousel,
+    .hero-slide {
+        min-height: 480px;
+    }
+
+    .hero-slide-img {
+        width: 75%;
+        max-height: 250px;
+        top: 25%;
+        right: 12%;
+        opacity: 0.9;
+    }
+
+    .hero-editorial-content {
+        padding: 1.5rem;
+        margin-top: 140px;
+        max-width: 100%;
+        text-align: center;
+    }
+
+    .hero-badge {
+        justify-content: center;
+    }
+
+    .hero-title {
+        font-size: 1.6rem !important;
+    }
+
+    .hero-subtitle {
+        font-size: 0.85rem;
+        margin: 0 auto 1.25rem;
+    }
+
+    .hero-price-action {
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .catalog-sidebar-col {
+        display: none;
+    }
+
+    .catalog-sidebar-col.is-mobile-open {
+        display: block;
+        margin-bottom: 1.5rem;
+    }
+
+    .pro-mobile-filter-btn {
+        font-size: 0.85rem;
+        padding: 0 1rem;
+    }
+}
+
+
+/* ===================================================
+   13. ESTILO NIKE / ADIDAS: HEADER STICKY, TICKER Y ENCUENTRA TU EQUIPO
+   =================================================== */
+
+/* --- A. HEADER STICKY & NAVBAR ENGROSADA --- */
+.main-sticky-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.pro-master-navbar {
+    min-height: 82px !important;
+    padding: 1.15rem 2rem !important;
+    background-color: #111827 !important; /* Estilo Nike Dark Premium */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    display: flex;
+    align-items: center;
+}
+
+.pro-brand-link {
+    padding: 0 0.75rem !important;
+}
+
+.pro-brand-logo {
+    max-height: 44px !important;
+    width: auto;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+
+.pro-brand-link:hover .pro-brand-logo {
+    transform: scale(1.05);
+}
+
+.pro-brand-title {
+    font-size: 1.35rem !important;
+    letter-spacing: 1.5px;
+    font-weight: 900 !important;
+    text-transform: uppercase;
+}
+
+/* --- B. BARRA DE ANUNCIOS ROTATIVA (TICKER ESTILO NIKE) --- */
+.promo-ticker-bar {
+    background-color: #F5F5F5 !important;
+    border-bottom: 1px solid #E5E7EB;
+    padding: 0.55rem 1rem;
+    font-size: 0.82rem;
+    color: #111827;
+    overflow: hidden;
+}
+
+.promo-ticker-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 960px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.promo-ticker-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    text-align: center;
+    flex: 1;
+    animation: promoFadeIn 0.35s ease-out;
+}
+
+.promo-ticker-text {
+    font-weight: 500;
+    color: #1f2937;
+    letter-spacing: 0.2px;
+}
+
+.promo-ticker-action-link {
+    font-weight: 700 !important;
+    color: #111827 !important;
+    text-decoration: underline !important;
+    text-underline-offset: 3px;
+    white-space: nowrap;
+    transition: color 0.15s ease;
+}
+
+.promo-ticker-action-link:hover {
+    color: #00b89c !important;
+}
+
+.promo-ticker-arrow {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 50%;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.promo-ticker-arrow:hover {
+    background-color: #e5e7eb;
+    color: #111827;
+}
+
+@keyframes promoFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- C. ICONOS SVG MINIMALISTAS EN BENEFICIOS --- */
+.trust-badge-svg-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #f1f5f9;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.trust-badge-item:hover .trust-badge-svg-wrap {
+    background-color: #e2e8f0;
+    transform: translateY(-2px);
+}
+
+.trust-badge-svg-wrap svg {
+    display: block;
+}
+
+/* --- D. GRILLA LIMPIA ESTILO NIKE: ENCUENTRA TU EQUIPO Y CATEGORÍAS --- */
+.find-team-clean-section {
+    background-color: #ffffff;
+    border-top: 1px solid #f1f5f9;
+}
+
+.nike-teams-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.5rem;
+    justify-items: center;
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0.5rem 0;
+}
+
+.nike-team-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    max-width: 140px;
+    padding: 0.75rem 0.5rem;
+    border-radius: 12px;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.2s ease-in-out;
+}
+
+.nike-team-item:hover {
+    transform: translateY(-4px);
+}
+
+.nike-team-item.is-selected {
+    border-color: #00b89c;
+    background-color: #f0fdfa;
+}
+
+.nike-team-img-wrap {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.85rem;
+    overflow: hidden;
+    padding: 6px;
+    transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.nike-team-item:hover .nike-team-img-wrap {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    border-color: #cbd5e1;
+    transform: scale(1.06);
+}
+
+.nike-team-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain !important;
+    border-radius: 50%;
+}
+
+.nike-team-name {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #111827 !important;
+    letter-spacing: 0.2px;
+    line-height: 1.25;
+    text-transform: none;
+    transition: color 0.15s ease;
+}
+
+.nike-team-item:hover .nike-team-name {
+    color: #00b89c !important;
+}
+
+/* Responsividad para móviles */
+@media screen and (max-width: 1023px) {
+    .nike-teams-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.25rem 0.75rem;
+    }
+
+    .pro-master-navbar {
+        min-height: 72px !important;
+        padding: 0.75rem 1rem !important;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .nike-teams-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem 0.5rem;
+    }
+
+    .promo-ticker-content {
+        font-size: 0.75rem;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+}

@@ -17,75 +17,96 @@ export function ProductCard({
     }
   }
 
+  const brandOrCategory = product.nombreMarca || product.categoria || 'Fútbol Oficial'
+  const isClub = product.categoria === 'Clubes Chilenos'
+
   return (
-    <div className="card h-100">
+    <div className="card h-100 pro-sport-card">
       <div
-        className="card-image cursor-pointer"
+        className="card-image cursor-pointer pro-card-image-wrap"
         onClick={handleSelect}
       >
-        <figure className="image">
+        {/* Badges superiores flotantes */}
+        <div className="pro-card-badges">
+          {product.descuento ? (
+            <span className="pro-badge-discount">-{product.descuento}% OFF</span>
+          ) : isClub ? (
+            <span className="pro-badge-tag pro-badge-club">FÚTBOL CHILENO</span>
+          ) : (
+            <span className="pro-badge-tag pro-badge-intl">SELECCIÓN</span>
+          )}
+
+          {isOutOfStock ? (
+            <span className="pro-badge-stock is-danger">AGOTADO</span>
+          ) : product.stock <= 5 ? (
+            <span className="pro-badge-stock is-warning">ÚLTIMAS {product.stock} UNID.</span>
+          ) : null}
+        </div>
+
+        <figure className="image pro-card-figure">
           <img
             src={product.img}
             alt={product.titulo}
+            className="pro-product-img"
+            loading="lazy"
             onError={(e) => {
-              e.target.src = 'https://placehold.co/400x300?text=Camiseta'
+              e.target.src = 'https://placehold.co/400x500/1e293b/FFFFFF?text=Camiseta+Oficial'
             }}
           />
         </figure>
       </div>
 
-      <div className="card-content">
-        <div>
-          <div className="is-flex is-justify-content-space-between is-align-items-center mb-2">
-            <span className="is-size-7 has-text-grey">{product.categoria}</span>
+      <div className="card-content pro-card-content">
+        <div className="pro-card-header">
+          <div className="pro-card-meta">
+            <span className="pro-card-category">{product.categoria}</span>
+            <span className="pro-card-brand">{brandOrCategory}</span>
           </div>
 
           <h3
-            className="title is-6 mb-2 cursor-pointer"
+            className="title is-6 pro-card-title cursor-pointer"
             onClick={handleSelect}
+            title={product.titulo}
           >
             {product.titulo}
           </h3>
 
-          {product.descuento ? (
-            <div>
-              <div className="is-flex is-align-items-center mb-1">
-                <span className="tag is-danger is-light has-text-weight-bold mr-2">
-                  -{product.descuento}% OFF
-                </span>
-                <span className="is-size-7 has-text-grey line-through">
+          <div className="pro-card-pricing">
+            {product.descuento ? (
+              <div className="pro-price-discount-wrap">
+                <span className="is-size-7 has-text-grey line-through mr-2">
                   ${Number(product.precioOriginal || product.precio).toLocaleString('es-CL')}
                 </span>
+                <span className="pro-price-current has-text-danger">
+                  ${Number(product.precioFinal || Math.round(product.precio * (1 - product.descuento / 100))).toLocaleString('es-CL')}
+                </span>
               </div>
-              <p className="subtitle is-5 has-text-danger has-text-weight-bold mb-0">
-                ${Number(product.precioFinal || Math.round(product.precio * (1 - product.descuento / 100))).toLocaleString('es-CL')}
+            ) : (
+              <p className="pro-price-current has-text-dark">
+                ${Number(product.precio).toLocaleString('es-CL')}
               </p>
-            </div>
-          ) : (
-            <p className="subtitle is-5 has-text-primary has-text-weight-bold">
-              ${Number(product.precio).toLocaleString('es-CL')}
-            </p>
-          )}
+            )}
+          </div>
         </div>
 
-
-        <div className="buttons mt-3">
+        <div className="pro-card-actions mt-3">
           <Button
             variant="primary"
             size="small"
-            className="is-fullwidth mb-1"
-            onClick={handleSelect}
-          >
-            Ver detalles
-          </Button>
-          <Button
-            variant="primary"
-            size="small"
-            className="is-fullwidth"
+            className="is-fullwidth pro-btn-cart mb-2"
             disabled={isOutOfStock}
             onClick={() => onAddToCart && onAddToCart(product)}
           >
-            {isOutOfStock ? 'Sin Stock' : 'Agregar al Carrito'}
+            {isOutOfStock ? 'Sin Stock Disponible' : 'Agregar al Carrito'}
+          </Button>
+
+          <Button
+            variant="light"
+            size="small"
+            className="is-fullwidth pro-btn-details"
+            onClick={handleSelect}
+          >
+            Ver detalles
           </Button>
         </div>
       </div>
@@ -94,4 +115,3 @@ export function ProductCard({
 }
 
 export default ProductCard
-

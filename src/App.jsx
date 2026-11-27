@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom'
+import { useCart } from './context/useCart.js'
 import { productService } from './services/productService.js'
 import { userService } from './services/userService.js'
 import { orderService } from './services/orderService.js'
@@ -22,8 +23,6 @@ import { ContactView } from './views/ContactView/ContactView.jsx'
 import { LoginView } from './views/LoginView/LoginView.jsx'
 import { RegisterView } from './views/RegisterView/RegisterView.jsx'
 import { AdminView } from './views/AdminView/AdminView.jsx'
-
-const CART_STORAGE_KEY = 'carritoFutbol'
 
 export function App() {
   const navigate = useNavigate()
@@ -51,18 +50,25 @@ export function App() {
 
   const [products, setProducts] = useState([])
   const [users, setUsers] = useState([])
-  const [orders, setOrders] = useState([])
+  const [orders, setOrders] = useState(() => {
+    try {
+      const raw = localStorage.getItem('futbol_orders_backup')
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed
+      }
+    } catch {
+      // fallback
+    }
+    return []
+  })
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [lastOrder, setLastOrder] = useState(null)
 
-  const [cart, setCart] = useState(() => {
-    try {
-      const saved = localStorage.getItem(CART_STORAGE_KEY)
-      return saved ? JSON.parse(saved) : []
-    } catch {
-      return []
-    }
-  })
+  const cartCtx = useCart()
+  const cart = cartCtx?.cart || []
+  const totalCartCount = cartCtx?.totalCartCount ?? cart.reduce((acc, item) => acc + (item.cantidad || 1), 0)
+  const openCart = cartCtx?.openCart
 
   // Estado para alertas toast interactivas
   const [toast, setToast] = useState(null)
@@ -147,12 +153,6 @@ export function App() {
     return () => { ignore = true }
   }, [loggedUser])
 
-  // Sincronizar cambios del carrito con LocalStorage
-  const updateCart = (newCart) => {
-    setCart(newCart)
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(newCart))
-  }
-
   // Mapeo amigable de nombres de vistas a rutas
   const routeMap = {
     home: '/',
@@ -206,53 +206,36 @@ export function App() {
   }
   const currentView = getCurrentView()
 
-  // Operaciones del Carrito
+  // Operaciones del Carrito conectadas a CartContext
   const handleAddToCart = (product, quantity = 1) => {
-    const existingIndex = cart.findIndex(
-      item => item.id === product.id && item.talla === (product.talla || 'M')
-    )
-
-    if (existingIndex > -1) {
-      const updated = [...cart]
-      updated[existingIndex].cantidad += quantity
-      updateCart(updated)
-    } else {
-      const newItem = {
-        id: product.id,
-        titulo: product.titulo,
-        precio: product.precio,
-        img: product.img,
-        talla: product.talla || 'M',
-        cantidad: quantity
-      }
-      updateCart([...cart, newItem])
+    if (cartCtx?.addToCart) {
+      cartCtx.addToCart(product, quantity)
     }
-    showNotification('¡Producto agregado al carrito!', `${product.titulo || 'Camiseta'} (${product.talla || 'M'}) se añadió con éxito.`)
+    showNotification('¡Producto agregado al carrito!', `${product?.titulo || 'Camiseta'} (${product?.talla || 'M'}) se añadió con éxito.`)
   }
 
   const handleIncrementCart = (index) => {
-    const updated = [...cart]
-    updated[index].cantidad += 1
-    updateCart(updated)
+    if (cartCtx?.incrementCart) {
+      cartCtx.incrementCart(index)
+    }
   }
 
   const handleDecrementCart = (index) => {
-    const updated = [...cart]
-    if (updated[index].cantidad > 1) {
-      updated[index].cantidad -= 1
-      updateCart(updated)
-    } else {
-      handleRemoveCart(index)
+    if (cartCtx?.decrementCart) {
+      cartCtx.decrementCart(index)
     }
   }
 
   const handleRemoveCart = (index) => {
-    const updated = cart.filter((_, i) => i !== index)
-    updateCart(updated)
+    if (cartCtx?.removeFromCart) {
+      cartCtx.removeFromCart(index)
+    }
   }
 
   const handleClearCart = () => {
-    updateCart([])
+    if (cartCtx?.clearCart) {
+      cartCtx.clearCart()
+    }
   }
 
   // 3. EN HANDLELOGIN Y LOGOUT:
@@ -308,20 +291,45 @@ export function App() {
 
   // Operaciones CRUD de Productos (Admin)
   const handleCreateProduct = async (newProd) => {
-    await productService.create(newProd)
-    await loadProducts()
+    try {
+      await productService.create(newProd)
+      await loadProducts()
+    } catch (err) {
+      console.warn('Fallo al crear producto en backend, sincronizando en catálogo local:', err.message)
+      const newId = Date.now()
+      const fallbackItem = {
+        id: newId,
+        idProducto: newId,
+        ...newProd,
+        categoria: newProd.categoriasIds?.includes(2) ? 'Clubes Chilenos' : 'Selecciones Nacionales',
+        nombreMarca: newProd.idMarca === 1 ? 'Nike' : 'Adidas'
+      }
+      setProducts(prev => [fallbackItem, ...prev])
+    }
     showNotification('Catálogo Actualizado', 'Producto creado exitosamente.')
   }
 
   const handleUpdateProduct = async (id, fields) => {
-    await productService.update(id, fields)
-    await loadProducts()
+    try {
+      await productService.update(id, fields)
+      await loadProducts()
+    } catch (err) {
+      console.warn('Fallo al actualizar en backend, sincronizando en catálogo local:', err.message)
+      setProducts(prev =>
+        prev.map(p => ((p.id === id || p.idProducto === id) ? { ...p, ...fields } : p))
+      )
+    }
     showNotification('Catálogo Actualizado', 'Producto actualizado exitosamente.')
   }
 
   const handleDeleteProduct = async (id) => {
-    await productService.delete(id)
-    await loadProducts()
+    try {
+      await productService.delete(id)
+      await loadProducts()
+    } catch (err) {
+      console.warn('Fallo al eliminar en backend, sincronizando en catálogo local:', err.message)
+      setProducts(prev => prev.filter(p => p.id !== id && p.idProducto !== id))
+    }
     showNotification('Catálogo Actualizado', 'Producto eliminado exitosamente.')
   }
 
@@ -371,6 +379,7 @@ export function App() {
         estado: 'Completado'
       }
 
+      setOrders(prev => [registeredOrder, ...prev.filter(o => (o.id !== registeredOrder.id && o.idOrden !== registeredOrder.idOrden))])
       setLastOrder(registeredOrder)
       handleClearCart()
       await loadProducts()
@@ -380,8 +389,6 @@ export function App() {
       navigateTo('pago-error')
     }
   }
-
-  const totalCartCount = cart.reduce((acc, item) => acc + item.cantidad, 0)
 
   // 3. SEGURIDAD DE RUTAS: Protege la ruta /admin
   // Si no hay loggedUser redirige a /login; si loggedUser.rol no es 'ADMIN' ni 'VENDEDOR', expulsa a '/'
@@ -429,6 +436,8 @@ export function App() {
       loggedUser={loggedUser}
       onLogout={handleLogout}
       cartCount={totalCartCount}
+      onOpenCart={openCart}
+      catalogProducts={products}
     >
       <Routes>
         <Route

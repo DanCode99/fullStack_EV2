@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Carousel } from '../../components/organisms/Carousel/Carousel.jsx'
 import { ProductCard } from '../../components/molecules/ProductCard/ProductCard.jsx'
 import { Button } from '../../components/atoms/Button/Button.jsx'
+import { enrichProductWithDiscounts } from '../../context/cartHelpers.js'
 
 export function HomeView({
   products = [],
@@ -9,17 +10,22 @@ export function HomeView({
   onAddToCart,
   onNavigate
 }) {
+  // 0. Enriquecer productos con descuentos oficiales y marcas
+  const enrichedProducts = useMemo(() => {
+    return (products || []).map(enrichProductWithDiscounts)
+  }, [products])
+
   // 1. Carrusel principal (Hero Banner con autoplay funcional)
   const bannerProducts = useMemo(() => {
-    if (!products || products.length === 0) return []
-    return products.slice(0, 5)
-  }, [products])
+    if (!enrichedProducts || enrichedProducts.length === 0) return []
+    return enrichedProducts.slice(0, 5)
+  }, [enrichedProducts])
 
   // 2. Curación de 4 camisetas destacadas para la fila principal (products.slice(0, 4))
   const featuredProducts = useMemo(() => {
-    if (!products || products.length === 0) return []
-    return products.slice(0, 4)
-  }, [products])
+    if (!enrichedProducts || enrichedProducts.length === 0) return []
+    return enrichedProducts.slice(0, 4)
+  }, [enrichedProducts])
 
   // 3. Equipos y selecciones reales disponibles en nuestra base de datos
   const availableTeams = useMemo(() => [

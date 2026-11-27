@@ -29,14 +29,36 @@ export async function apiFetch(endpoint, options = {}) {
     throw new Error(`Error de conexión con el servidor: ${networkError.message}`, { cause: networkError });
   }
 
-  // Si responde 401 o 403, limpiar token y loggedUser de localStorage y redirigir a /login
+  // Si responde 401 o 403, evaluar si es una acción de escritura/admin para no expulsar al usuario
   if (response.status === 401 || response.status === 403) {
-    localStorage.removeItem('token');
-    localStorage.removeItem('loggedUser');
-    if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-      window.location.href = '/login';
+    const isWriteOrAdminAction =
+      (options.method && options.method !== 'GET') ||
+      cleanEndpoint.includes('/productos') ||
+      cleanEndpoint.includes('/usuarios') ||
+      cleanEndpoint.includes('/ordenes') ||
+      (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin'));
+
+    let authErrorMessage = 'Acceso no autorizado o permisos insuficientes (401/403).';
+    try {
+      const errJson = await response.json();
+      authErrorMessage =
+        errJson.message ||
+        errJson.mensaje ||
+        errJson.error ||
+        authErrorMessage;
+    } catch {
+      // Ignorar fallo de parseo JSON
     }
-    throw new Error('Sesión expirada o no autorizada. Redirigiendo a inicio de sesión...');
+
+    if (!isWriteOrAdminAction) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('loggedUser');
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    }
+
+    throw new Error(authErrorMessage);
   }
 
   // Si responde 204 No Content, retorna true

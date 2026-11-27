@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom'
-import { Button } from '../../atoms/Button/Button.jsx'
 
 export function ProductCard({
   product,
@@ -7,7 +6,7 @@ export function ProductCard({
   onAddToCart
 }) {
   const navigate = useNavigate()
-  const isOutOfStock = product.stock <= 0
+  const isOutOfStock = (product.stock || 0) <= 0
 
   const handleSelect = () => {
     if (onSelect) {
@@ -17,7 +16,7 @@ export function ProductCard({
     }
   }
 
-  const brandOrCategory = product.nombreMarca || product.categoria || 'Fútbol Oficial'
+  const brandOrCategory = product.nombreMarca || product.marca || 'Fútbol Oficial'
   const isClub = product.categoria === 'Clubes Chilenos'
 
   return (
@@ -54,13 +53,58 @@ export function ProductCard({
             }}
           />
         </figure>
+
+        {/* Barra flotante animada al hover en la base de la imagen */}
+        <div
+          className="pro-card-hover-actions"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            type="button"
+            className="pro-hover-btn-cart"
+            disabled={isOutOfStock}
+            onClick={(e) => {
+              e.stopPropagation()
+              if (!isOutOfStock && onAddToCart) {
+                onAddToCart(product)
+              }
+            }}
+            title={isOutOfStock ? 'Agotado' : 'Agregar al carrito'}
+            aria-label={`Agregar ${product.titulo} al carrito`}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span>{isOutOfStock ? 'Agotado' : 'Agregar al carrito'}</span>
+          </button>
+
+          <button
+            type="button"
+            className="btn-primary pro-hover-btn-details"
+            onClick={(e) => {
+              e.stopPropagation()
+              handleSelect()
+            }}
+            title="Ver detalles"
+            aria-label={`Ver detalles de ${product.titulo}`}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            </svg>
+            <span>Ver detalles</span>
+          </button>
+        </div>
       </div>
 
+      {/* Parte inferior minimalista: Categoría y Marca, Título y Precio */}
       <div className="card-content pro-card-content">
         <div className="pro-card-header">
           <div className="pro-card-meta">
             <span className="pro-card-category">{product.categoria}</span>
-            <span className="pro-card-brand">{brandOrCategory}</span>
+            <span className="pro-card-brand">• {brandOrCategory}</span>
           </div>
 
           <h3
@@ -87,27 +131,6 @@ export function ProductCard({
               </p>
             )}
           </div>
-        </div>
-
-        <div className="pro-card-actions mt-3">
-          <Button
-            variant="primary"
-            size="small"
-            className="is-fullwidth pro-btn-cart mb-2"
-            disabled={isOutOfStock}
-            onClick={() => onAddToCart && onAddToCart(product)}
-          >
-            {isOutOfStock ? 'Sin Stock Disponible' : 'Agregar al Carrito'}
-          </Button>
-
-          <Button
-            variant="light"
-            size="small"
-            className="is-fullwidth pro-btn-details"
-            onClick={handleSelect}
-          >
-            Ver detalles
-          </Button>
         </div>
       </div>
     </div>

@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Button } from '../../atoms/Button/Button.jsx'
 import { PromoAnnouncementBar } from '../../molecules/PromoAnnouncementBar/PromoAnnouncementBar.jsx'
 
 export function Navbar({
@@ -14,7 +13,20 @@ export function Navbar({
   const [burgerActive, setBurgerActive] = useState(false)
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false)
   const [megaTimer, setMegaTimer] = useState(null)
+  const [authMenuOpen, setAuthMenuOpen] = useState(false)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (!e.target.closest('.retail-auth-dropdown')) {
+        setAuthMenuOpen(false)
+      }
+    }
+    if (authMenuOpen) {
+      document.addEventListener('click', handleOutsideClick)
+    }
+    return () => document.removeEventListener('click', handleOutsideClick)
+  }, [authMenuOpen])
 
   const handleMouseEnterMega = () => {
     if (megaTimer) clearTimeout(megaTimer)
@@ -165,42 +177,135 @@ export function Navbar({
 
             <div className="navbar-end">
               <div className="navbar-item">
-                <div className="buttons">
-                  {loggedUser ? (
-                    <>
-                      <span className="navbar-item has-text-white is-size-7">
-                        Hola, {loggedUser.nombre || loggedUser.correo}
+                <div className="retail-header-bar">
+                  {/* 1. Hola, Inicia sesión / Hola, [Nombre] */}
+                  <div className="retail-auth-dropdown">
+                    <button
+                      type="button"
+                      className="retail-btn-auth"
+                      onClick={() => setAuthMenuOpen(prev => !prev)}
+                      aria-haspopup="true"
+                      aria-expanded={authMenuOpen}
+                    >
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                      </svg>
+                      <span>
+                        {loggedUser ? `Hola, ${loggedUser.nombre || loggedUser.correo}` : 'Hola, Inicia sesión'}
                       </span>
-                      <Button
-                        variant="danger"
-                        size="small"
-                        onClick={onLogout}
-                      >
-                        Cerrar Sesión
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button
-                        variant="light"
-                        size="small"
-                        onClick={() => handleNav('login')}
-                      >
-                        Iniciar Sesión
-                      </Button>
-                      <Button
-                        variant="primary"
-                        size="small"
-                        onClick={() => handleNav('registro')}
-                      >
-                        Registro
-                      </Button>
-                    </>
-                  )}
-                  <Button
-                    variant="primary"
-                    size="small"
-                    className="is-outlined"
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </button>
+
+                    <div className={`retail-auth-menu ${authMenuOpen ? 'is-active' : ''}`}>
+                      {loggedUser ? (
+                        <>
+                          <div className="px-3 py-2 border-bottom has-text-grey is-size-7">
+                            Conectado como <strong>{loggedUser.nombre || loggedUser.correo}</strong>
+                          </div>
+                          {isAdminOrSeller && (
+                            <button
+                              type="button"
+                              className="retail-auth-menu-item"
+                              onClick={() => {
+                                setAuthMenuOpen(false)
+                                handleNav('admin')
+                              }}
+                            >
+                              Panel de Administración
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            className="retail-auth-menu-item is-logout"
+                            onClick={() => {
+                              setAuthMenuOpen(false)
+                              if (onLogout) onLogout()
+                            }}
+                          >
+                            Cerrar Sesión
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            type="button"
+                            className="retail-auth-menu-item"
+                            onClick={() => {
+                              setAuthMenuOpen(false)
+                              handleNav('login')
+                            }}
+                          >
+                            Iniciar Sesión
+                          </button>
+                          <button
+                            type="button"
+                            className="retail-auth-menu-item"
+                            onClick={() => {
+                              setAuthMenuOpen(false)
+                              handleNav('registro')
+                            }}
+                          >
+                            Registro
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Separador vertical | */}
+                  <span className="retail-divider" aria-hidden="true"></span>
+
+                  {/* 2. Mi cuenta */}
+                  <button
+                    type="button"
+                    className="retail-account-link"
+                    onClick={() => {
+                      if (!loggedUser) {
+                        handleNav('login')
+                      } else if (isAdminOrSeller) {
+                        handleNav('admin')
+                      } else {
+                        handleNav('home')
+                      }
+                    }}
+                  >
+                    Mi cuenta
+                  </button>
+
+                  {/* Separador vertical | */}
+                  <span className="retail-divider" aria-hidden="true"></span>
+
+                  {/* 3. Icono de Corazón (Favoritos) */}
+                  <button
+                    type="button"
+                    className="retail-icon-btn"
+                    title="Mis Favoritos"
+                    aria-label="Favoritos"
+                    onClick={() => {
+                      if (!loggedUser) {
+                        handleNav('login')
+                      } else {
+                        handleNav('productos')
+                      }
+                    }}
+                  >
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                  </button>
+
+                  {/* Separador vertical | */}
+                  <span className="retail-divider" aria-hidden="true"></span>
+
+                  {/* 4. Icono de Carrito con contador circular */}
+                  <button
+                    type="button"
+                    className="retail-cart-btn"
+                    title="Abrir Carrito"
+                    aria-label={`Carrito con ${cartCount} productos`}
                     onClick={() => {
                       if (onOpenCart) {
                         onOpenCart()
@@ -209,8 +314,14 @@ export function Navbar({
                       }
                     }}
                   >
-                    Carrito ({cartCount})
-                  </Button>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                      <line x1="3" y1="6" x2="21" y2="6"></line>
+                      <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                    <span>Carrito ({cartCount})</span>
+                    <span className="retail-cart-badge">{cartCount}</span>
+                  </button>
                 </div>
               </div>
             </div>

@@ -20,6 +20,9 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
     if (periodFilter === 'MARZO') {
       return orders.filter(o => o.fecha?.startsWith('2026-03'))
     }
+    if (periodFilter === 'NOVIEMBRE') {
+      return orders.filter(o => o.fecha?.startsWith('2026-11'))
+    }
     if (periodFilter === 'RECENT') {
       // Últimas 10 órdenes
       return [...orders].slice(0, 10)
@@ -160,6 +163,7 @@ export function ReportsPanel({ orders = [], products = [], users = [] }) {
               id="report-period-select"
             >
               <option value="ALL">Todo el Historial</option>
+              <option value="NOVIEMBRE">Noviembre 2026</option>
               <option value="MARZO">Marzo 2026</option>
               <option value="RECENT">Últimas 10 Transacciones</option>
             </select>

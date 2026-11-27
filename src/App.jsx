@@ -50,7 +50,18 @@ export function App() {
 
   const [products, setProducts] = useState([])
   const [users, setUsers] = useState([])
-  const [orders, setOrders] = useState([])
+  const [orders, setOrders] = useState(() => {
+    try {
+      const raw = localStorage.getItem('futbol_orders_backup')
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed
+      }
+    } catch {
+      // fallback
+    }
+    return []
+  })
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [lastOrder, setLastOrder] = useState(null)
 
@@ -368,6 +379,7 @@ export function App() {
         estado: 'Completado'
       }
 
+      setOrders(prev => [registeredOrder, ...prev.filter(o => (o.id !== registeredOrder.id && o.idOrden !== registeredOrder.idOrden))])
       setLastOrder(registeredOrder)
       handleClearCart()
       await loadProducts()

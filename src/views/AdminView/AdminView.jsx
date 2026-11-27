@@ -212,6 +212,8 @@ export function AdminView({
       idMarca: Number(productForm.idMarca || 1),
       img: productForm.img,
       img2: productForm.img2 || '',
+      urlImagen: productForm.img,
+      descripcion: productForm.descripcion || productForm.titulo.trim(),
       categoriasIds: Array.isArray(productForm.categoriasIds)
         ? productForm.categoriasIds.map(Number)
         : [1]
@@ -220,7 +222,7 @@ export function AdminView({
     try {
       setProductActionLoading(true)
       if (editingProduct) {
-        await onUpdateProduct(editingProduct.id, payload)
+        await onUpdateProduct(editingProduct.id || editingProduct.idProducto, payload)
       } else {
         await onCreateProduct(payload)
       }
